@@ -5,10 +5,16 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Moodr</title>
-  <link href="src/styles/styles.css" rel="stylesheet">
+  <link href="view/styles/styles.css" rel="stylesheet">
 </head>
 <body>
-  
+  <?php 
+    include 'model/Database.php'; 
+    $x = new Database();
+    $arr = ['username', 'password'];
+
+    print_r($x->select('tbl_user', $arr));
+  ?>
   <?php //include 'src/templates/header.php' ?>
   <div id="header">
   <div>
