@@ -11,10 +11,9 @@
   <?php 
     include 'controller/api/Database.php'; 
     $x = new DatabaseApi();
-    // $arr = ['username', 'password'];
+    //echo $x->checkPassword('username', 'password');
+    var_dump($x->checkPassword('username', 'password'));
 
-    // print_r($x->select('tbl_user', $arr));
-    print_r($x->checkPassword('username', 'password'));
   ?>
   <?php //include 'src/templates/header.php' ?>
   <div id="header">
