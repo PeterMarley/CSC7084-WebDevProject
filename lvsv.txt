@@ -1,0 +1,7 @@
+- set live server browser extension
+  actual server: http://localhost/uni/project/
+  live server: http://localhost:5500/
+
+- go live
+- server php server
+- navigate to http://localhost/uni/project/

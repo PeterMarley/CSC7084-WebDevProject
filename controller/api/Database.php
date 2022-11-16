@@ -13,7 +13,10 @@ const DB_HOST = 'localhost';
 
 // echo '<script>console.log("db connection successful")</script>';
 
-class Database {
+include 'controller/utility.php';
+
+class DatabaseApi {
+
     protected $conn;
 
     public function __construct() {
@@ -21,13 +24,35 @@ class Database {
         $this->conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
         if (mysqli_connect_errno()) {
-            throw new Exception('DB Connection Failed!');
+            $failureMsg = 'DB Connection Failed!';
+            consoleLog($failureMsg);
+            throw new Exception($failureMsg);
         }
+        $successMsg = 'DB Connection success!';
+        consoleLog($successMsg);
+    }
+
+    public function checkPassword($username, $password) {
+        //consoleLog($username . ' ' . $password);
+        $stmt = $this->conn->query("SELECT fn_Check_Password('$username', '$password')");
+        if ($stmt) {
+            $result = $stmt->fetch_assoc();
+            //consoleLog('result: '. implode(',',$result));
+            return $result;
+        }
+        return 'Password Check Failed!';
     }
 
     public function select($table, $attributes) {
         $attrStr = implode(',', $attributes);
         
+        $stmt = $this->conn->prepare('SELECT (?) FROM ' . $table);
+        $stmt->bind_param(str_repeat('s', count($attributes)), $attrStr);
+
+        $stmt->execute();
+
+        return $stmt->get_result()->fetch_array(MYSQLI_ASSOC);
+
         $statement = $this->execute('SELECT * FROM ' . $table);
         return $statement->get_result()->fetch_all(MYSQLI_ASSOC);
 

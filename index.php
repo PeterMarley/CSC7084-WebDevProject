@@ -9,16 +9,17 @@
 </head>
 <body>
   <?php 
-    include 'model/Database.php'; 
-    $x = new Database();
-    $arr = ['username', 'password'];
+    include 'controller/api/Database.php'; 
+    $x = new DatabaseApi();
+    // $arr = ['username', 'password'];
 
-    print_r($x->select('tbl_user', $arr));
+    // print_r($x->select('tbl_user', $arr));
+    print_r($x->checkPassword('username', 'password'));
   ?>
   <?php //include 'src/templates/header.php' ?>
   <div id="header">
   <div>
-    ICON
+    ICONssssss
   </div>
   <div>
     Add Entry
