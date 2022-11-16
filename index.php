@@ -1,49 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Moodr</title>
-  <link href="view/styles/styles.css" rel="stylesheet">
-</head>
-<body>
-  <?php 
-    include 'controller/api/Database.php'; 
-    $x = new DatabaseApi();
-    //echo $x->checkPassword('username', 'password');
-    var_dump($x->checkPassword('username', 'password'));
+<?php
+/**
+ * This is the routing controller of the Moodr mood tracking web application
+ */
 
-  ?>
-  <?php //include 'src/templates/header.php' ?>
-  <div id="header">
-  <div>
-    ICONssssss
-  </div>
-  <div>
-    Add Entry
-  </div>
-  <div>
-    Visualise
-  </div>
-  <div>
-    Manage Moods
-  </div>
-  <div>
-    Login | Register
-  </div>
-</div>
+ 
+include_once('inc/bootstrap.php');
 
-  <div id="body">
-    <?php //include 'src/templates/nav.php' ?>
-    <div>nav menu?</div>
-    <div>content?</div>
-  </div>
-  
-  <?php //include 'src/templates/footer.php' ?>
-  <div id="footer">
-    footer contents
-  </div>
+$uri = array_filter(explode( '/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)));
 
-</body>
-</html>
+$uri = array_filter($uri, function($element) {
+  return $element == true;
+});
+$startpointPath =  array_slice($uri,0,array_search(INDEX, $uri, true) - 1);
+$endpointPath = array_slice($uri, array_search(INDEX, $uri, true));
+echo 'start: '. print_r($startpointPath, true) . '<br>';
+echo 'end: '. print_r($endpointPath, true) . '<br>';
+echo 'implode: '. implode('\\',$startpointPath) . '<br>';
+echo 'DIR: '.  __DIR__ . '<BR>';
+echo __DIR__ .  '\view\templates\template.php<br>';
+
+// C:\xampp\htdocs\uni\project\view\templates
+
+$route = implode('/', $endpointPath);
+// echo 'route: '. $route . '<br>';
+// echo 'HOME_PATH: '. HOME_PATH . '<br>';
+
+switch ($route) {
+  case HOME_PATH:
+  case "":
+    include('view/templates/template.php');
+    //header('Location: view/templates/template.php');
+    break;
+  case "test":
+    include('view/templates/test.php');
+    break;
+  default:
+    echo 'Route not recognised: '. $route . '<br>';
+}
+
+// exit;
+
+// if (count($endpointPath) === 0) {
+//   include('view/templates/template.php');
+// } else if (isset($endpointPath[0])) {
+
+//   // first stage route
+//   switch ($endpointPath[0]) {
+//     case 'test':
+//       header('Location: '.THE_PATH.'test.html');
+//       break;
+//   }
+//   echo $endpointPath[0];
+// }
+
+// var_dump($endpointPath);
+
+// if ((isset($uri[2]) && $uri[2] != 'user') || !isset($uri[3])) {
+//     header("HTTP/1.1 404 Not Found");
+//     exit();
+// }
+
+
+

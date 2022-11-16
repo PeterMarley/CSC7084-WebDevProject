@@ -61,33 +61,4 @@ class DatabaseApi {
 
     }
 
-    public function select($table, $attributes) {
-        $attrStr = implode(',', $attributes);
-        
-        $stmt = $this->conn->prepare('SELECT (?) FROM ' . $table);
-        $stmt->bind_param(str_repeat('s', count($attributes)), $attrStr);
-
-        $stmt->execute();
-
-        return $stmt->get_result()->fetch_array(MYSQLI_ASSOC);
-
-        $statement = $this->execute('SELECT * FROM ' . $table);
-        return $statement->get_result()->fetch_all(MYSQLI_ASSOC);
-
-        return $attrStr;
-    }
-
-    private function execute($sqlString, $params = []) {
-        $statement = $this->conn->prepare($sqlString);
-        if (!$statement) {
-            throw new Exception('statement creation failed');
-        }
-        if ($params) {
-            if ($statement->bind_param(...$params)) {
-                throw new Exception('statment parameter binding failed');
-            }
-        }
-        $statement->execute();
-        return $statement;
-    }
 }
