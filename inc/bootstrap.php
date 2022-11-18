@@ -1,5 +1,10 @@
 <?php
 
-define('HOME_PATH', 'uni/project');
-define('INDEX', 'index.php');
-define('THE_PATH', '../view/templates/');
+/*****************************
+ *  CONSTANTS
+ *****************************/
+
+define('HOME', 'uni/project');
+
+// used in the http-controller.php
+define('PHP_TEMPLATES', 'view/templates/');

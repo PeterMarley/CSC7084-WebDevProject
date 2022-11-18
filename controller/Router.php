@@ -1,12 +1,29 @@
 <?php
 
 class Router {
-  function __construct()
+  
+  private static $router;
+  private $allowedHttpMethod = ["GET", "POST"];
+  
+  private function __construct()
   {
-    echo 'dan san';
+    echo '<div>dan san</div>';
+  }
+
+  public static function getInstance() {
+    if (Router::$router == null) {
+      Router::$router = new Router();
+    }
+    return Router::$router;
   }
 
   public function __call($name, $args) {
-    echo 'call was called';
+    if (!in_array(strtoupper($name), $this->allowedHttpMethod)) {
+      throw new InvalidArgumentException('invalid http method used');
+    }
+    print_r($args);
+    // echo '<div>call was called</div>';
+    // echo '<div>name: '.$name.'</div>';
+    // echo '<div>args: '.$args.'</div>';
   }
 }
