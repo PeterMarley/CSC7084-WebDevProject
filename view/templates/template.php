@@ -3,7 +3,8 @@
   // requires
   require_once 'inc/Logger.php';
 
-  // instantiate database path
+  // start/ resume session
+  session_start();
 
   // instantiate logger
   $logger = new Logger();
@@ -42,17 +43,17 @@
     <div>nav menu?</div>
     <div>
       <?php 
-        //var_dump($_COOKIE);
+        var_dump($_SESSION);
       ?>
 
 
-      <?php if (isset($_COOKIE['ls']) && $_COOKIE['ls'] === '1'): ?>
-        <h1>You are logged in as: <?php echo $_COOKIE['un'] ?></h1>
+      <?php if (isset($_SESSION['login-success']) && $_SESSION['login-success'] == true): ?>
+        <h1>You are logged in as: <?php echo $_SESSION['username'] ?></h1>
       <?php else: ?>
-        <?php if (isset($_COOKIE['ls']) && $_COOKIE['ls'] === '0'): ?>
+        <?php if (isset($_SESSION['login-success']) && $_SESSION['login-success'] == false): ?>
         <h1>Login unsuccessful</h1>
         <?php endif ?>
-        <form method="POST" action="<?= buildPathRelative('/controller/api/login.php?redirect=index.php');?>">
+        <form method="POST" action="<?= buildPathRelative('/controller/api/login.php');?>">
           <div>
             <label for="username">Username:</label>
             <input type="text" name="username" placeholder="Enter username">
@@ -61,6 +62,7 @@
             <label for="username">Password:</label>
             <input type="password" name="password" placeholder="Enter password">
           </div>
+          <input type="text" name="redirect" value="index.php" hidden>
           <input type="submit" name="login-submit">
         </form>
       <?php endif ?> 
