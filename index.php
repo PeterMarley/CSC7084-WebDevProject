@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 
 <?php
 
@@ -13,10 +12,10 @@ switch ($_SERVER['REQUEST_URI']) {
     renderTemplate('test.php');
     break;
 
-  case "/home":
-  default:
+  case "/":
+  case '/' . HOME . '/':
+  case '/' . HOME . "/index.php":
     renderTemplate('template.php');
-
 }
 
 function renderTemplate($filename) {

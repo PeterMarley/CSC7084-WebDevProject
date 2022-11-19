@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <?php 
   // requires
   require_once 'inc/Logger.php';
@@ -6,9 +7,8 @@
 
   // instantiate logger
   $logger = new Logger();
-  $logger->log(buildPathAbsolute('/view/styles/styles.css'));
+  //$logger->log(buildPathAbsolute('/view/styles/styles.css'));
 ?>
-
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -42,13 +42,16 @@
     <div>nav menu?</div>
     <div>
       <?php 
-        var_dump($_COOKIE);
+        //var_dump($_COOKIE);
       ?>
 
 
       <?php if (isset($_COOKIE['ls']) && $_COOKIE['ls'] === '1'): ?>
-        <h1>You are logged in as: <?php echo $_COOKIE['username'] ?></h1>
+        <h1>You are logged in as: <?php echo $_COOKIE['un'] ?></h1>
       <?php else: ?>
+        <?php if (isset($_COOKIE['ls']) && $_COOKIE['ls'] === '0'): ?>
+        <h1>Login unsuccessful</h1>
+        <?php endif ?>
         <form method="POST" action="<?= buildPathRelative('/controller/api/login.php?redirect=index.php');?>">
           <div>
             <label for="username">Username:</label>
