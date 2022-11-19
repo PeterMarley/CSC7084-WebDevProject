@@ -1,11 +1,12 @@
 <?php
-require('ILogger.php');
+include_once('ILogger.php');
 /**
  * Logger
  * 
  * This object may be used to log information to various places
  */
 class Logger implements ILogger {
+  
   private $logFunc;
   private $allowedLoggingTypes = ['console'];
   
@@ -53,6 +54,9 @@ class Logger implements ILogger {
         break;
       case "array":
         echo '<script>console.log("' . implode(',', $message)  . '")</script>';
+        break;
+      case "boolean":
+        echo '<script>console.log("' . $message ? "true" : false  . '")</script>';
         break;
       default:
         throw new InvalidArgumentException("console log aborted due to unknown type of \$message: ". getType($message));

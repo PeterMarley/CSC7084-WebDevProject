@@ -1,8 +1,12 @@
-<!DOCTYPE html>
-
 <?php 
-  $localhost = 'https://localhost';
-  $filepath = $localhost . '/uni/project';
+  // requires
+  require_once 'inc/Logger.php';
+
+  // instantiate database path
+
+  // instantiate logger
+  $logger = new Logger();
+  $logger->log(buildPathAbsolute('/view/styles/styles.css'));
 ?>
 
 <html lang="en">
@@ -11,7 +15,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Moodr</title>
-  <link href="<?= $filepath ?>/view/styles/styles.css" rel="stylesheet">
+  <link href="<?= buildPathRelative('/view/styles/styles.css'); ?>" rel="stylesheet">
 </head>
 <body>
   <?php //include 'src/templates/header.php' ?>
@@ -36,7 +40,29 @@
   <div id="body">
     <?php //include 'src/templates/nav.php' ?>
     <div>nav menu?</div>
-    <div>content?</div>
+    <div>
+      <?php 
+        var_dump($_COOKIE);
+      ?>
+
+
+      <?php if (isset($_COOKIE['ls']) && $_COOKIE['ls'] === '1'): ?>
+        <h1>You are logged in as: <?php echo $_COOKIE['username'] ?></h1>
+      <?php else: ?>
+        <form method="POST" action="<?= buildPathRelative('/controller/api/login.php?redirect=index.php');?>">
+          <div>
+            <label for="username">Username:</label>
+            <input type="text" name="username" placeholder="Enter username">
+          </div>
+          <div>
+            <label for="username">Password:</label>
+            <input type="password" name="password" placeholder="Enter password">
+          </div>
+          <input type="submit" name="login-submit">
+        </form>
+      <?php endif ?> 
+
+    </div>
   </div>
   
   <?php //include 'src/templates/footer.php' ?>
