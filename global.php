@@ -1,8 +1,9 @@
 <?php
+
 /*****************************
  *  CONSTANTS
  *****************************/
-
+define('LOGIN_URL', 'https://localhost/uni/project/controller/api/Login.php');
 define('HOME', 'uni/project');
 
 define('LOCALHOST', 'https://localhost');

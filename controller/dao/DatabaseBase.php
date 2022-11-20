@@ -27,13 +27,13 @@ class DatabaseBase {
         if (mysqli_connect_errno()) {
             // report connection failure
             $failureMsg = 'DB Connection Failed!';
-            $this->logger->log($failureMsg);
+            //$this->logger->log($failureMsg);
             throw new Exception($failureMsg);
         }
 
         // report connection success
-        $successMsg = 'DB Connection success!';
-        $this->logger->log($successMsg);
+        //$successMsg = 'DB Connection success!';
+        //$this->logger->log($successMsg);
     }
     
     /**

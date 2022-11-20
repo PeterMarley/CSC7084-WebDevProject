@@ -2,6 +2,7 @@
 <?php 
   // requires
   require_once 'inc/Logger.php';
+  require_once 'global.php';
 
   // start/ resume session
   session_start();
@@ -34,26 +35,53 @@
       Manage Moods
     </div>
     <div>
-      Login | Register
+      Login | Register | 
+      <form method="POST" action="" style="display: inline-block;">
+        <input type="submit" name="log-out" value="Log Out" class="login-control">
+      </form>
     </div>
   </div>
-
+  
   <div id="body">
     <?php //include 'src/templates/nav.php' ?>
     <div>nav menu?</div>
     <div>
-      <?php 
-        var_dump($_SESSION);
-      ?>
+      <?php if (isset($_POST['log-in'])): // if login form has been submitted?>
+        <?php 
+          // process login
+          $fields = ['username' => $_POST['username'], 'password' => $_POST['password']];
+          $fields_string = http_build_query($fields);
 
+          $ch = curl_init(LOGIN_URL);
+          curl_setopt($ch, CURLOPT_POST, true);
+          curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
+          curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+          curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // resolve this?
 
-      <?php if (isset($_SESSION['login-success']) && $_SESSION['login-success'] == true): ?>
-        <h1>You are logged in as: <?php echo $_SESSION['username'] ?></h1>
-      <?php else: ?>
-        <?php if (isset($_SESSION['login-success']) && $_SESSION['login-success'] == false): ?>
-        <h1>Login unsuccessful</h1>
+          $result = json_decode(curl_exec($ch));
+          curl_close($ch);
+
+          if($result->encryptedPassword != 0) {
+            echo 'huzzah! welcome ' . $result->username;
+            $_SESSION['username'] = $result->username;
+            $_SESSION['encrypted-pw'] = $result->encryptedPassword;
+            $_SESSION['login-time'] = time();
+          }
+        ?>
+
+        <?php if (isset($_SESSION['username']) && isset($_SESSION['encrypted-pw'])): // successful login?>
+          <h1>You are logged in as: <?php echo $_SESSION['username'] ?></h1>
+        <?php else: // unsuccessful login?>
+          <h1>Login unsuccessful</h1>
         <?php endif ?>
-        <form method="POST" action="<?= buildPathRelative('/controller/api/login.php');?>">
+
+      <?php elseif (isset($_POST['log-out'])): ?>
+        <?php session_destroy(); session_start(); ?>
+      <?php endif ?>
+      <?php if (isset($_SESSION['username']) && isset($_SESSION['encrypted-pw'])): // display login form is not logged in?>
+        <h1>Welcome back!</h1>
+      <?php else: ?>
+        <form method="POST" action="">
           <div>
             <label for="username">Username:</label>
             <input type="text" name="username" placeholder="Enter username">
@@ -63,9 +91,9 @@
             <input type="password" name="password" placeholder="Enter password">
           </div>
           <input type="text" name="redirect" value="index.php" hidden>
-          <input type="submit" name="login-submit">
+          <input type="submit" name="log-in" value="login">
         </form>
-      <?php endif ?> 
+      <?php endif ?>
 
     </div>
   </div>

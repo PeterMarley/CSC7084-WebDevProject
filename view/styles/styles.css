@@ -1,7 +1,3 @@
-:root {
-
-}
-
 /****************************
   LAYOUT
 ****************************/
@@ -52,4 +48,13 @@ body {
   background-color: cornflowerblue;
   margin: 10px;
   /* margin-top: auto; */
+}
+
+/****************************
+  CONTROLS
+****************************/
+
+.login-control {
+  border: 0px; 
+  background: none;
 }
