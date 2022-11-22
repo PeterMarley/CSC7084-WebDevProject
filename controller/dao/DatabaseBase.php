@@ -1,5 +1,5 @@
 <?php
-require_once '../../inc/Logger.php';
+require_once '../../lib/Logger.php';
 require_once 'DatabaseConfig.php';
 
 class DatabaseBase {

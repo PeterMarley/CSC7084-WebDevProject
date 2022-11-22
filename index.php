@@ -1,27 +1,28 @@
-
-<?php
-
-require_once('global.php');
-require_once('inc/Logger.php');
-$logger = new Logger();
-$logger->log($_SERVER['REQUEST_URI']);
-
-switch ($_SERVER['REQUEST_URI']) {
+<!DOCTYPE html>
+<?php require_once 'global.php'; ?>
+<?php include 'view/templates/header.php' ?>
+<?php include 'view/templates/navigation.php' ?>
   
-  case "/test":
-    renderTemplate('test.php');
-    break;
-
-  case "/":
-  case '/' . HOME . '/':
-  case '/' . HOME . "/index.php":
-    renderTemplate('template.php');
-}
-
-function renderTemplate($filename) {
-  include(PHP_TEMPLATES . $filename);
-}
-
-
-
-
+  <div id="content-pane">
+    <?php
+    if (isset($_POST['process'])) {
+      if ($_POST['process'] === 'user') {
+        switch ($_POST['action']) {
+          case 'Log In':
+            include 'view/templates/forms/login_form.php';
+            break;
+          case 'Log Out':
+            session_destroy();
+            header('Location: index.php');
+            break;
+          case 'welcome':
+            include 'view/templates/welcome.php';
+            break;
+        }
+      }
+    }
+    ?>
+  </div>
+  
+<?php include 'view/templates/footer.php' ?>
+ 

@@ -3,13 +3,29 @@
 /*****************************
  *  CONSTANTS
  *****************************/
+
 define('LOGIN_URL', 'https://localhost/uni/project/controller/api/Login.php');
 define('HOME', 'uni/project');
-
 define('LOCALHOST', 'https://localhost');
-
-// used in the http-controller.php
 define('PHP_TEMPLATES', 'view/templates/');
+
+/*****************************
+ *  REQUIRES
+ *****************************/
+
+require_once 'lib/Logger.php';
+
+/*****************************
+ *  OBJECTS
+ *****************************/
+
+$logger = new Logger();
+
+/*****************************
+ *  SESSION
+ *****************************/
+
+session_start();
 
 /*****************************
  *  Path Builder functions
