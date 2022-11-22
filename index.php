@@ -17,9 +17,14 @@ require_once 'Express.php';
 global $app;
 $app = new Express();
 
-# Require Configuration file...
-require_once "config.php";
+$app->set('basePath', '/uni/project');
+$app->set('view engine', 'default');
+$app->set('views', 'views/');
 
-# Define app routes... 
-require_once "routes/Apis.php";
-require_once "routes/Web.php";
+session_start();
+
+$app->get('/', function ($req, $res) {
+  // public function render($template, $data) {
+  $_SESSION['data'] = array("beep"=>"boop");
+  $res->render('home', array());
+});
