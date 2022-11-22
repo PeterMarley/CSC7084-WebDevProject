@@ -12,6 +12,7 @@
 
 # Require Express PHP Framework...
 require_once 'Express.php';
+require_once './api/DatabaseUser.php';
 
 # Create an Expess PHP app...
 global $app;
@@ -25,6 +26,12 @@ session_start();
 
 $app->get('/', function ($req, $res) {
   // public function render($template, $data) {
-  $_SESSION['data'] = array("beep"=>"boop");
-  $res->render('home', array());
+  //$_SESSION['data'] = array("beep"=>"boop");
+  $res->render('home', null);
 });
+
+function auth() {
+  if (!$_SESSION['login'] || !isset($_SESSION['login']['username']) || !isset($_SESSION['login']['password'])) {
+    return null;
+  }
+}

@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+<?php 
+?>
 <html>
     <head>
       <title> <?php echo $data["appName"]." / ".$data["title"]; ?></title>
@@ -6,7 +8,8 @@
       <body>
         <h1>Express PHP. It works</h1>
         <?php 
-            echo '<pre>'; 
+            echo '<pre>';
+            echo '<hr>';
             var_dump($_SESSION);
             var_dump($_REQUEST);
             var_dump($_GET);
