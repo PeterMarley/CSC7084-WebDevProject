@@ -11,7 +11,7 @@ class DatabaseUser extends DatabaseBase {
    *
    * @param  string $username user's username attempt
    * @param  string $password user's password attempt
-   * @return integer 0 if password is incorrect, otherwise the salted and hashed password is returned
+   * @return integer false if password is incorrect, otherwise the salted and hashed password is returned
    */
   public function checkPassword($username, $password) {
     // validate parameter types
@@ -22,7 +22,7 @@ class DatabaseUser extends DatabaseBase {
     $mysqli = $this->getConnection();
 
     // open connection and prepare statement
-    $stmt = $mysqli->prepare("SELECT fn_Check_Password(?, ?)");
+    $stmt = $mysqli->prepare("SELECT fn_Check_Password_Login(?, ?)");
     $stmt->bind_param('ss', $username, $password);
 
     // execute SQL and return result

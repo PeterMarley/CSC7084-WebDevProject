@@ -1,0 +1,60 @@
+/****************************
+  LAYOUT
+****************************/
+
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#header {
+  background-color: darkkhaki;
+  padding: 10px;
+  display: flex;
+}
+
+#header>div:not(:first-child) {
+  background-color: grey;
+  margin-left: 10px;
+}
+
+#header>div:last-child {
+  margin-left: auto;
+}
+
+#body {
+  background-color: green;
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+}
+
+#body>div:first-child {
+  width: 20%;
+  background-color: bisque;
+  margin: 10px;
+}
+
+#body>div:last-child {
+  background-color: bisque;
+  flex-grow: 1;
+  margin: 10px;
+}
+
+#footer {
+  background-color: cornflowerblue;
+  margin: 10px;
+  /* margin-top: auto; */
+}
+
+/****************************
+  CONTROLS
+****************************/
+
+.login-control {
+  border: 0px; 
+  background: none;
+}

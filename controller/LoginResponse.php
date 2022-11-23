@@ -1,7 +1,7 @@
 <?php
 class LoginResponse {
-  public $encryptedPassword;
   public $username;
+  public $encryptedPassword;
 
   function __construct($encryptedPassword, $username = '') {
     $this->encryptedPassword = $encryptedPassword;

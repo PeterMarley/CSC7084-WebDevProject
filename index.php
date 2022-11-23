@@ -12,7 +12,6 @@
 
 # Require Express PHP Framework...
 require_once 'Express.php';
-require_once './api/DatabaseUser.php';
 
 # Create an Expess PHP app...
 global $app;
@@ -20,18 +19,26 @@ $app = new Express();
 
 $app->set('basePath', '/uni/project');
 $app->set('view engine', 'default');
-$app->set('views', 'views/');
+$app->set('views', 'view/');
+$app->set('static', 'public/');
 
-session_start();
+/********************************
+ * 
+ * MIDDLEWARE
+ * 
+ *******************************/
+
+$app->use(session_start());
+
+/********************************
+ * 
+ * ROUTES
+ * 
+ *******************************/
+
+require_once 'route/api/login.php';
 
 $app->get('/', function ($req, $res) {
-  // public function render($template, $data) {
-  //$_SESSION['data'] = array("beep"=>"boop");
-  $res->render('home', null);
+  $res->render('home', $_GET);
 });
 
-function auth() {
-  if (!$_SESSION['login'] || !isset($_SESSION['login']['username']) || !isset($_SESSION['login']['password'])) {
-    return null;
-  }
-}
