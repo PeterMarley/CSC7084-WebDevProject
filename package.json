@@ -1,0 +1,19 @@
+{
+  "name": "moodr",
+  "version": "0.0.1",
+  "description": "Moodr - See Your Moods",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PeterMarley/CSC7084-WebDevProject.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PeterMarley/CSC7084-WebDevProject/issues"
+  },
+  "homepage": "https://github.com/PeterMarley/CSC7084-WebDevProject#readme"
+}
