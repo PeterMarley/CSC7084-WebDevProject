@@ -36,8 +36,8 @@ $app->use(session_start());
  * 
  *******************************/
 
-require_once 'route/api/auth.php';
-require_once 'route/web.php';
+include_once 'route/api/auth.php';
+include_once 'route/web/web.php';
 
 
 

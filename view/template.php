@@ -1,18 +1,16 @@
 <!DOCTYPE html>
 <?php
 function checkLogin() {
-    return isset($_COOKIE['logged-in']) && $_COOKIE['logged-in'] == '1';
-}
+    if (isset($_COOKIE['logged-in']) && $_COOKIE['logged-in'] == '1') {
+        if ($_SESSION['timestamp-start'] < $_SESSION['timestamp-end']) {
+            return true;
+        } else {
+            session_destroy();
+        }
+    }
+    return false;
+    }
 ?>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moodr</title>
-    <link href="public/styles/styles.css" rel="stylesheet">
-</head>
-<body>
     <?php include 'template-header.php' ?>
     <div id="body">
         <div><?php include 'template-nav.php'; ?></div>

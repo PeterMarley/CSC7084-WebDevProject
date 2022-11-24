@@ -1,5 +1,5 @@
 <?php
-require_once 'controller/DatabaseUser.php';
+require_once 'lib/class/DatabaseUser.php';
 
 function login($username, $password) {
   $db = new DatabaseUser();
