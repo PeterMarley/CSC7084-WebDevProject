@@ -1,37 +1,42 @@
+/******************************
+ * 
+ * Express Config
+ * 
+ ******************************/
+
 const express = require('express');
+const session = require('express-session');
 const app = express();
+const path = require('path');
+const port = 3000;
 
-var phpExpress = require('php-express')({
-  binPath: 'php'
-});
-app.set('views', './views');
-app.engine('php', phpExpress.engine);
-app.set('view engine', 'php');
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
-// app.get('/', (req, res) => {
-//   console.log('hello world')
-//   //res.send('hi');
-//   //res.status(200).json({message: "error"});
-//   res.render('index', {text: "sup broski"});
-// });
 
-app.get('/', (req, res) => {
-  console.log('hello world')
-  //res.send('hi');
-  //res.status(200).json({message: "error"});
-  res.render('index', {text: "sup broski"});
-});
+/******************************
+ * 
+ * Middlewear
+ * 
+ ******************************/
 
-/*
- * routers 
- */
+app.use(express.static('public'));
+app.use(session({
+  resave: false, // don't save session if unmodified
+  saveUninitialized: false, // don't create session until something stored
+  secret: 'shhhh, very secret'
+}));
 
-// const userRouter = require('./routes/user.js');
-// app.use('/user', userRouter);
+/******************************
+ * 
+ * routes
+ * 
+ ******************************/
 
-server = app.listen(3000, function () {
-  var host = server.address().address;
-  var port = server.address().port;
-  console.log('PHPExpress app listening at http://%s:%s', host, port);
+app.get('/', (request, response) => {
+  response.send('yo');
 });
 
+app.listen(port, () => {
+  console.log('Moodr listening on port ' + port);
+});

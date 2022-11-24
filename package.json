@@ -1,21 +1,24 @@
 {
-  "name": "webdevproject",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "moodr",
+  "version": "0.0.1",
+  "description": "moodr - own your moods",
+  "main": "app.js",
   "scripts": {
-    "start-server": "nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "devStart": "nodemon app.js"
   },
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PeterMarley/CSC7084-WebDevProject.git"
+  },
+  "author": "Peter G Marley",
   "license": "ISC",
-  "dependencies": {
-    "ejs": "^3.1.8",
-    "express": "^4.18.2",
-    "mysql": "^2.18.1",
-    "php-express": "^0.0.3"
+  "bugs": {
+    "url": "https://github.com/PeterMarley/CSC7084-WebDevProject/issues"
   },
-  "devDependencies": {
+  "homepage": "https://github.com/PeterMarley/CSC7084-WebDevProject#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
     "nodemon": "^2.0.20"
   }
 }
