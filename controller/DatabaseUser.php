@@ -6,6 +6,18 @@ class DatabaseUser extends DatabaseBase {
     parent::__construct();
   }
 
+  public function register($username, $password) {
+    if (gettype($username) != 'string' || gettype($password) != 'string') {
+      return;
+    }
+
+    $mysqli = $this->getConnection();
+    $stmt = $mysqli->prepare('CALL usp_Create_User(?, ?)');
+    $stmt->bind_param('ss', $username, $password);
+
+    $stmt->execute();
+  }
+
     /**
    * checkPassword using a prepared statement
    *
@@ -19,9 +31,9 @@ class DatabaseUser extends DatabaseBase {
         // console log string as throwing an exception and not catching it may expose passwords typed in
         return false;
     }
-    $mysqli = $this->getConnection();
 
     // open connection and prepare statement
+    $mysqli = $this->getConnection();
     $stmt = $mysqli->prepare("SELECT fn_Check_Password_Login(?, ?)");
     $stmt->bind_param('ss', $username, $password);
 

@@ -1,8 +1,11 @@
 <?php
 
+define('BASE_ROUTE', '/');
 
-// GET HTTP REQUEST
+$app->get(BASE_ROUTE, function ($req, $res) {
+  $res->render('template', null);
+});
 
-$app->get('/', function($req, $res) {
-	$res->render('home', array('title'=>'Home'));
+$app->get(BASE_ROUTE.'registration', function ($req, $res) {
+  $res->render('template', array('content'=>'register'));
 });

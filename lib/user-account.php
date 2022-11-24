@@ -27,3 +27,8 @@ function logout() {
   setcookie("logged-in", false, 0, '/');
 }
 
+function register($username, $password)
+{
+  $db = new DatabaseUser();
+  $db->register($username, $password);
+}

@@ -36,9 +36,9 @@ $app->use(session_start());
  * 
  *******************************/
 
-require_once 'route/auth.php';
+require_once 'route/api/auth.php';
+require_once 'route/web.php';
 
-$app->get('/', function ($req, $res) {
-  $res->render('home', null);
-});
+
+
 
