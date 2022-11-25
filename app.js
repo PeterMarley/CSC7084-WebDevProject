@@ -7,17 +7,12 @@
 const express = require('express');
 const session = require('express-session');
 const mysql = require('mysql');
-const bodyParser = require('body-parser');
 const app = express();
 const path = require('path');
 const port = 3000;
 
-const jsonParser = bodyParser.json();
-const formParser = bodyParser.urlencoded({extended: false});
 
-const authRouter = require('./routes/authRouter.js');
-const dbRouter = require('./routes/api/db.js');
-
+const authRouter = require('./routes/api/authRouter.js');
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -46,8 +41,7 @@ app.use(session({
  * 
  ******************************/
 
-app.use('/auth', authRouter);
-app.use('/db', dbRouter);
+app.use('/auth', authRouter); // auth api
 
 app.get('/', (request, response) => {
   response.render('index', {session});
