@@ -10,7 +10,6 @@ const app = express();
 const path = require('path');
 const port = 3000;
 
-
 const authRouter = require('./routes/api/authRouter.js');
 
 app.set('view engine', 'ejs');
@@ -27,12 +26,6 @@ app.listen(port, () => {
  ******************************/
 
 app.use(express.static('public'));
-// app.use(session({
-//   resave: false, // don't save session if unmodified
-//   saveUninitialized: false, // don't create session until something stored
-//   secret: process.env.MOODR_SESSION_KEY,
-//   maxAge: 1000 * 60 * 60 * 24,
-// }));
 
 /******************************
  * 

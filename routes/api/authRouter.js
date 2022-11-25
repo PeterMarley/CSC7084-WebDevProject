@@ -16,6 +16,7 @@ const cookieParser = require('cookie-parser');
 
 const loginHandler = require('./middleware/loginHandler.js');
 const authHandler = require('./middleware/authHandler.js');
+const { raw } = require('mysql');
 
 authRouter.use(cookieParser());
 
@@ -41,7 +42,11 @@ authRouter.get('/auth', authHandler, function (req, res) {
 
 authRouter.post('/logout', express.urlencoded({ extended: false }), (req, res) => {
   res.clearCookie('token');
-  res.send(200);
+  if (req.body.redirect) {
+    res.redirect(req.body.redirect);
+  } else {
+    res.send(200);
+  }
 });
 
 module.exports = authRouter;
