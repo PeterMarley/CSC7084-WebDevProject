@@ -34,7 +34,10 @@ authRouter.use(session({
 
 authRouter.post('/login', express.urlencoded({ extended: false }), loginHandler);
 
-authRouter.get('/auth', authHandler);
+authRouter.get('/auth', authHandler, function (req, res) {
+  console.log(res.locals.authed);
+  res.send(res.locals.authed);
+});
 
 authRouter.post('/logout', express.urlencoded({ extended: false }), (req, res) => {
   res.send(req.body.username);

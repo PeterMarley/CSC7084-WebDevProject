@@ -6,12 +6,12 @@ function authenticate(req, res, next) {
   if (req.cookies && req.cookies.token){
     console.log(req.cookies.token);
     token = verifyToken(req.cookies.token);
-    //console.log(token);
     if (Date.now() < token.expiry) {
       success = true;
     } 
   }
-  res.json(new AuthResponse(success));
+  res.locals.authed = success;
+  next();
 }
 
 class AuthResponse {
