@@ -37,11 +37,17 @@ app.use(session({
 
 /******************************
  * 
- * routes
+ * Routers
  * 
  ******************************/
 
 app.use('/auth', authRouter); // auth api
+
+/******************************
+ * 
+ * Routes
+ * 
+ ******************************/
 
 app.get('/', (request, response) => {
   response.render('index', {session});

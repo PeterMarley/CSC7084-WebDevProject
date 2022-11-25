@@ -1,51 +1,49 @@
-const CheckPasswordResponse = require('../authResponses.js');
-const mysql = require('mysql');
-const jwt = require('jsonwebtoken');
+/******************************
+ * 
+ * Imports
+ * 
+ ******************************/
+
+const CheckPasswordResponse = require('../../../models/authResponses.js');
+const {createToken, verifyToken} = require('../../../lib/jwtHelpers.js');
+const getConnection = require('../../../lib/dbConnection.js');
+
+/******************************
+ * 
+ * Handler
+ * 
+ ******************************/
 
 function loginHandler(req, res, next) {
   
-  // validate
+  // validate post body contains required data
   if (!req.body.username || !req.body.password) {
     res.status(400).json(new CheckPasswordResponse());
     return;
   }
 
+  // destructure post body into vars
   const { username, password } = req.body;
+
+  // get db connection and execute function to check password is correct
   con = getConnection();
-  con.query('SELECT fn_Check_Password(?,?) AS checkResult', [username, password] ,function(error, results, fields){
+  con.query('SELECT fn_Check_Password(?,?) AS passwordCorrect', [username, password] ,function(error, results, fields){
     if (error) throw error;
-    const result = results[0].checkResult;
-    req.session.token = 'token here';
-    token = createToken(username);
-    console.log(token);
-    console.log(authenticateToken(token));
-    console.log(new Date(token.expiry));
+    
+    const result = results[0].passwordCorrect;
+
+    // if password correct set token cookie to jwt
+    if (result) {
+      token = createToken(username);
+      res.cookie('token', token);
+    }
+    //req.session.token = token;
+    // console.log(token);
+    // console.log(authenticateToken(token));
+    // console.log(new Date(token.expiry));
     res.status(200).json(new CheckPasswordResponse(result));
   });
   con.end();
-}
-
-function createToken(username) {
-  data = {
-    expiry: Date.now() + (1000 * 60 * 60),
-    username
-  }
-  return jwt.sign(data, process.env.MOODR_SESSION_KEY);
-}
-
-function authenticateToken(token) {
-  return jwt.verify(token, process.env.MOODR_SESSION_KEY)
-}
-
-function getConnection() {
-  const connection = mysql.createConnection({
-    host: 'localhost',
-    user: process.env.MOODR_DB_USER,
-    password: process.env.MOODR_DB_PASS,
-    database: process.env.MOODR_DB_NAME
-  });
-  connection.connect();
-  return connection;
 }
 
 module.exports = loginHandler;
