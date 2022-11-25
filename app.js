@@ -16,6 +16,8 @@ const jsonParser = bodyParser.json();
 const formParser = bodyParser.urlencoded({extended: false});
 
 const authRouter = require('./routes/authRouter.js');
+const dbRouter = require('./routes/api/db.js');
+
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -45,6 +47,7 @@ app.use(session({
  ******************************/
 
 app.use('/auth', authRouter);
+app.use('/db', dbRouter);
 
 app.get('/', (request, response) => {
   response.render('index', {session});
