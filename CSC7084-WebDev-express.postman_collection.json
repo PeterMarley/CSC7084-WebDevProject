@@ -1,0 +1,248 @@
+{
+	"info": {
+		"_postman_id": "e5d688e9-96bc-44ba-96d2-71c651ee69b7",
+		"name": "CSC7084-WebDev-express",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23455263"
+	},
+	"item": [
+		{
+			"name": "APIs",
+			"item": [
+				{
+					"name": "auth",
+					"item": [
+						{
+							"name": "log in (password correct)",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "username",
+											"value": "username",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "password",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{httpProtocol}}://{{moodrAddress}}/auth/login",
+									"protocol": "{{httpProtocol}}",
+									"host": [
+										"{{moodrAddress}}"
+									],
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "log in & redirect (password correct) Copy",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "username",
+											"value": "username",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "password",
+											"type": "text"
+										},
+										{
+											"key": "redirect",
+											"value": "/",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{httpProtocol}}://{{moodrAddress}}/auth/login",
+									"protocol": "{{httpProtocol}}",
+									"host": [
+										"{{moodrAddress}}"
+									],
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "log in (password incorrect)",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "username",
+											"value": "username",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "password1",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{httpProtocol}}://{{moodrAddress}}/auth/login",
+									"protocol": "{{httpProtocol}}",
+									"host": [
+										"{{moodrAddress}}"
+									],
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "log in (body missing data)",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "username",
+											"value": "username",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "password1",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "{{httpProtocol}}://{{moodrAddress}}/auth/login",
+									"protocol": "{{httpProtocol}}",
+									"host": [
+										"{{moodrAddress}}"
+									],
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "log out",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "username",
+											"value": "username",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "password",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{httpProtocol}}://{{moodrAddress}}/auth/login",
+									"protocol": "{{httpProtocol}}",
+									"host": [
+										"{{moodrAddress}}"
+									],
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "auth",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "username",
+											"value": "username",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "password",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{httpProtocol}}://{{moodrAddress}}/auth/login",
+									"protocol": "{{httpProtocol}}",
+									"host": [
+										"{{moodrAddress}}"
+									],
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Home",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{httpProtocol}}://{{moodrAddress}}/",
+					"protocol": "{{httpProtocol}}",
+					"host": [
+						"{{moodrAddress}}"
+					],
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
