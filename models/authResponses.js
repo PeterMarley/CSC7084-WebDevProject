@@ -1,9 +1,12 @@
-class CheckPasswordResponse {
-  
+class LoginResponse {
   constructor(token = 0) {
     this.success = token == 1;
-    // this.success = inp !== '0' ? true : false;
-    // this.pw = inp;
+  }
+}
+
+class AuthResponse {
+  constructor(success) {
+    this.success = success;
   }
 }
 
@@ -12,4 +15,4 @@ class CheckPasswordResponse {
  * event listener for json response
  */
 
-module.exports = CheckPasswordResponse;
+module.exports = { LoginResponse, AuthResponse };

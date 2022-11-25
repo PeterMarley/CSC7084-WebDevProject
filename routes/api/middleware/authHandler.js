@@ -1,23 +1,52 @@
-const mysql = require('mysql');
-const {createToken, verifyToken} = require('../../../lib/jwtHelpers.js');
+/******************************
+ * 
+ * Imports
+ * 
+ ******************************/
 
+const mysql = require('mysql');
+const { createToken, verifyToken } = require('../../../lib/jwtHelpers.js');
+const { AuthResponse } = require('../../../models/authResponses.js');
+
+/******************************
+ * 
+ * Handler
+ * 
+ ******************************/
+
+/**
+ * Express middleware for processing auth checks.
+ * 
+ * This middleware is intended for use in a request chain. It will authenticate the users JWT then call `next()`
+ * 
+ * This middleware will check the JWT credential. `res.locals.authed` will be set to a boolean denoting if
+ * the auth was successful
+ * @param {*} req request object
+ * @param {*} res response object
+ * @param {*} next next callback
+ */
 function authenticate(req, res, next) {
   let success = false;
-  if (req.cookies && req.cookies.token){
+  if (req.cookies && req.cookies.token) {
     console.log(req.cookies.token);
-    token = verifyToken(req.cookies.token);
-    if (Date.now() < token.expiry) {
-      success = true;
-    } 
+    try {
+      token = verifyToken(req.cookies.token);
+      if (Date.now() < token.expiry) {
+        success = true;
+      }
+    } catch (err) {
+      res.clearCookie('token');
+      console.log(err.message);
+    }
   }
   res.locals.authed = success;
   next();
 }
 
-class AuthResponse {
-  constructor(success) {
-    this.success = success;
-  }
-}
+/******************************
+ * 
+ * Exports
+ * 
+ ******************************/
 
 module.exports = authenticate;

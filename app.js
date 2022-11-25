@@ -5,7 +5,6 @@
  ******************************/
 
 const express = require('express');
-const session = require('express-session');
 const mysql = require('mysql');
 const app = express();
 const path = require('path');
@@ -28,16 +27,16 @@ app.listen(port, () => {
  ******************************/
 
 app.use(express.static('public'));
-app.use(session({
-  resave: false, // don't save session if unmodified
-  saveUninitialized: false, // don't create session until something stored
-  secret: process.env.MOODR_SESSION_KEY,
-  maxAge: 1000 * 60 * 60 * 24,
-}));
+// app.use(session({
+//   resave: false, // don't save session if unmodified
+//   saveUninitialized: false, // don't create session until something stored
+//   secret: process.env.MOODR_SESSION_KEY,
+//   maxAge: 1000 * 60 * 60 * 24,
+// }));
 
 /******************************
  * 
- * Routers
+ * Routers/ APIs
  * 
  ******************************/
 
@@ -50,8 +49,5 @@ app.use('/auth', authRouter); // auth api
  ******************************/
 
 app.get('/', (request, response) => {
-  response.render('index', {session});
+  response.render('index');
 });
-
-
-
