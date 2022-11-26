@@ -1,4 +1,7 @@
-<form method="POST" action="auth/register">
+<%_ if (locals.authed) { %>
+  You're already logged in mate
+<% } else { %>
+  <form method="POST" action="auth/register">
   <label for="username">Enter a username:</label>
   <input type="text" name="username" id="username"><br>
 
@@ -11,3 +14,4 @@
   <input type="submit" value="Register Your Account">
   <input type="text" name="redirect" value="/" hidden>
 </form>
+<% } %>

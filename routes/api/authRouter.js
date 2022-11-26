@@ -14,21 +14,13 @@ const cookieParser = require('cookie-parser');
  * 
  ******************************/
 
-const MIDDLEWARE_DIR = './middleware/';
-
-const login = require(MIDDLEWARE_DIR + 'loginHandler.js');
-const register = require(MIDDLEWARE_DIR + 'registrationHandler.js');
-const authHandler = require(MIDDLEWARE_DIR + 'authHandler.js');
-const { raw } = require('mysql');
+const login = require('./middleware/login.js');
+const { validateRegistrationForm, register } = require('./middleware/registration.js');
+const authenticate = require('./middleware/authenticate.js');
+const redirect = require('./middleware/redirect.js');
+const logout = require('./middleware/logout.js');
 
 authRouter.use(cookieParser());
-
-// authRouter.use(session({
-//   resave: false, // don't save session if unmodified
-//   saveUninitialized: false, // don't create session until something stored
-//   secret: process.env.MOODR_SESSION_KEY,
-//   maxAge: 1000 * 60 * 60 * 24,
-// }));
 
 /******************************
  * 
@@ -36,22 +28,17 @@ authRouter.use(cookieParser());
  * 
  ******************************/
 
-authRouter.post('/login', express.urlencoded({ extended: false }), login);
+authRouter.post('/login', express.urlencoded({ extended: false }), login, redirect);
 
-authRouter.get('/auth', authHandler, function (req, res) {
+// a testing only route for postman bants
+authRouter.get('/authed', authenticate, function (req, res) {
   console.log(res.locals.authed);
   res.send(res.locals.authed);
 });
 
-authRouter.post('/logout', express.urlencoded({ extended: false }), (req, res) => {
-  res.clearCookie('token');
-  if (req.body.redirect) {
-    res.redirect(req.body.redirect);
-  } else {
-    res.send(200);
-  }
-});
+authRouter.get('/logout', logout, redirect);
 
-authRouter.post('/register', express.urlencoded({ extended: false }), register);
+authRouter.post('/register', express.urlencoded({ extended: false }), validateRegistrationForm, register, redirect);
+
 
 module.exports = authRouter;

@@ -1,18 +1,6 @@
-/******************************
- * 
- * Imports
- * 
- ******************************/
-
 const mysql = require('mysql');
 const { createToken, verifyToken } = require('../../../lib/jwtHelpers.js');
 const { AuthResponse } = require('../../../models/authResponses.js');
-
-/******************************
- * 
- * Handler
- * 
- ******************************/
 
 /**
  * Express middleware for processing auth checks.
@@ -28,12 +16,15 @@ const { AuthResponse } = require('../../../models/authResponses.js');
 function authenticate(req, res, next) {
   let success = false;
   if (req.cookies && req.cookies.token) {
-    console.log(req.cookies.token);
+    // console.log(req.cookies.token);
     try {
       token = verifyToken(req.cookies.token);
+      // console.dir(token);
       if (Date.now() < token.exp) {
         success = true;
+        // console.log('un from token: ' + token.username);
         res.locals.username = token.username;
+        // console.log('username set');
       } else {
         res.clearCookie('token');
       }
@@ -42,6 +33,7 @@ function authenticate(req, res, next) {
       console.log(err.message);
     }
   }
+  
   res.locals.authed = success;
   next();
 }

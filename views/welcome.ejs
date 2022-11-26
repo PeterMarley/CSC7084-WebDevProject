@@ -1,13 +1,15 @@
 
 <%- include('partials/top.ejs') %>
 <% 
-if (locals.username) {
+if (locals.authed && authed) {
       welcomeMsg = ', ' + username;
 } else {
       welcomeMsg = '';
 }
-%>  
+let dogs = ['reggie', 'dax'];
+%>
 
+<%= authed %><br>
 Oh hai there<%= welcomeMsg %>
 
 <%- include('partials/bottom.ejs') %>

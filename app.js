@@ -28,24 +28,24 @@ app.listen(port, () => {
  ******************************/
 
 const authRouter = require('./routes/api/authRouter.js');
-const authenticate = require('./routes/api/middleware/authHandler.js');
+const authenticate = require('./routes/api/middleware/authenticate.js');
 
 app.use(express.static('public'));
 app.use(cookieParser());
 app.use(authenticate);
-app.use(function debugPrint(req, res, next) {
-  console.log('-------------START--------------');
-  console.log('LOCALS:');
-  console.dir(res.locals ? res.locals : 'no locals');
-  console.log('--------------END---------------');
+// app.use(function debugPrint(req, res, next) {
+//   console.log('-------------START--------------');
+//   console.log('LOCALS:');
+//   console.dir(res.locals ? res.locals : 'no locals');
+//   console.log('--------------END---------------');
 
-  console.log('-------------START--------------');
-  console.log('COOKIES:');
-  console.dir(req.cookies ? req.cookies : 'no cookies');
-  console.log('--------------END---------------');
+//   console.log('-------------START--------------');
+//   console.log('COOKIES:');
+//   console.dir(req.cookies ? req.cookies : 'no cookies');
+//   console.log('--------------END---------------');
 
-  next();
-});
+//   next();
+// });
 
 /******************************
  * 
@@ -71,4 +71,9 @@ app.get('/login', (req, res) => {
 
 app.get('/register', (req, res) => {
   res.render('register');
+});
+
+// fallback route
+app.get('*', function(req, res){
+  res.send('that aint no valid route SONNY JIM MBOY', 404);
 });
