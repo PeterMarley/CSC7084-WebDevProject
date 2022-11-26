@@ -14,8 +14,11 @@ const cookieParser = require('cookie-parser');
  * 
  ******************************/
 
-const loginHandler = require('./middleware/loginHandler.js');
-const authHandler = require('./middleware/authHandler.js');
+const MIDDLEWARE_DIR = './middleware/';
+
+const login = require(MIDDLEWARE_DIR + 'loginHandler.js');
+const register = require(MIDDLEWARE_DIR + 'registrationHandler.js');
+const authHandler = require(MIDDLEWARE_DIR + 'authHandler.js');
 const { raw } = require('mysql');
 
 authRouter.use(cookieParser());
@@ -33,7 +36,7 @@ authRouter.use(cookieParser());
  * 
  ******************************/
 
-authRouter.post('/login', express.urlencoded({ extended: false }), loginHandler);
+authRouter.post('/login', express.urlencoded({ extended: false }), login);
 
 authRouter.get('/auth', authHandler, function (req, res) {
   console.log(res.locals.authed);
@@ -48,5 +51,7 @@ authRouter.post('/logout', express.urlencoded({ extended: false }), (req, res) =
     res.send(200);
   }
 });
+
+authRouter.post('/register', express.urlencoded({ extended: false }), register);
 
 module.exports = authRouter;

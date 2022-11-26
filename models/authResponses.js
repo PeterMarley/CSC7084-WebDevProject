@@ -10,9 +10,18 @@ class AuthResponse {
   }
 }
 
+class RegistrationResponse {
+  constructor(success, error = null) {
+    this.success = success;
+    if (error) {
+      this.error = error;
+    }
+  }
+}
+
 /**
  * token instead of pw
  * event listener for json response
  */
 
-module.exports = { LoginResponse, AuthResponse };
+module.exports = { LoginResponse, AuthResponse, RegistrationResponse };

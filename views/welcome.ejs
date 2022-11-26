@@ -1,0 +1,13 @@
+
+<%- include('partials/top.ejs') %>
+<% 
+if (locals.username) {
+      welcomeMsg = ', ' + username;
+} else {
+      welcomeMsg = '';
+}
+%>  
+
+Oh hai there<%= welcomeMsg %>
+
+<%- include('partials/bottom.ejs') %>

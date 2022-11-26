@@ -31,8 +31,11 @@ function authenticate(req, res, next) {
     console.log(req.cookies.token);
     try {
       token = verifyToken(req.cookies.token);
-      if (Date.now() < token.expiry) {
+      if (Date.now() < token.exp) {
         success = true;
+        res.locals.username = token.username;
+      } else {
+        res.clearCookie('token');
       }
     } catch (err) {
       res.clearCookie('token');

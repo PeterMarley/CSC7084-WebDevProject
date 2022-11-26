@@ -1,0 +1,9 @@
+<%- include('partials/top.ejs') %>
+
+<% if (authed === false) { %>
+<%- include('forms/login_form.ejs'); %>
+<% } else { %>
+Welcome <%= username %>, you are already logged in :)
+<% } %>
+
+<%- include('partials/bottom.ejs') %>
