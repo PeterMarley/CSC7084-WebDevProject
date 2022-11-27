@@ -17,20 +17,20 @@ function login(req, res, next) {
     return false;
   }
 
-  // destructure post body into consts
-  const { username, password } = req.body;
-
   // get db connection and execute function to check password is correct
-  const sql = 'SELECT fn_Check_Password(?,?) AS passwordCorrect';
   con = getConnection();
-  checkPassword(con, sql, req, next, res);
+  checkPassword(con, 'SELECT fn_Check_Password(?,?) AS passwordCorrect', req, next, res);
   con.end(); // close connection
 }
 
 
 function checkPassword(connection, sql, req, next, response) {
   const { username, password } = req.body;
-  connection.query(sql, [username, password], (error, results, fields) => dbProcess(error, results, fields, next, response, username, password));
+  connection.query(
+    sql,
+    [username, password],
+    (error, results, fields) => dbProcess(error, results, fields, next, response, username, password)
+  );
 }
 
 function dbProcess(error, results, fields, next, response, username, password) {

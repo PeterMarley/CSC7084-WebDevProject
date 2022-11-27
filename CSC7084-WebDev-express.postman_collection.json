@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "e5d688e9-96bc-44ba-96d2-71c651ee69b7",
+		"_postman_id": "fb388f13-658e-4339-962d-9e0bee7cf299",
 		"name": "CSC7084-WebDev-express",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "23455263"
+		"_exporter_id": "24471392"
 	},
 	"item": [
 		{
@@ -13,185 +13,528 @@
 					"name": "auth",
 					"item": [
 						{
-							"name": "log in (password correct)",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "username",
-											"value": "username",
-											"type": "text"
+							"name": "Registration",
+							"item": [
+								{
+									"name": "register (valid username and email)",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "urlencoded",
+											"urlencoded": [
+												{
+													"key": "username",
+													"value": "randomcrap",
+													"type": "text"
+												},
+												{
+													"key": "email",
+													"value": "randomcrap@password.com",
+													"type": "text"
+												},
+												{
+													"key": "password",
+													"value": "whatever",
+													"type": "text"
+												}
+											]
 										},
-										{
-											"key": "password",
-											"value": "password",
-											"type": "text"
+										"url": {
+											"raw": "{{httpProtocol}}://{{moodrAddress}}/auth/register",
+											"protocol": "{{httpProtocol}}",
+											"host": [
+												"{{moodrAddress}}"
+											],
+											"path": [
+												"auth",
+												"register"
+											]
 										}
-									]
+									},
+									"response": []
 								},
-								"url": {
-									"raw": "{{httpProtocol}}://{{moodrAddress}}/auth/login",
-									"protocol": "{{httpProtocol}}",
-									"host": [
-										"{{moodrAddress}}"
-									],
-									"path": [
-										"auth",
-										"login"
-									]
+								{
+									"name": "register (taken username)",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "urlencoded",
+											"urlencoded": [
+												{
+													"key": "username",
+													"value": "username",
+													"type": "text"
+												},
+												{
+													"key": "email",
+													"value": "randomcrap@password.com",
+													"type": "text"
+												},
+												{
+													"key": "password",
+													"value": "whatever",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{httpProtocol}}://{{moodrAddress}}/auth/register",
+											"protocol": "{{httpProtocol}}",
+											"host": [
+												"{{moodrAddress}}"
+											],
+											"path": [
+												"auth",
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "register (taken email)",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "urlencoded",
+											"urlencoded": [
+												{
+													"key": "username",
+													"value": "username1",
+													"type": "text"
+												},
+												{
+													"key": "email",
+													"value": "username@password.com",
+													"type": "text"
+												},
+												{
+													"key": "password",
+													"value": "password",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{httpProtocol}}://{{moodrAddress}}/auth/register",
+											"protocol": "{{httpProtocol}}",
+											"host": [
+												"{{moodrAddress}}"
+											],
+											"path": [
+												"auth",
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "register (taken username & email)",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "urlencoded",
+											"urlencoded": [
+												{
+													"key": "username",
+													"value": "username",
+													"type": "text"
+												},
+												{
+													"key": "email",
+													"value": "username@password.com",
+													"type": "text"
+												},
+												{
+													"key": "password",
+													"value": "password",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{httpProtocol}}://{{moodrAddress}}/auth/register",
+											"protocol": "{{httpProtocol}}",
+											"host": [
+												"{{moodrAddress}}"
+											],
+											"path": [
+												"auth",
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "register (body missing username)",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "urlencoded",
+											"urlencoded": [
+												{
+													"key": "username",
+													"value": "username",
+													"type": "text",
+													"disabled": true
+												},
+												{
+													"key": "email",
+													"value": "username@password.com",
+													"type": "text"
+												},
+												{
+													"key": "password",
+													"value": "password",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{httpProtocol}}://{{moodrAddress}}/auth/register",
+											"protocol": "{{httpProtocol}}",
+											"host": [
+												"{{moodrAddress}}"
+											],
+											"path": [
+												"auth",
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "register (body missing email)",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "urlencoded",
+											"urlencoded": [
+												{
+													"key": "username",
+													"value": "username",
+													"type": "text"
+												},
+												{
+													"key": "email",
+													"value": "username@password.com",
+													"type": "text",
+													"disabled": true
+												},
+												{
+													"key": "password",
+													"value": "password",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{httpProtocol}}://{{moodrAddress}}/auth/register",
+											"protocol": "{{httpProtocol}}",
+											"host": [
+												"{{moodrAddress}}"
+											],
+											"path": [
+												"auth",
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "register (body missing password)",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "urlencoded",
+											"urlencoded": [
+												{
+													"key": "username",
+													"value": "username",
+													"type": "text"
+												},
+												{
+													"key": "email",
+													"value": "username@password.com",
+													"type": "text"
+												},
+												{
+													"key": "password",
+													"value": "password",
+													"type": "text",
+													"disabled": true
+												}
+											]
+										},
+										"url": {
+											"raw": "{{httpProtocol}}://{{moodrAddress}}/auth/register",
+											"protocol": "{{httpProtocol}}",
+											"host": [
+												"{{moodrAddress}}"
+											],
+											"path": [
+												"auth",
+												"register"
+											]
+										}
+									},
+									"response": []
 								}
-							},
-							"response": []
+							]
 						},
 						{
-							"name": "log in & redirect (password correct) Copy",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "username",
-											"value": "username",
-											"type": "text"
+							"name": "login",
+							"item": [
+								{
+									"name": "log in (password correct)",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "urlencoded",
+											"urlencoded": [
+												{
+													"key": "username",
+													"value": "username",
+													"type": "text"
+												},
+												{
+													"key": "password",
+													"value": "password",
+													"type": "text"
+												}
+											]
 										},
-										{
-											"key": "password",
-											"value": "password",
-											"type": "text"
-										},
-										{
-											"key": "redirect",
-											"value": "/",
-											"type": "text"
+										"url": {
+											"raw": "{{httpProtocol}}://{{moodrAddress}}/auth/login",
+											"protocol": "{{httpProtocol}}",
+											"host": [
+												"{{moodrAddress}}"
+											],
+											"path": [
+												"auth",
+												"login"
+											]
 										}
-									]
+									},
+									"response": []
 								},
-								"url": {
-									"raw": "{{httpProtocol}}://{{moodrAddress}}/auth/login",
-									"protocol": "{{httpProtocol}}",
-									"host": [
-										"{{moodrAddress}}"
-									],
-									"path": [
-										"auth",
-										"login"
-									]
+								{
+									"name": "log in (password correct) Copy",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "urlencoded",
+											"urlencoded": [
+												{
+													"key": "username",
+													"value": "username",
+													"type": "text"
+												},
+												{
+													"key": "password",
+													"value": "password",
+													"type": "text"
+												},
+												{
+													"key": "redirect",
+													"value": "",
+													"type": "text",
+													"disabled": true
+												}
+											]
+										},
+										"url": {
+											"raw": "{{httpProtocol}}://{{moodrAddress}}/auth/login?redirect=/doogos",
+											"protocol": "{{httpProtocol}}",
+											"host": [
+												"{{moodrAddress}}"
+											],
+											"path": [
+												"auth",
+												"login"
+											],
+											"query": [
+												{
+													"key": "redirect",
+													"value": "/doogos"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "log in & redirect (password correct) Copy",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "urlencoded",
+											"urlencoded": [
+												{
+													"key": "username",
+													"value": "username",
+													"type": "text"
+												},
+												{
+													"key": "password",
+													"value": "password",
+													"type": "text"
+												},
+												{
+													"key": "redirect",
+													"value": "/register",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{httpProtocol}}://{{moodrAddress}}/auth/login",
+											"protocol": "{{httpProtocol}}",
+											"host": [
+												"{{moodrAddress}}"
+											],
+											"path": [
+												"auth",
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "log in (password incorrect)",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "urlencoded",
+											"urlencoded": [
+												{
+													"key": "username",
+													"value": "username",
+													"type": "text"
+												},
+												{
+													"key": "password",
+													"value": "password1",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{httpProtocol}}://{{moodrAddress}}/auth/login",
+											"protocol": "{{httpProtocol}}",
+											"host": [
+												"{{moodrAddress}}"
+											],
+											"path": [
+												"auth",
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "log in (body missing data)",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "urlencoded",
+											"urlencoded": [
+												{
+													"key": "username",
+													"value": "username",
+													"type": "text"
+												},
+												{
+													"key": "password",
+													"value": "password1",
+													"type": "text",
+													"disabled": true
+												}
+											]
+										},
+										"url": {
+											"raw": "{{httpProtocol}}://{{moodrAddress}}/auth/login",
+											"protocol": "{{httpProtocol}}",
+											"host": [
+												"{{moodrAddress}}"
+											],
+											"path": [
+												"auth",
+												"login"
+											]
+										}
+									},
+									"response": []
 								}
-							},
-							"response": []
+							]
 						},
 						{
-							"name": "log in (password incorrect)",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "username",
-											"value": "username",
-											"type": "text"
+							"name": "logout",
+							"item": [
+								{
+									"name": "log out",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "urlencoded",
+											"urlencoded": [
+												{
+													"key": "username",
+													"value": "username",
+													"type": "text"
+												},
+												{
+													"key": "password",
+													"value": "password",
+													"type": "text"
+												}
+											]
 										},
-										{
-											"key": "password",
-											"value": "password1",
-											"type": "text"
+										"url": {
+											"raw": "{{httpProtocol}}://{{moodrAddress}}/auth/logout",
+											"protocol": "{{httpProtocol}}",
+											"host": [
+												"{{moodrAddress}}"
+											],
+											"path": [
+												"auth",
+												"logout"
+											]
 										}
-									]
-								},
-								"url": {
-									"raw": "{{httpProtocol}}://{{moodrAddress}}/auth/login",
-									"protocol": "{{httpProtocol}}",
-									"host": [
-										"{{moodrAddress}}"
-									],
-									"path": [
-										"auth",
-										"login"
-									]
+									},
+									"response": []
 								}
-							},
-							"response": []
-						},
-						{
-							"name": "log in (body missing data)",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "username",
-											"value": "username",
-											"type": "text"
-										},
-										{
-											"key": "password",
-											"value": "password1",
-											"type": "text",
-											"disabled": true
-										}
-									]
-								},
-								"url": {
-									"raw": "{{httpProtocol}}://{{moodrAddress}}/auth/login",
-									"protocol": "{{httpProtocol}}",
-									"host": [
-										"{{moodrAddress}}"
-									],
-									"path": [
-										"auth",
-										"login"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "log out",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "username",
-											"value": "username",
-											"type": "text"
-										},
-										{
-											"key": "password",
-											"value": "password",
-											"type": "text"
-										}
-									]
-								},
-								"url": {
-									"raw": "{{httpProtocol}}://{{moodrAddress}}/auth/login",
-									"protocol": "{{httpProtocol}}",
-									"host": [
-										"{{moodrAddress}}"
-									],
-									"path": [
-										"auth",
-										"login"
-									]
-								}
-							},
-							"response": []
+							]
 						},
 						{
 							"name": "auth",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
 							"request": {
-								"method": "POST",
+								"method": "GET",
 								"header": [],
 								"body": {
 									"mode": "urlencoded",
@@ -209,14 +552,14 @@
 									]
 								},
 								"url": {
-									"raw": "{{httpProtocol}}://{{moodrAddress}}/auth/login",
+									"raw": "{{httpProtocol}}://{{moodrAddress}}/auth/authed",
 									"protocol": "{{httpProtocol}}",
 									"host": [
 										"{{moodrAddress}}"
 									],
 									"path": [
 										"auth",
-										"login"
+										"authed"
 									]
 								}
 							},

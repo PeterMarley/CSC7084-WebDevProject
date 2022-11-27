@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 25, 2022 at 06:26 PM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 7.4.33
+-- Generation Time: Nov 28, 2022 at 12:25 AM
+-- Server version: 10.4.24-MariaDB
+-- PHP Version: 7.4.29
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -75,7 +75,7 @@ CREATE TABLE `tbl_activity` (
   `icon_image_id` int(11) NOT NULL,
   `activity_group_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -87,7 +87,7 @@ CREATE TABLE `tbl_activity_group` (
   `activity_group_id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `icon_image_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -101,7 +101,7 @@ CREATE TABLE `tbl_entry` (
   `timestamp` int(11) NOT NULL DEFAULT current_timestamp(),
   `activity_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -113,7 +113,7 @@ CREATE TABLE `tbl_entry_image` (
   `entry_image_id` int(11) NOT NULL,
   `entry_id` int(11) NOT NULL,
   `image_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -125,7 +125,7 @@ CREATE TABLE `tbl_entry_mood` (
   `entry_mood_id` int(11) NOT NULL,
   `entry_id` int(11) NOT NULL,
   `mood_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -138,7 +138,7 @@ CREATE TABLE `tbl_image` (
   `url` varchar(1000) NOT NULL,
   `alt_text` varchar(255) NOT NULL,
   `image_type_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -149,7 +149,7 @@ CREATE TABLE `tbl_image` (
 CREATE TABLE `tbl_image_type` (
   `image_type_id` int(11) NOT NULL,
   `image_type_name` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -163,7 +163,7 @@ CREATE TABLE `tbl_mood` (
   `order` int(11) NOT NULL,
   `icon_image_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -174,17 +174,18 @@ CREATE TABLE `tbl_mood` (
 CREATE TABLE `tbl_user` (
   `user_id` int(11) NOT NULL,
   `username` varchar(255) NOT NULL,
-  `password` varbinary(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  `password` varbinary(255) NOT NULL,
+  `email` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `tbl_user`
 --
 
-INSERT INTO `tbl_user` (`user_id`, `username`, `password`) VALUES
-(7, 'username', 0x30363463363365633335343764316366626231633734653965323531656637306434323462353364656631616139),
-(9, 'dax', 0x62633231363766643630396432653065316231316138626631383239616139386161666265653735346262613733),
-(12, 'django', 0x30626263613031383536663961306437613736653333393737343735346238383936626366623861626461333961);
+INSERT INTO `tbl_user` (`user_id`, `username`, `password`, `email`) VALUES
+(7, 'username', 0x30363463363365633335343764316366626231633734653965323531656637306434323462353364656631616139, 'username@password.com'),
+(9, 'dax', 0x62633231363766643630396432653065316231316138626631383239616139386161666265653735346262613733, 'dax@reggie.com'),
+(25, 'testinguser1', 0x39366630616431666537656162336361303939656438636130613965373036383036303265383238663161396537, '');
 
 --
 -- Indexes for dumped tables
@@ -256,7 +257,9 @@ ALTER TABLE `tbl_mood`
 -- Indexes for table `tbl_user`
 --
 ALTER TABLE `tbl_user`
-  ADD PRIMARY KEY (`user_id`);
+  ADD PRIMARY KEY (`user_id`),
+  ADD UNIQUE KEY `username` (`username`),
+  ADD UNIQUE KEY `email` (`email`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -314,7 +317,7 @@ ALTER TABLE `tbl_mood`
 -- AUTO_INCREMENT for table `tbl_user`
 --
 ALTER TABLE `tbl_user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- Constraints for dumped tables
