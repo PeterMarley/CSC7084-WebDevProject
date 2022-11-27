@@ -14,7 +14,7 @@ function login(req, res, next) {
   const err = validateLoginRequest(req);
   if (err.length != 0) {
     res.status(400).json(new LoginResponse(err));
-    return;
+    return false;
   }
 
   // destructure post body into consts
@@ -22,6 +22,11 @@ function login(req, res, next) {
 
   // get db connection and execute function to check password is correct
   con = getConnection();
+  query(con, username, password, next, req, res);
+  con.end(); // close connection
+}
+
+function query(con, username, password, next,req, res) {
   con.query('SELECT fn_Check_Password(?,?) AS passwordCorrect', [username, password], function (error, results, fields) {
     if (error) throw error;
 
@@ -37,7 +42,6 @@ function login(req, res, next) {
     // either return a response model object or redirect to specified route if redirect property provided in request post body
     next();
   });
-  con.end(); // close connection
 }
 
 function validateLoginRequest(req, res) {
@@ -52,9 +56,13 @@ function validateLoginRequest(req, res) {
   if (!req.body.password) {
     err.push('login requires a POST body "password" property.');
   }
-
+  // console.log(err);
+  // if (err.length != 0) {
+  //   res.status(400).json(new LoginResponse(err));
+  //   return false;
+  // }
   return err;
 }
 
-module.exports = login;
+module.exports = login
 module.exports.validateLoginRequest = validateLoginRequest;
