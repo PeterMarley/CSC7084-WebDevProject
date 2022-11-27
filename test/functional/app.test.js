@@ -7,8 +7,7 @@ describe('GET /auth/authed', () => {
     test('responds with "false"', async () => {
       const response = await request(app)
         .get('/auth/authed')
-        .send().set('Cookie', ['token='+jwt.createToken('username')])
-        ;
+        .send().set('Cookie', ['token='+jwt.createToken('username')]);
       // console.dir(response);
       const responseText = response.res.text;
       expect(response.statusCode).toBe(200);

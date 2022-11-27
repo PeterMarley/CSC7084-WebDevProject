@@ -4,8 +4,8 @@
   "description": "moodr - own your moods",
   "main": "app.js",
   "scripts": {
-    "devStart": "nodemon -e ts,js,json server.ts",
-    "test": "npx jest"
+    "devStart": "nodemon -e ts,js,json server.js",
+    "test": "npx jest --watchAll"
   },
   "repository": {
     "type": "git",
