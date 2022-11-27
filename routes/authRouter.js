@@ -32,7 +32,7 @@ authRouter.post('/login', express.urlencoded({ extended: false }), login, redire
 
 // a testing only route for postman bants
 authRouter.get('/authed', authenticate, function (req, res) {
-  console.log(res.locals.authed);
+  // console.log(res.locals.authed);
   res.send(res.locals.authed);
 });
 

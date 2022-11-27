@@ -1,6 +1,6 @@
 const mysql = require('mysql');
-const { createToken, verifyToken } = require('../../../lib/jwtHelpers.js');
-const { AuthResponse } = require('../../../models/authResponses.js');
+const { createToken, verifyToken } = require('../../lib/jwtHelpers.js');
+const { AuthResponse } = require('../../models/authResponses.js');
 
 /**
  * Express middleware for processing auth checks.

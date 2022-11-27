@@ -1,6 +1,6 @@
 class LoginResponse {
-  constructor(token = 0) {
-    this.success = token == 1;
+  constructor(err) {
+    this.err = err;
   }
 }
 

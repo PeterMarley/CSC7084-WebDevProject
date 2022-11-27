@@ -1,6 +1,6 @@
 const { restart } = require('nodemon');
-const getConnection = require('../../../lib/dbConnection.js');
-const { RegistrationResponse } = require('../../../models/authResponses.js');
+const getConnection = require('../../lib/dbConnection.js');
+const { RegistrationResponse } = require('../../models/authResponses.js');
 
 /**
  * Express middlewear that received a registration forms data, and validates it via SQL queries to the database, then calls next()

@@ -1,20 +1,30 @@
-const { LoginResponse } = require('../../../models/authResponses.js');
-const { createToken, verifyToken } = require('../../../lib/jwtHelpers.js');
-const getConnection = require('../../../lib/dbConnection.js');
+const { LoginResponse } = require('../../models/authResponses.js');
+const { createToken, verifyToken } = require('../../lib/jwtHelpers.js');
+const getConnection = require('../../lib/dbConnection.js');
 
 /**
  * Express middleware for processing login POST requests.
  * 
- * req.body.username and req.body.password properties are required, or a 400 status will be returned
+ * `req.body.username` and `req.body.password` properties are required, or a 400 status will be returned
  * 
  * If they are present this middleware will validate the username/ password combination is correct, and if it is will set a JWT cookie and call next()
  */
 function login(req, res, next) {
 
-  
-  // validate post body contains required data
-  if (!req.body.username || !req.body.password) {
-    res.status(400).json(new LoginResponse());
+  const err = [];
+  // validate post body properties and http request method
+  if (req.method != 'POST') {
+    err.push('login requires a POST HTTP request but was ' + req.method + '.');
+  }
+  if (!req.body.username) {
+    err.push('login requires a POST body "username" property.');
+  }
+  if (!req.body.password) {
+    err.push('login requires a POST body "password" property.');
+  }
+  // console.log(err);
+  if (err.length != 0) {
+    res.status(400).json(new LoginResponse(err));
     return;
   }
 

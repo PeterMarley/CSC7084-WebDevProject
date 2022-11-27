@@ -4,7 +4,8 @@
   "description": "moodr - own your moods",
   "main": "app.js",
   "scripts": {
-    "devStart": "nodemon app.js"
+    "devStart": "nodemon -e ts,js,json server.ts",
+    "test": "npx jest"
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,12 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^8.5.1",
     "mysql": "^2.18.1",
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.20",
+    "typescript": "^4.9.3"
+  },
+  "devDependencies": {
+    "jest": "^29.3.1",
+    "supertest": "^6.3.1",
+    "ts-node": "^10.9.1"
   }
 }

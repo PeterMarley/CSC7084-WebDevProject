@@ -17,18 +17,14 @@ const port = 3000;
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-app.listen(port, () => {
-  console.log('Moodr listening on port ' + port);
-});
-
 /******************************
  * 
  * Middlewear
  * 
  ******************************/
 
-const authRouter = require('./routes/api/authRouter.js');
-const authenticate = require('./routes/api/middleware/authenticate.js');
+const authRouter = require('./routes/authRouter.js');
+const authenticate = require('./routes/middleware/authenticate.js');
 
 app.use(express.static('public'));
 app.use(cookieParser());
@@ -73,7 +69,9 @@ app.get('/register', (req, res) => {
   res.render('register');
 });
 
-// fallback route
+// 404 NOT FOUND fallback route
 app.get('*', function(req, res){
   res.send('that aint no valid route SONNY JIM MBOY', 404);
 });
+
+module.exports = app;
