@@ -23,26 +23,29 @@ function login(req, res, next) {
   // get db connection and execute function to check password is correct
   const sql = 'SELECT fn_Check_Password(?,?) AS passwordCorrect';
   con = getConnection();
-  checkPassword(con, sql, username, password, next, res);
+  checkPassword(con, sql, req, next, res);
   con.end(); // close connection
 }
 
 
-function checkPassword(connection, sql, username, password, next, response) {
-  connection.query(sql, [username, password], function (error, results, fields) {
-    if (error) throw error;
+function checkPassword(connection, sql, req, next, response) {
+  const { username, password } = req.body;
+  connection.query(sql, [username, password], (error, results, fields) => dbProcess(error, results, fields, next, response, username, password));
+}
 
-    const result = results[0].passwordCorrect;
+function dbProcess(error, results, fields, next, response, username, password) {
+  if (error) throw error;
 
-    // if password correct set token cookie to jwt and set express local var to username
-    if (result) {
-      response.locals.username = username;
-      response.cookie('token', createToken(username));
-    }
+  const result = results[0].passwordCorrect;
 
-    // either return a response model object or redirect to specified route if redirect property provided in request post body
-    next();
-  });
+  // if password correct set token cookie to jwt and set express local var to username
+  if (result) {
+    response.locals.username = username;
+    response.cookie('token', createToken(username));
+  }
+
+  // either return a response model object or redirect to specified route if redirect property provided in request post body
+  next();
 }
 
 function validateLoginRequest(req, res) {
