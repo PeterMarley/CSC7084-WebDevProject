@@ -14,7 +14,7 @@ const cookieParser = require('cookie-parser');
  * 
  ******************************/
 
-const login = require('./middleware/login.js');
+const login  = require('./middleware/login.js');
 const { validateRegistrationForm, register } = require('./middleware/registration.js');
 const authenticate = require('./middleware/authenticate.js');
 const redirect = require('./middleware/redirect.js');

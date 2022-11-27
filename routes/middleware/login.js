@@ -11,18 +11,7 @@ const getConnection = require('../../lib/dbConnection.js');
  */
 function login(req, res, next) {
 
-  const err = [];
-  // validate post body properties and http request method
-  if (req.method != 'POST') {
-    err.push('login requires a POST HTTP request but was ' + req.method + '.');
-  }
-  if (!req.body.username) {
-    err.push('login requires a POST body "username" property.');
-  }
-  if (!req.body.password) {
-    err.push('login requires a POST body "password" property.');
-  }
-  // console.log(err);
+  const err = validateLoginRequest(req);
   if (err.length != 0) {
     res.status(400).json(new LoginResponse(err));
     return;
@@ -51,4 +40,21 @@ function login(req, res, next) {
   con.end(); // close connection
 }
 
+function validateLoginRequest(req, res) {
+  const err = [];
+  // validate post body properties and http request method
+  if (req.method != 'POST') {
+    err.push('login requires a POST HTTP request but was ' + req.method + '.');
+  }
+  if (!req.body.username) {
+    err.push('login requires a POST body "username" property.');
+  }
+  if (!req.body.password) {
+    err.push('login requires a POST body "password" property.');
+  }
+
+  return err;
+}
+
 module.exports = login;
+module.exports.validateLoginRequest = validateLoginRequest;

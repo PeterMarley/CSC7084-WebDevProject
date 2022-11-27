@@ -1,77 +1,70 @@
-const login = require('../../../routes/middleware/login.js');
-const { Request, Response , NextFunction } = require('express');
+const { validateLoginRequest } = require('../../../routes/middleware/login.js');
 
-const req = {
-  body: {
-    username: 'username',
-    password: 'password'
-  },
-  method: 'GET'
+const USERNAME = 'testusername123';
+const PASSWORD = 'testpassword123';
+const POST = 'POST';
+const GET = 'GET';
+
+function buildRequest(method, username, password) {
+  let req = {};
+  if (method) req.method = method;
+  req.body = {};
+  if (username) req.body.username = username;
+  if (password) req.body.password = password;
+  return req;
 }
 
-// function Res() {
+class MockExpressRequest {
+  method;
+  body = {};
 
-//   return {
-//     statusCalled: false,
-//     jsonCalled: false,
-//     status: function () {
-//       this.statusCalled = true;
-//       return {
-//         called: false,
-//         json: function () {
-//           called = true;
-//           console.log('json called');
-//         }
-//       }
-//     }
-//   }
-// }
-
-class ResponseMockDawg {
-
-  json = new JsonMock();
-
-  constructor() {
-    this.statusCalled = false;
-  }
-
-  status() {
-    this.statusCalled = true;
-    return this.json;
-  }
-
-  statusCalled() {
-    return this.statusCalled;
-  }
-
-  jsonCalled() {
-    return this.json.jsonCalled;
+  constructor(method, username, password) {
+    if (method) this.method = method;
+    if (username) this.body.username = username;
+    if (password) this.body.password = password;
   }
 }
 
-class JsonMock {
-  constructor() {
-    this.jsonCalled = false;
-  }
+describe('login middlewear units', () => {
 
-  json() {
-    this.jsonCalled = true;
-  }
-}
+  describe('validateLoginRequest -> valid request returns no error messages', () => {
+    test('login request valid', () => {
+      const validation = validateLoginRequest(new MockExpressRequest(POST, USERNAME, PASSWORD));
+      expect(validation).toHaveLength(0);
+    });
+  });
 
-describe('login middlewear', () => {
-  describe('login success', () => {
-    test('login success', () => {
-      const res = new ResponseMockDawg();
-      login(req, res, () => { console.log('next() called'); });
-      console.dir(Object.keys(res));
-      expect(res.statusCalled).toBe(true);
-      expect(res.jsonCalled()).toBe(true);
-      // console.dir(res);
-      // const abc = res.status();
-      // console.log(res.statusCalled);
-      // const xyz = abc.json();
-      // console.log(res.j.jsonCalled);
+  describe('validateLoginRequest -> invalid request return appropriate error messages', () => {
+    test('login request invalid -> no request method', () => {
+      const validation = validateLoginRequest(new MockExpressRequest(undefined, USERNAME, PASSWORD));
+      expect(validation).toHaveLength(1);
+      expect(validation).toContain('login requires a POST HTTP request but was undefined.');
+    });
+
+    test('login request invalid -> invalid request method: GET', () => {
+      const validation = validateLoginRequest(new MockExpressRequest(GET, USERNAME, PASSWORD));
+      expect(validation).toHaveLength(1);
+      expect(validation).toContain('login requires a POST HTTP request but was GET.');
+    });
+
+    test('login request invalid -> no username in request body', () => {
+      const validation = validateLoginRequest(new MockExpressRequest(POST, undefined, PASSWORD));
+      expect(validation).toHaveLength(1);
+      expect(validation).toContain('login requires a POST body "username" property.');
+    });
+
+    test('login request invalid -> no password in request body', () => {
+      const validation = validateLoginRequest(new MockExpressRequest(POST, USERNAME, undefined));
+      expect(validation).toHaveLength(1);
+      expect(validation).toContain('login requires a POST body "password" property.');
+    });
+
+    test('login request invalid -> no request methodpassword in request body', () => {
+      const validation = validateLoginRequest(new MockExpressRequest(GET, undefined, undefined));
+      expect(validation).toHaveLength(3);
+      expect(validation).toContain('login requires a POST body "password" property.');
+      expect(validation).toContain('login requires a POST body "username" property.');
+      expect(validation).toContain('login requires a POST HTTP request but was GET.');
     });
   });
 });
