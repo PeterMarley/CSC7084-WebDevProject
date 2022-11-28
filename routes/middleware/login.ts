@@ -1,6 +1,8 @@
-const { LoginResponse } = require('../../models/authResponses.js');
-const { createToken, verifyToken } = require('../../lib/jwtHelpers.js');
-const getConnection = require('../../lib/dbConnection.js');
+import { LoginResponse } from '../../models/authResponses';
+import { createToken, verifyToken } from '../../lib/jwtHelpers';
+import getConnection from '../../lib/dbConnection';
+import {Request, Response, NextFunction} from 'express';
+import mysql from 'mysql';
 
 /**
  * Express middleware for processing login POST requests.
@@ -9,31 +11,31 @@ const getConnection = require('../../lib/dbConnection.js');
  * 
  * If they are present this middleware will validate the username/ password combination is correct, and if it is will set a JWT cookie and call next()
  */
-function login(req, res, next) {
+function login(req: Request, res: Response, next: NextFunction) {
 
-  const err = validateLoginRequest(req);
+  const err: string[] = validateLoginRequest(req, res);
   if (err.length != 0) {
     res.status(400).json(new LoginResponse(err));
     return false;
   }
 
   // get db connection and execute function to check password is correct
-  con = getConnection();
-  checkPassword(con, 'SELECT fn_Check_Password(?,?) AS passwordCorrect', req, next, res);
+  const con = getConnection();
+  checkPassword(con, 'SELECT fn_Check_Password(?,?) AS passwordCorrect', req, next, res, dbProcess);
   con.end(); // close connection
 }
 
 
-function checkPassword(connection, sql, req, next, response) {
+function checkPassword(connection: mysql.Connection, sql: string, req: Request, next: NextFunction, res: Response, dbCallback: Function) {
   const { username, password } = req.body;
   connection.query(
     sql,
     [username, password],
-    (error, results, fields) => dbProcess(error, results, fields, next, response, username, password)
+    (error, results, fields) => dbCallback(error, results, fields, next, res, username, password)
   );
 }
 
-function dbProcess(error, results, fields, next, response, username, password) {
+function dbProcess(error: Error, results: any, fields: any, next: NextFunction, response: Response, username: string, password: string) {
   if (error) throw error;
 
   const result = results[0].passwordCorrect;
@@ -48,8 +50,8 @@ function dbProcess(error, results, fields, next, response, username, password) {
   next();
 }
 
-function validateLoginRequest(req, res) {
-  const err = [];
+function validateLoginRequest(req: Request, res: Response) {
+  const err: Array<string> = [];
   // validate post body properties and http request method
   if (req.method != 'POST') {
     err.push('login requires a POST HTTP request but was ' + req.method + '.');
@@ -68,6 +70,9 @@ function validateLoginRequest(req, res) {
   return err;
 }
 
-module.exports = login
-module.exports.validateLoginRequest = validateLoginRequest;
-module.exports.checkPassword = checkPassword;
+// module.exports = login
+// module.exports.validateLoginRequest = validateLoginRequest;
+// module.exports.checkPassword = checkPassword;
+
+export default login;
+export { validateLoginRequest, checkPassword };

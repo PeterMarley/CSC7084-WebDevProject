@@ -1,6 +1,7 @@
-const mysql = require('mysql');
-const { createToken, verifyToken } = require('../../lib/jwtHelpers.js');
-const { AuthResponse } = require('../../models/authResponses.js');
+import mysql from 'mysql';
+import { createToken, verifyToken } from '../../lib/jwtHelpers';
+import { AuthResponse } from '../../models/authResponses';
+import {Request, Response, NextFunction} from 'express';
 
 /**
  * Express middleware for processing auth checks.
@@ -13,12 +14,12 @@ const { AuthResponse } = require('../../models/authResponses.js');
  * @param {*} res response object
  * @param {*} next next callback
  */
-function authenticate(req, res, next) {
+function authenticate(req: Request, res: Response, next: NextFunction) {
   let success = false;
   if (req.cookies && req.cookies.token) {
     // console.log(req.cookies.token);
     try {
-      token = verifyToken(req.cookies.token);
+      const token: any = verifyToken(req.cookies.token);
       // console.dir(token);
       if (Date.now() < token.exp) {
         success = true;
@@ -30,7 +31,7 @@ function authenticate(req, res, next) {
       }
     } catch (err) {
       res.clearCookie('token');
-      console.log(err.message);
+      if (err instanceof Error) console.log(err.message);
     }
   }
   
@@ -44,4 +45,5 @@ function authenticate(req, res, next) {
  * 
  ******************************/
 
-module.exports = authenticate;
+//module.exports = authenticate;
+export default authenticate;

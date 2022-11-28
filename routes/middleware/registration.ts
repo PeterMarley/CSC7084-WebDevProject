@@ -1,6 +1,7 @@
 const { restart } = require('nodemon');
-const getConnection = require('../../lib/dbConnection.js');
-const { RegistrationResponse } = require('../../models/authResponses.js');
+import getConnection from '../../lib/dbConnection';
+import { RegistrationResponse } from '../../models/authResponses';
+import {Request, Response, NextFunction} from 'express';
 
 /**
  * Express middlewear that received a registration forms data, and validates it via SQL queries to the database, then calls next()
@@ -9,7 +10,7 @@ const { RegistrationResponse } = require('../../models/authResponses.js');
  * @param {*} next 
  * @returns 
  */
-function validateRegistrationForm(req, res, next) {
+function validateRegistrationForm(req: Request, res: Response, next: NextFunction) {
 
   // validate post body properties exist
   if (!req.body || !req.body.username || !req.body.email || !req.body.password) {
@@ -24,10 +25,10 @@ function validateRegistrationForm(req, res, next) {
 
   // validation here
 
-  let errMsg = {};
+  const errMsg: any = {};
 
   // query database to ensure username and email
-  con = getConnection(true);
+  const con = getConnection(true);
   con.query(
     `SELECT COUNT(username) AS usernameCount FROM tbl_user WHERE username=?;
     SELECT COUNT(email) AS emailCount FROM tbl_user WHERE email=?`, [username, email], function (error, results, fields) {
@@ -60,12 +61,12 @@ function validateRegistrationForm(req, res, next) {
 /**
  * Express middle wear that will register a user in the database then call next(). Dumb method, will not attempt to validate the users details
  */
-function register(req, res, next) {
+function register(req: Request, res: Response, next: NextFunction) {
   if (res.locals.success && res.locals.success === true) {
     // console.log('register logic here');
     // console.dir(res.locals.user);
     const {username, password, email} = res.locals.user;
-    con = getConnection();
+    const con = getConnection();
     con.query('INSERT INTO tbl_user (username, password, email) VALUES (?,fn_1WayEncrypt(?,NULL),?)', [username, password, email], function (error, results, fields) {
       if (error) throw error;
       // console.dir(results);
@@ -76,8 +77,9 @@ function register(req, res, next) {
   next();
 }
 
-function validateUsername(con, username) {
+// function validateUsername(con, username) {
   
-}
+// }
 
-module.exports = {validateRegistrationForm, register};
+//module.exports = {validateRegistrationForm, register};
+export {validateRegistrationForm, register};

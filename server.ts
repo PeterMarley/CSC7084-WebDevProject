@@ -1,4 +1,4 @@
-const app = require('./app');
+const expressApp = require('./app.ts');
 const port  = 3000;
 
 /*
@@ -6,6 +6,6 @@ const port  = 3000;
  * this file is ran, not app.js
  */
 
-app.listen(port, () => {
+expressApp.listen(port, () => {
   console.log('Moodr listening on port ' + port);
 });

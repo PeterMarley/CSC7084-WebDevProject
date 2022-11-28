@@ -4,9 +4,9 @@
  * 
  ******************************/
 
-const express = require('express');
+import express from 'express';
 const authRouter = express.Router();
-const cookieParser = require('cookie-parser');
+import cookieParser from 'cookie-parser';
 
 /******************************
  * 
@@ -14,11 +14,13 @@ const cookieParser = require('cookie-parser');
  * 
  ******************************/
 
-const login  = require('./middleware/login.js');
-const { validateRegistrationForm, register } = require('./middleware/registration.js');
-const authenticate = require('./middleware/authenticate.js');
-const redirect = require('./middleware/redirect.js');
-const logout = require('./middleware/logout.js');
+import login from './middleware/login';
+import { validateRegistrationForm, register } from './middleware/registration';
+import authenticate from './middleware/authenticate';
+import redirect from './middleware/redirect';
+import logout from './middleware/logout';
+
+import {Request, Response} from 'express';
 
 authRouter.use(cookieParser());
 
@@ -31,7 +33,7 @@ authRouter.use(cookieParser());
 authRouter.post('/login', express.urlencoded({ extended: false }), login, redirect);
 
 // a testing only route for postman bants
-authRouter.get('/authed', authenticate, function (req, res) {
+authRouter.get('/authed', authenticate, function (req: Request, res: Response) {
   // console.log(res.locals.authed);
   res.send(res.locals.authed);
 });
@@ -41,4 +43,5 @@ authRouter.get('/logout', logout, redirect);
 authRouter.post('/register', express.urlencoded({ extended: false }), validateRegistrationForm, register, redirect);
 
 
-module.exports = authRouter;
+//module.exports = authRouter;
+export default authRouter;

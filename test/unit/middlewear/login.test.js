@@ -25,46 +25,50 @@ class MockExpressRequest {
   }
 }
 
-describe('login middlewear units', () => {
+describe('validateLoginRequest()', () => {
+  describe('valid', () => {
 
-  describe('validateLoginRequest -> valid request returns no error messages', () => {
-    test('login request valid', () => {
-      const validation = validateLoginRequest(new MockExpressRequest(POST, USERNAME, PASSWORD));
-      expect(validation).toHaveLength(0);
+    describe('valid request returns no error messages', () => {
+      test('login request valid', () => {
+        const errorMsgs = validateLoginRequest(new MockExpressRequest(POST, USERNAME, PASSWORD));
+        expect(errorMsgs).toHaveLength(0);
+      });
     });
   });
 
-  describe('validateLoginRequest -> invalid request return appropriate error messages', () => {
-    test('login request invalid -> no request method', () => {
-      const validation = validateLoginRequest(new MockExpressRequest(undefined, USERNAME, PASSWORD));
-      expect(validation).toHaveLength(1);
-      expect(validation).toContain('login requires a POST HTTP request but was undefined.');
-    });
+  describe('invalid', () => {
+    describe('invalid request return appropriate error messages', () => {
+      test('login request invalid -> no request method', () => {
+        const errorMsgs = validateLoginRequest(new MockExpressRequest(undefined, USERNAME, PASSWORD));
+        expect(errorMsgs).toHaveLength(1);
+        expect(errorMsgs).toContain('login requires a POST HTTP request but was undefined.');
+      });
 
-    test('login request invalid -> invalid request method: GET', () => {
-      const validation = validateLoginRequest(new MockExpressRequest(GET, USERNAME, PASSWORD));
-      expect(validation).toHaveLength(1);
-      expect(validation).toContain('login requires a POST HTTP request but was GET.');
-    });
+      test('invalid request method: GET', () => {
+        const errorMsgs = validateLoginRequest(new MockExpressRequest(GET, USERNAME, PASSWORD));
+        expect(errorMsgs).toHaveLength(1);
+        expect(errorMsgs).toContain('login requires a POST HTTP request but was GET.');
+      });
 
-    test('login request invalid -> no username in request body', () => {
-      const validation = validateLoginRequest(new MockExpressRequest(POST, undefined, PASSWORD));
-      expect(validation).toHaveLength(1);
-      expect(validation).toContain('login requires a POST body "username" property.');
-    });
+      test('no username in request body', () => {
+        const errorMsgs = validateLoginRequest(new MockExpressRequest(POST, undefined, PASSWORD));
+        expect(errorMsgs).toHaveLength(1);
+        expect(errorMsgs).toContain('login requires a POST body "username" property.');
+      });
 
-    test('login request invalid -> no password in request body', () => {
-      const validation = validateLoginRequest(new MockExpressRequest(POST, USERNAME, undefined));
-      expect(validation).toHaveLength(1);
-      expect(validation).toContain('login requires a POST body "password" property.');
-    });
+      test('no password in request body', () => {
+        const errorMsgs = validateLoginRequest(new MockExpressRequest(POST, USERNAME, undefined));
+        expect(errorMsgs).toHaveLength(1);
+        expect(errorMsgs).toContain('login requires a POST body "password" property.');
+      });
 
-    test('login request invalid -> no request methodpassword in request body', () => {
-      const validation = validateLoginRequest(new MockExpressRequest(GET, undefined, undefined));
-      expect(validation).toHaveLength(3);
-      expect(validation).toContain('login requires a POST body "password" property.');
-      expect(validation).toContain('login requires a POST body "username" property.');
-      expect(validation).toContain('login requires a POST HTTP request but was GET.');
+      test('no request methodpassword in request body', () => {
+        const errorMsgs = validateLoginRequest(new MockExpressRequest(GET, undefined, undefined));
+        expect(errorMsgs).toHaveLength(3);
+        expect(errorMsgs).toContain('login requires a POST body "password" property.');
+        expect(errorMsgs).toContain('login requires a POST body "username" property.');
+        expect(errorMsgs).toContain('login requires a POST HTTP request but was GET.');
+      });
     });
   });
 });

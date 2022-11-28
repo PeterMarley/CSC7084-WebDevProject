@@ -4,15 +4,14 @@
  * 
  ******************************/
 
-const express = require('express');
-const mysql = require('mysql');
+// const express = require('express');
+import express, { Request, Response } from 'express';
+import mysql from 'mysql';
+//const mysql = require('mysql');
+import path from 'path';
+//const cookieParser = require('cookie-parser');
+import cookieParser from 'cookie-parser';
 const app = express();
-const path = require('path');
-const cookieParser = require('cookie-parser');
-
-const port = 3000;
-
-
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -23,12 +22,13 @@ app.set('views', path.join(__dirname, 'views'));
  * 
  ******************************/
 
-const authRouter = require('./routes/authRouter.js');
-const authenticate = require('./routes/middleware/authenticate.js');
+import authRouter from './routes/authRouter';
+import authenticate from './routes/middleware/authenticate';
 
 app.use(express.static('public'));
 app.use(cookieParser());
 app.use(authenticate);
+
 // app.use(function debugPrint(req, res, next) {
 //   console.log('-------------START--------------');
 //   console.log('LOCALS:');
@@ -57,21 +57,22 @@ app.use('/auth', authRouter); // auth api
  * 
  ******************************/
 
-app.get('/', (req, res) => {
+app.get('/', (req: Request, res: Response) => {
   res.render('welcome');
 });
 
-app.get('/login', (req, res) => {
+app.get('/login', (req: Request, res: Response) => {
   res.render('login');
 });
 
-app.get('/register', (req, res) => {
+app.get('/register', (req: Request, res: Response) => {
   res.render('register');
 });
 
 // 404 NOT FOUND fallback route
-app.get('*', function(req, res){
-  res.send('that aint no valid route SONNY JIM MBOY', 404);
+app.get('*', (req: Request, res: Response) => {
+  res.statusCode = 404;
+  res.send('that aint no valid route SONNY JIM MBOY');
 });
 
 module.exports = app;

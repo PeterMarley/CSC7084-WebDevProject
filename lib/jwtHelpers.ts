@@ -6,8 +6,8 @@ const jwt = require('jsonwebtoken');
  * @param {number} id 
  * @returns 
  */
-function createToken(username, id = 'not yet implemented') {
-  data = {
+function createToken(username: string, id = 'not yet implemented') {
+  const data = {
     exp: Date.now() + (1000 * 60 * 60), // 1 HOUR
     username: username,
     id: id
@@ -20,8 +20,9 @@ function createToken(username, id = 'not yet implemented') {
  * @param {string} token 
  * @returns decrypted token as an object literal
  */
-function verifyToken(token) {
+function verifyToken(token: string) {
   return jwt.verify(token, process.env.MOODR_TOKEN_SECRET);
 }
 
-module.exports = { createToken, verifyToken };
+//module.exports = { createToken, verifyToken };
+export {createToken, verifyToken};
