@@ -1,6 +1,6 @@
 const express = require('express');
 const request = require('supertest');
-const authRouter = require('../../routes/authRouter.js');
+import authRouter from '../../routes/authRouter';
 const cookieParser = require('cookie-parser');
 const { URLSearchParams } = require('url');
 const {extractToken,extractTokenErrMsg} = require('./helpers/extractToken.js');

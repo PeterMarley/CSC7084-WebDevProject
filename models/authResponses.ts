@@ -27,4 +27,4 @@ class RegistrationResponse {
  */
 
 //module.exports = { LoginResponse, AuthResponse, RegistrationResponse };
-export {LoginResponse, AuthResponse, RegistrationResponse};
+export { LoginResponse, AuthResponse, RegistrationResponse };

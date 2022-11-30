@@ -1,10 +1,10 @@
 const request = require('supertest');
-const app = require('../../app.js');
-const jwt = require('../../lib/jwtHelpers.js');
+const app = require('../../app');
+const jwt = require('../../lib/jwtHelpers');
 
 describe('GET /auth/authed', () => {
-  describe('without token cookie', () => {
-    test('responds with "false"', async () => {
+  describe('with token cookie', () => {
+    test('responds with "true"', async () => {
       const response = await request(app)
         .get('/auth/authed')
         .send().set('Cookie', ['token='+jwt.createToken('username')]);

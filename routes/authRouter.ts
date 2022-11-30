@@ -22,6 +22,7 @@ import logout from './middleware/logout';
 
 import {Request, Response} from 'express';
 
+authRouter.use(express.urlencoded({extended: false}));
 authRouter.use(cookieParser());
 
 /******************************
@@ -30,7 +31,7 @@ authRouter.use(cookieParser());
  * 
  ******************************/
 
-authRouter.post('/login', express.urlencoded({ extended: false }), login, redirect);
+authRouter.post('/login', login, redirect);
 
 // a testing only route for postman bants
 authRouter.get('/authed', authenticate, function (req: Request, res: Response) {
@@ -40,7 +41,7 @@ authRouter.get('/authed', authenticate, function (req: Request, res: Response) {
 
 authRouter.get('/logout', logout, redirect);
 
-authRouter.post('/register', express.urlencoded({ extended: false }), validateRegistrationForm, register, redirect);
+authRouter.post('/register', validateRegistrationForm, register, redirect);
 
 
 //module.exports = authRouter;

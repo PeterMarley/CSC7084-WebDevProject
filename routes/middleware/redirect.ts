@@ -4,9 +4,8 @@ import {Request, Response, NextFunction} from 'express';
  * if a GET request, then from `req.query.redirect`. If neither is provided request is routed to root '/'.
  */
 function redirect(req: Request, res: Response, next: NextFunction) {
-  // console.log(req.method);
   let redirectionLocation: string = '';
-
+  
   switch (req.method) {
     case 'POST':
       redirectionLocation = req.body && req.body.redirect ? req.body.redirect : '/';

@@ -69,6 +69,10 @@ app.get('/register', (req: Request, res: Response) => {
   res.render('register');
 });
 
+app.get('/test', (req: Request, res: Response) => {
+  res.render('test');
+});
+
 // 404 NOT FOUND fallback route
 app.get('*', (req: Request, res: Response) => {
   res.statusCode = 404;
