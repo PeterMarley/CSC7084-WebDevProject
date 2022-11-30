@@ -11,7 +11,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use('/auth', authRouter);
 
-const userCorrect = { username: 'testinguser1', password: 'AEAB42j3rg3$/' };
+const userCorrect = { username: process.env.MOODR_TEST_USER_USERNAME, password: process.env.MOODR_TEST_USER_PASSWORD };
 const userIncorrectPassword = { username: 'testinguser1', password: 'incorrectPassword' };
 const userUnknown = { username: 'nonExistantUser', password: 'randomPassword' };
 

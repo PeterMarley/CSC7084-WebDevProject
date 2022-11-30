@@ -24,7 +24,7 @@ const SQL = 'SELECT fn_Check_Password(?,?) AS passwordCorrect';
  * 
  * Dependency injection is used here to enable unit and functional testing using mocks
  */
-function login(req: Request, res: Response, next: NextFunction) {
+async function login(req: Request, res: Response, next: NextFunction) {
 
   // validate the request post body
   const err: Array<string> = [];

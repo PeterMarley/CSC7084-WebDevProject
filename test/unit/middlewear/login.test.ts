@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { LoginResponse } from "../../../models/authResponses";
 import login from "../../../routes/middleware/login";
+import mysql from 'mysql';
 
-const USERNAME = "testusername123";
-const PASSWORD = "testpassword123";
+const USERNAME = process.env.MOODR_TEST_USER_USERNAME;
+const PASSWORD = process.env.MOODR_TEST_USER_PASSWORD;
 const POST = "POST";
 const GET = "GET";
 const PUT = 'PUT';
@@ -88,11 +89,7 @@ describe("login() middlewear", () => {
       login(req as Request, res as Response, next);
       expect(res.json).toHaveBeenCalled();
       expect(res.json).toBeCalledTimes(1);
-      expect(res.json).toHaveBeenCalledWith(
-        new LoginResponse([
-          ERR_MSG_LOGIN_USERNAME,
-        ])
-      );
+      expect(res.json).toHaveBeenCalledWith(new LoginResponse([ERR_MSG_LOGIN_USERNAME]));
       expect(res.cookie).not.toHaveBeenCalled();
       expect(res.locals?.username).toBeUndefined();
       expect(next).not.toHaveBeenCalled();
@@ -104,11 +101,7 @@ describe("login() middlewear", () => {
       login(req as Request, res as Response, next);
       expect(res.json).toHaveBeenCalled();
       expect(res.json).toBeCalledTimes(1);
-      expect(res.json).toHaveBeenCalledWith(
-        new LoginResponse([
-          ERR_MSG_LOGIN_PASSWORD,
-        ])
-      );
+      expect(res.json).toHaveBeenCalledWith(new LoginResponse([ERR_MSG_LOGIN_PASSWORD]));
       expect(res.cookie).not.toHaveBeenCalled();
       expect(res.locals?.username).toBeUndefined();
       expect(next).not.toHaveBeenCalled();
@@ -136,8 +129,9 @@ describe("login() middlewear", () => {
       next = jest.fn()
     });
 
-    test('login', () => {
-      login(req as Request, res as Response, next);
+    test('login', async () => {
+      let connect: Partial<mysql.Connection>;
+      await login(req as Request, res as Response, next);
       expect(res.locals?.username).not.toBeUndefined();
     });
   });
