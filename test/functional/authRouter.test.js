@@ -12,7 +12,7 @@ app.use(cookieParser());
 app.use('/auth', authRouter);
 
 const userCorrect = { username: process.env.MOODR_TEST_USER_USERNAME, password: process.env.MOODR_TEST_USER_PASSWORD };
-const userIncorrectPassword = { username: 'testinguser1', password: 'incorrectPassword' };
+const userIncorrectPassword = { username: process.env.MOODR_TEST_USER_USERNAME, password: 'incorrectPassword' };
 const userUnknown = { username: 'nonExistantUser', password: 'randomPassword' };
 
 describe('authRouter login', () => {

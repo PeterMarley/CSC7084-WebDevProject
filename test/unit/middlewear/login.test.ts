@@ -1,276 +1,188 @@
 import { Request, Response, NextFunction } from "express";
 import { LoginResponse } from "../../../models/authResponses";
-import login from "../../../routes/middleware/login";
+import login, { cb } from "../../../routes/middleware/login";
 import mysql from 'mysql';
 
-const USERNAME = process.env.MOODR_TEST_USER_USERNAME;
+const USERNAME: string = process.env.MOODR_TEST_USER_USERNAME!;
 const PASSWORD = process.env.MOODR_TEST_USER_PASSWORD;
 const POST = "POST";
 const GET = "GET";
 const PUT = 'PUT';
 
 const ERR_MSG_LOGIN_USERNAME =
-  'login requires a POST body "username" property.';
+	'login requires a POST body "username" property.';
 const ERR_MSG_LOGIN_PASSWORD =
-  'login requires a POST body "password" property.';
+	'login requires a POST body "password" property.';
 const ERR_MSG_LOGIN_METHOD = "login requires a POST HTTP request but was {0}.";
 
 describe("login() middlewear", () => {
-  describe("invalid login", () => {
-    let req: Partial<Request>;
-    let res: Partial<Response>;
-    let next: NextFunction;
+	describe("invalid login", () => {
+		let req: Partial<Request>;
+		let res: Partial<Response>;
+		let next: NextFunction;
 
-    beforeEach(() => {
-      req = {
-        body: {},
-      };
-      res = {
-        json: jest.fn(),
-        cookie: jest.fn(),
-        locals: {},
-      };
-      next = jest.fn()
-    });
+		beforeEach(() => {
+			req = {
+				body: {},
+			};
+			res = {
+				json: jest.fn(),
+				cookie: jest.fn(),
+				locals: {},
+			};
+			next = jest.fn()
+		});
 
-    test("undefined request type, no username nor password", () => {
-      login(req as Request, res as Response, next);
-      expect(res.json).toHaveBeenCalled();
-      expect(res.json).toBeCalledTimes(1);
-      expect(res.json).toHaveBeenCalledWith(
-        new LoginResponse([
-          ERR_MSG_LOGIN_METHOD.replace("{0}", "undefined"),
-          ERR_MSG_LOGIN_USERNAME,
-          ERR_MSG_LOGIN_PASSWORD,
-        ])
-      );
-      expect(res.cookie).not.toHaveBeenCalled();
-      expect(res.locals?.username).toBeUndefined();
-      expect(next).not.toHaveBeenCalled();
-    });
+		test("undefined request type, no username nor password", () => {
+			login(req as Request, res as Response, next);
+			expect(res.json).toHaveBeenCalled();
+			expect(res.json).toBeCalledTimes(1);
+			expect(res.json).toHaveBeenCalledWith(
+				new LoginResponse([
+					ERR_MSG_LOGIN_METHOD.replace("{0}", "undefined"),
+					ERR_MSG_LOGIN_USERNAME,
+					ERR_MSG_LOGIN_PASSWORD,
+				])
+			);
+			expect(res.cookie).not.toHaveBeenCalled();
+			expect(next).not.toHaveBeenCalled();
+		});
 
-    test("GET request type", () => {
-      req.method = GET;
-      login(req as Request, res as Response, next);
-      expect(res.json).toHaveBeenCalled();
-      expect(res.json).toBeCalledTimes(1);
-      expect(res.json).toHaveBeenCalledWith(
-        new LoginResponse([
-          ERR_MSG_LOGIN_METHOD.replace("{0}", GET),
-          ERR_MSG_LOGIN_USERNAME,
-          ERR_MSG_LOGIN_PASSWORD,
-        ])
-      );
-      expect(res.cookie).not.toHaveBeenCalled();
-      expect(res.locals?.username).toBeUndefined();
-      expect(next).not.toHaveBeenCalled();
-    });
+		test("GET request type", () => {
+			req.method = GET;
+			login(req as Request, res as Response, next);
+			expect(res.json).toHaveBeenCalled();
+			expect(res.json).toBeCalledTimes(1);
+			expect(res.json).toHaveBeenCalledWith(
+				new LoginResponse([
+					ERR_MSG_LOGIN_METHOD.replace("{0}", GET),
+					ERR_MSG_LOGIN_USERNAME,
+					ERR_MSG_LOGIN_PASSWORD,
+				])
+			);
+			expect(res.cookie).not.toHaveBeenCalled();
+			expect(next).not.toHaveBeenCalled();
+		});
 
-    test("PUT request type", () => {
-      req.method = PUT;
-      login(req as Request, res as Response, next);
-      expect(res.json).toHaveBeenCalled();
-      expect(res.json).toBeCalledTimes(1);
-      expect(res.json).toHaveBeenCalledWith(
-        new LoginResponse([
-          ERR_MSG_LOGIN_METHOD.replace("{0}", PUT),
-          ERR_MSG_LOGIN_USERNAME,
-          ERR_MSG_LOGIN_PASSWORD,
-        ])
-      );
-      expect(res.cookie).not.toHaveBeenCalled();
-      expect(res.locals?.username).toBeUndefined();
-      expect(next).not.toHaveBeenCalled();
-    });
+		test("PUT request type", () => {
+			req.method = PUT;
+			login(req as Request, res as Response, next);
+			expect(res.json).toHaveBeenCalled();
+			expect(res.json).toBeCalledTimes(1);
+			expect(res.json).toHaveBeenCalledWith(
+				new LoginResponse([
+					ERR_MSG_LOGIN_METHOD.replace("{0}", PUT),
+					ERR_MSG_LOGIN_USERNAME,
+					ERR_MSG_LOGIN_PASSWORD,
+				])
+			);
+			expect(res.cookie).not.toHaveBeenCalled();
+			expect(next).not.toHaveBeenCalled();
+		});
 
-    test("no username", () => {
-      req.method = POST;
-      req.body.password = PASSWORD;
-      login(req as Request, res as Response, next);
-      expect(res.json).toHaveBeenCalled();
-      expect(res.json).toBeCalledTimes(1);
-      expect(res.json).toHaveBeenCalledWith(new LoginResponse([ERR_MSG_LOGIN_USERNAME]));
-      expect(res.cookie).not.toHaveBeenCalled();
-      expect(res.locals?.username).toBeUndefined();
-      expect(next).not.toHaveBeenCalled();
-    });
+		test("no username", () => {
+			req.method = POST;
+			req.body.password = PASSWORD;
+			login(req as Request, res as Response, next);
+			expect(res.json).toHaveBeenCalled();
+			expect(res.json).toBeCalledTimes(1);
+			expect(res.json).toHaveBeenCalledWith(new LoginResponse([ERR_MSG_LOGIN_USERNAME]));
+			expect(res.cookie).not.toHaveBeenCalled();
+			expect(next).not.toHaveBeenCalled();
+		});
 
-    test("no password", () => {
-      req.method = POST;
-      req.body.username = USERNAME;
-      login(req as Request, res as Response, next);
-      expect(res.json).toHaveBeenCalled();
-      expect(res.json).toBeCalledTimes(1);
-      expect(res.json).toHaveBeenCalledWith(new LoginResponse([ERR_MSG_LOGIN_PASSWORD]));
-      expect(res.cookie).not.toHaveBeenCalled();
-      expect(res.locals?.username).toBeUndefined();
-      expect(next).not.toHaveBeenCalled();
-    });
-  });
+		test("no password", () => {
+			req.method = POST;
+			req.body.username = USERNAME;
+			login(req as Request, res as Response, next);
+			expect(res.json).toHaveBeenCalled();
+			expect(res.json).toBeCalledTimes(1);
+			expect(res.json).toHaveBeenCalledWith(new LoginResponse([ERR_MSG_LOGIN_PASSWORD]));
+			expect(res.cookie).not.toHaveBeenCalled();
+			expect(next).not.toHaveBeenCalled();
+		});
+	});
 
-  describe('valid login', () => {
-    let req: Partial<Request>;
-    let res: Partial<Response>;
-    let next: NextFunction;
+	describe('valid login', () => {
+		let req: Partial<Request>;
+		let res: Partial<Response>;
+		let next: NextFunction;
 
-    beforeEach(() => {
-      req = {
-        method: POST,
-        body: {
-          username: USERNAME,
-          password: PASSWORD
-        },
-      };
-      res = {
-        json: jest.fn(),
-        cookie: jest.fn(),
-        locals: {},
-      };
-      next = jest.fn()
-    });
+		let connect: Partial<mysql.Connection>;
 
-    test('login', async () => {
-      let connect: Partial<mysql.Connection>;
-      await login(req as Request, res as Response, next);
-      expect(res.locals?.username).not.toBeUndefined();
-    });
-  });
+		beforeEach(() => {
+			req = {
+				method: POST,
+				body: {
+					username: USERNAME,
+					password: PASSWORD
+				},
+			};
+			res = {
+				json: jest.fn(),
+				cookie: jest.fn(),
+				locals: {
+					username: undefined
+				},
+			};
+			next = jest.fn();
+			connect = {
+				query: jest.fn(),
+				end: jest.fn()
+			}
+		});
+
+		test('login', async () => {
+			let getConFunc = jest.fn(() => connect as mysql.Connection);
+			let cb = jest.fn();
+			await login(req as Request, res as Response, next, getConFunc, cb);
+			expect(getConFunc).toHaveBeenCalledTimes(1);
+			expect(connect.query).toHaveBeenCalledTimes(1);
+			expect(connect.end).toHaveBeenCalledTimes(1);
+		});
+	});
+
+	describe('login callback', () => {
+		let res: Partial<Response>;
+		let next: NextFunction;
+		let errorNull: null;
+		let errorNotNull: Partial<mysql.MysqlError>;
+		let resultsFalse: Partial<{}>;
+		let resultsTrue: Partial<{}>;
+
+		beforeEach(() => {
+			resultsFalse = [{ passwordCorrect: false }];
+			resultsTrue = [{ passwordCorrect: true }];
+			errorNull = null;
+			errorNotNull = new Error();
+			next = jest.fn();
+			res = {
+				locals: {},
+				cookie: jest.fn()
+			}
+		});
+
+		test('cb with results false', () => {
+			cb(errorNull, resultsFalse, res as Response, USERNAME, next as NextFunction);
+			expect(next).toHaveBeenCalled();
+			expect(res.locals?.username).toBeUndefined();
+		});
+
+		test('cb with results true', () => {
+			cb(errorNull, resultsTrue, res as Response, USERNAME, next as NextFunction);
+			expect(next).toHaveBeenCalled();
+			expect(res.locals?.username).toBe(USERNAME);
+			expect(res.cookie).toHaveBeenCalled();
+		});
+
+		test('cb with error error', () => {
+			expect(
+				() => cb(errorNotNull as mysql.MysqlError, resultsTrue, res as Response, USERNAME, next as NextFunction)
+			).toThrowError();
+			expect(next).not.toHaveBeenCalled();
+			expect(res.locals?.username).toBeUndefined();
+			expect(res.cookie).not.toHaveBeenCalled();
+		});
+	});
 });
 
-// function buildRequest(method, username, password) {
-//   let req = {};
-//   if (method) req.method = method;
-//   req.body = {};
-//   if (username) req.body.username = username;
-//   if (password) req.body.password = password;
-//   return req;
-// }
-
-// class MockExpressRequest {
-//   method;
-//   body = {};
-
-//   constructor(method, username, password) {
-//     if (method) this.method = method;
-//     if (username) this.body.username = username;
-//     if (password) this.body.password = password;
-//   }
-// }
-
-// class MockExpressResponse {
-//   jsonCalled = false;
-//   sendCalled = false;
-
-//   json(obj) {
-//     this.jsonCalled = true;
-//     this.responseObj = obj;
-//     return this;
-//   }
-
-//   send() {
-//     this.sendCalled = true;
-//     return this;
-//   }
-// }
-
-// class MockConnectionObject {
-//   queryCalled;
-//   endCalled;
-
-//   end() {
-//     this.endCalled = true;
-//   }
-
-//   query(sql, unpwarr, callback) {
-//     this.queryCalled = true;
-//     callback();
-//     // console.log(sql);
-//     // console.log(unpwarr);
-//     // console.log(callback);
-//   }
-// }
-
-// describe('checkPassword()', () => {
-
-//   test('testname', () => {
-//     let next = false;
-//     let query = false;
-//     const con = new MockConnectionObject();
-//     const res = new MockExpressResponse();
-//     const req = new MockExpressRequest('POST', 'DOGS', 'CATS');
-//     checkPassword(con, 'hi', req, res,
-//       () => {next = true;},
-//       () => {query = true;}
-//     );
-//     function queryy() {
-//       query = true;
-//     }
-//     expect(con.queryCalled).toBe(true);
-//     expect(query).toBe(true);
-//   });
-
-// });
-
-// describe('validateLoginRequest()', () => {
-
-//   describe('valid login request', () => {
-
-//     describe('valid request returns no error messages', () => {
-//       test('login request valid', () => {
-//         let response = new MockExpressResponse();
-//         const returnBool = validateLoginRequest(new MockExpressRequest(POST, USERNAME, PASSWORD), response);
-//         expect(returnBool).toBe(true);
-//         expect(response.jsonCalled).toBe(false);
-//         expect(response.sendCalled).toBe(false);
-//       });
-//     });
-//   });
-
-//   describe('invalid login request', () => {
-//     test('no request method', () => {
-//       let response = new MockExpressResponse();
-//       const returnBool = validateLoginRequest(new MockExpressRequest(undefined, USERNAME, PASSWORD), response);
-//       expect(returnBool).toBe(false);
-//       expect(response.jsonCalled).toBe(true);
-//       expect(response.jsonCalled).toBe(true);
-//     });
-
-//     test('invalid request method: GET', () => {
-//       let response = new MockExpressResponse();
-//       const returnBool = validateLoginRequest(new MockExpressRequest(GET, USERNAME, PASSWORD), response);
-//       expect(returnBool).toBe(false);
-//       expect(response.jsonCalled).toBe(true);
-//       expect(response.jsonCalled).toBe(true);
-//       expect(response.responseObj.err).toContain('login requires a POST HTTP request but was GET.');
-//     });
-
-//     test('no username in request body', () => {
-//       let response = new MockExpressResponse();
-//       const returnBool = validateLoginRequest(new MockExpressRequest(POST, undefined, PASSWORD), response);
-//       expect(returnBool).toBe(false);
-//       expect(response.jsonCalled).toBe(true);
-//       expect(response.jsonCalled).toBe(true);
-//       expect(response.responseObj.err).toContain('login requires a POST body "username" property.');
-//     });
-
-//     test('no password in request body', () => {
-//       let response = new MockExpressResponse();
-//       const returnBool = validateLoginRequest(new MockExpressRequest(POST, USERNAME, undefined), response);
-//       expect(returnBool).toBe(false);
-//       expect(response.jsonCalled).toBe(true);
-//       expect(response.jsonCalled).toBe(true);
-//       expect(response.responseObj.err).toContain('login requires a POST body "password" property.');
-//     });
-
-//     test('no username nor password in request body', () => {
-//       let response = new MockExpressResponse();
-//       const returnBool = validateLoginRequest(new MockExpressRequest(GET, undefined, undefined), response);
-//       expect(returnBool).toBe(false);
-//       expect(response.jsonCalled).toBe(true);
-//       expect(response.jsonCalled).toBe(true);
-//       expect(response.responseObj.err).toContain('login requires a POST body "password" property.');
-//       expect(response.responseObj.err).toContain('login requires a POST body "username" property.');
-//       expect(response.responseObj.err).toContain('login requires a POST HTTP request but was GET.');
-//     });
-//   });
-// });

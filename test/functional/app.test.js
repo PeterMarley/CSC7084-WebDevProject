@@ -17,12 +17,12 @@ describe('GET /auth/authed', () => {
     // 200 status
   });
 
-  describe('with token cookie - expired', () => {
+  describe.skip('with token cookie - expired', () => {
     // res.locals.authed is false
     // 200 status
   });
 
-  describe('with token cookie - not expired', () => {
+  describe.skip('with token cookie - not expired', () => {
     // res.locals.authed is true
     // 200 status
   });
