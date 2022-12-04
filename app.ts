@@ -6,11 +6,9 @@
 
 // const express = require('express');
 import express, { Request, Response } from 'express';
-import mysql from 'mysql';
-//const mysql = require('mysql');
 import path from 'path';
-//const cookieParser = require('cookie-parser');
 import cookieParser from 'cookie-parser';
+
 const app = express();
 
 app.set('view engine', 'ejs');

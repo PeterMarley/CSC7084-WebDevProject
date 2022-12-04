@@ -1,7 +1,7 @@
 const { restart } = require('nodemon');
 import getConnection from '../../lib/dbConnection';
 import { RegistrationResponse } from '../../models/authResponses';
-import {Request, Response, NextFunction} from 'express';
+import { Request, Response, NextFunction } from 'express';
 
 /**
  * Express middlewear that received a registration forms data, and validates it via SQL queries to the database, then calls next()
@@ -10,7 +10,7 @@ import {Request, Response, NextFunction} from 'express';
  * @param {*} next 
  * @returns 
  */
-function validateRegistrationForm(req: Request, res: Response, next: NextFunction) {
+export function validateRegistrationForm(req: Request, res: Response, next: NextFunction, getConnectionFunc = getConnection) {
 
   // validate post body properties exist
   if (!req.body || !req.body.username || !req.body.email || !req.body.password) {
@@ -19,16 +19,17 @@ function validateRegistrationForm(req: Request, res: Response, next: NextFunctio
   }
 
   // get vars from post body & validate values
-  const username = req.body.username;
-  const email = req.body.email;
-  const password = req.body.password
+  const { username, email, password } = req.body;
 
   // validation here
 
-  const errMsg: any = {};
+  const errMsg = {
+    username: '',
+    email: ''
+  };
 
   // query database to ensure username and email
-  const con = getConnection(true);
+  const con = getConnectionFunc(true);
   con.query(
     `SELECT COUNT(username) AS usernameCount FROM tbl_user WHERE username=?;
     SELECT COUNT(email) AS emailCount FROM tbl_user WHERE email=?`, [username, email], function (error, results, fields) {
@@ -36,21 +37,25 @@ function validateRegistrationForm(req: Request, res: Response, next: NextFunctio
 
     const usernameCount = results[0][0].usernameCount;
     const emailCount = results[1][0].emailCount;
-    
+
     // check if username and email are unique
     if (usernameCount != 0) {
       errMsg.username = 'this username is already taken';
-    } 
+    }
     if (emailCount != 0) {
       errMsg.email = 'this email is already taken';
     }
 
-    if (Object.keys(errMsg).length === 0) {
-      res.locals.success = true;
-      res.locals.user = {username,email, password};
+    if (!errMsg.username && !errMsg.email) {
+      res.locals.registration = {
+        success: true,
+        user: { username, email, password },
+      };
     } else {
-      res.locals.success = false;
-      res.locals.errors = errMsg;
+      res.locals.registration = {
+        success: false,
+        errors: errMsg,
+      };
     }
 
     next();
@@ -61,25 +66,13 @@ function validateRegistrationForm(req: Request, res: Response, next: NextFunctio
 /**
  * Express middle wear that will register a user in the database then call next(). Dumb method, will not attempt to validate the users details
  */
-function register(req: Request, res: Response, next: NextFunction) {
-  if (res.locals.success && res.locals.success === true) {
-    // console.log('register logic here');
-    // console.dir(res.locals.user);
-    const {username, password, email} = res.locals.user;
-    const con = getConnection();
+export function register(req: Request, res: Response, next: NextFunction, getConnectionFunc = getConnection) {
+  if (res.locals.registration && res.locals.registration.success) {
+    const { username, password, email } = res.locals.registration.user;
+    const con = getConnectionFunc();
     con.query('INSERT INTO tbl_user (username, password, email) VALUES (?,fn_1WayEncrypt(?,NULL),?)', [username, password, email], function (error, results, fields) {
       if (error) throw error;
-      // console.dir(results);
     });
-  } else {
-    // console.dir(res.locals.errors);
   }
   next();
 }
-
-// function validateUsername(con, username) {
-  
-// }
-
-//module.exports = {validateRegistrationForm, register};
-export {validateRegistrationForm, register};

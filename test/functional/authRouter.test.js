@@ -4,6 +4,7 @@ import authRouter from '../../routes/authRouter';
 const cookieParser = require('cookie-parser');
 const { URLSearchParams } = require('url');
 const {extractToken,extractTokenErrMsg} = require('./helpers/extractToken.js');
+require('dotenv').config();
 
 const app = express(); 
 

@@ -22,7 +22,7 @@ import mysql from 'mysql';
  * 
  * Dependency injection is used here to enable unit and functional testing using mocks
  */
-export default async function login(req: Request, res: Response, next: NextFunction, getConnectionFunction = getConnection, callback = cb) {
+export default function login(req: Request, res: Response, next: NextFunction, getConnectionFunction = getConnection) {
 
 	// validate the request post body
 	const err: Array<string> = [];
@@ -50,12 +50,12 @@ export default async function login(req: Request, res: Response, next: NextFunct
 	con.query(
 		'SELECT fn_Check_Password(?,?) AS passwordCorrect',
 		[username, password],
-		(error, results, fields) => callback(error, results, res, username, next)
+		(error, results, fields) => authenticateLogin(error, results, res, username, next)
 	);
 	con.end(); // close connection
 }
 
-export function cb(error: mysql.MysqlError | null, results: any, res: Response, username: string, next: NextFunction) {
+export function authenticateLogin(error: mysql.MysqlError | null, results: any, res: Response, username: string, next: NextFunction) {
 	if (error) throw error;
 
 	const result = results[0].passwordCorrect;
@@ -63,6 +63,7 @@ export function cb(error: mysql.MysqlError | null, results: any, res: Response, 
 	// if password correct set token cookie to jwt and set express local var to username
 	if (result) {
 		res.locals.username = username;
+		res.locals.authed = true;
 		res.cookie('token', createToken(username));
 	}
 
