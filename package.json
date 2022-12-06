@@ -5,8 +5,9 @@
   "main": "app.js",
   "scripts": {
     "devStart": "nodemon -e ts,js,json server.ts",
-    "test": "npx jest --watchAll",
-    "test-coverage": "npx jest --coverage"
+    "test:all": "npx jest --watchAll",
+    "test:unit": "jest --watchAll --testPathPattern=test/unit",
+    "test:functional": "jest --watchAll --testPathPattern=test/functional"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,7 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^8.5.1",
     "mysql": "^2.18.1",
+    "mysql2": "^2.3.3",
     "nodemon": "^2.0.20",
     "typescript": "^4.9.3"
   },

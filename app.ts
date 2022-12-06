@@ -22,6 +22,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 import authRouter from './routes/authRouter';
 import authenticate from './routes/middleware/authenticate';
+import auth from './routes/api/auth/auth';
 
 app.use(express.static('public'));
 app.use(cookieParser());
@@ -48,7 +49,7 @@ app.use(authenticate);
  ******************************/
 
 app.use('/auth', authRouter); // auth api
-
+app.use('/authtest/', auth);
 /******************************
  * 
  * Routes

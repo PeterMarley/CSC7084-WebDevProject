@@ -10,13 +10,55 @@ const PASSWORD = 'password';
 const EMAIL = 'anewtestuser@password.com';
 
 describe('validateRegistrationForm() function', () => {
+    let req: Partial<Request>;
+    let res: Partial<Response>;
+    let next: NextFunction;
+    let connect: Partial<mysql.Connection>;
+    let query: Partial<mysql.queryCallback>;
+    let results;
+
+    describe('invalid form submitted', () => {
+        beforeEach(() => {
+            results = [
+                [{ usernameCount: 1 }],
+                [{ emailCount: 0 }]
+            ];
+            query = jest.fn((a: mysql.MysqlError | undefined, b: any, c: mysql.queryCallback) => c(null, results, undefined));
+            req = {
+                method: 'POST',
+            };
+            res = {
+                locals: {},
+                status: jest.fn(() => res as Response),
+                send: jest.fn(() => res as Response)
+            };
+            connect = {
+                query: query as QueryFunction,
+                end: jest.fn(),
+            };
+            next = jest.fn();
+        });
+
+        test('username in use', () => {
+            req.body = {
+                username: USERNAME,
+                password: PASSWORD,
+                email: EMAIL
+            }
+            validateRegistrationForm(req as Request, res as Response, next, () => connect as Connection);
+            expect(res.locals?.registration).not.toBeUndefined();
+            expect(res.locals?.registration.success).toBe(false);
+            /*
+             res.locals.registration = {
+        success: false,
+        errors: errMsg,
+      };
+             */
+        });
+    });
+
     describe('valid form submitted', () => {
-        let req: Partial<Request>;
-        let res: Partial<Response>;
-        let next: NextFunction;
-        let connect: Partial<mysql.Connection>;
-        let query: Partial<mysql.queryCallback>;
-        let results;
+        
 
         beforeEach(() => {
             results = [
@@ -58,5 +100,9 @@ describe('validateRegistrationForm() function', () => {
             expect(res.locals?.registration.user.password).toBe(PASSWORD);
 
         });
+    });
+
+    describe('description', () => {
+        
     });
 });
