@@ -1,7 +1,6 @@
 import express from 'express';
-import getConnection from '../../../lib/dbConnection';
-import mysql, {MysqlError, FieldInfo, Query} from 'mysql';
-
+import mysql from 'mysql2/promise';
+import { createToken, verifyToken } from '../../../lib/jwtHelpers';
 const auth = express.Router();
 
 /*
@@ -11,43 +10,56 @@ API DESCRIPTION
 - require a website token perhaps to limit outside access?
     - this token can live in .env file/ environment variables
 */
-auth.use(express.urlencoded({extended: false}));
+auth.use(express.urlencoded({ extended: false }));
 
-auth.post('/login', (req, res, next) => {
-    res.set('Content-Type', 'application/json')
-    console.dir(req.body);
-    login(req.body.username, req.body.password);
-    res.send(JSON.stringify({reqBody: req.body}));
-});
+auth.use(authenticateRequestSource);
 
-function login(username: string, password: string, res: express.Response | null = null) {
-	// get db connection and execute function to check password is correct
-	const con = getConnection();
-    let query: Query = con.query('SELECT fn_Check_Password(?,?) AS passwordCorrect', [username, password], (error: MysqlError | null, results: any) => {
-            if (error) throw error;
-        
-            const result = results[0].passwordCorrect;
-        
-            // if password correct set token cookie to jwt and set express local var to username
-            let ok;
-            if (result) {
-                // res.locals.username = username;
-                // res.locals.authed = true;
-                // res.cookie('token', createToken(username));
-                ok = true;
-            } else {
-                ok = false;
-            }
-            return ok;
-        }
-	);
-    // query.on('result', () => {
-    //     console.log('it is done');
-        
-    // });
-	con.end(); // close connection
-    console.dir(query);
-    
+class LoginResponse {
+    success: boolean;
+    token: string | undefined;
+
+    constructor(success: boolean, token: string | undefined) {
+        this.success = success;
+        if (token) this.token = token;
+    }
+}
+
+auth.post('/login', loginMiddleware);
+
+function authenticateRequestSource(req: express.Request, res: express.Response, next: express.NextFunction) {
+    if (req.body && req.body.requestor === process.env.REQUESTOR) {
+        next();
+    } else {
+        res.sendStatus(401);
+    }
+}
+
+async function loginMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
+
+    const { username, password } = req.body;
+    const passwordCorrect = await checkPassword(username, password);
+
+    let success: boolean = false;
+    let token: string | undefined;
+
+    if (passwordCorrect) {
+        success = true;
+        token = createToken(username)
+    }
+
+    res.set('Content-Type', 'application/json');
+    res.send(new LoginResponse(success, token));
+}
+
+async function checkPassword(username: string, password: string): Promise<boolean> {
+    const con = await mysql.createConnection({
+        host: process.env.MOODR_DB_HOST,
+        user: process.env.MOODR_DB_USER,
+        database: process.env.MOODR_DB_NAME,
+        password: process.env.MOODR_DB_PASS
+    });
+    const result = await con.execute('SELECT fn_Check_Password(?,?) AS passwordCorrect', [username, password]) as any;
+    return result[0][0].passwordCorrect === 1;
 }
 
 export default auth;
