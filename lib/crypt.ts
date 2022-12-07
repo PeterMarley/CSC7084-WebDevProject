@@ -12,17 +12,18 @@ export function encrypt(password: string, salt: string | undefined = undefined) 
     const saltedHash = CryptoJS.SHA256(theSalt + password); // 2
     const encrypted = theSalt! + saltedHash;
     
-    console.log('plain: ' + password);
-    console.log('encrypted: ' + encrypted.toString());  
+    // console.log('plain: ' + password);
+    // console.log('encrypted: ' + encrypted.toString());  
     return encrypted;  
 }
 
-export function check(cipher: string, plain:string) {
+export default function checkPasswordCorrect(cipher: string, plain:string) {
     const salt = cipher.substring(0,6);
     const theRest = cipher.substring(6);
     const e = encrypt(plain, salt);
-    console.log('enc password: ' + cipher);
-    console.log('new enc pswd: ' + e);
+    // console.log('enc password: ' + cipher);
+    // console.log('new enc pswd: ' + e);
+    return e === cipher;
 }
 
 /**

@@ -1,9 +1,10 @@
 import express from 'express';
 import mysql from 'mysql2/promise';
 import { createToken, verifyToken } from '../../../lib/jwtHelpers';
-// import sha256 from 'crypto-js/sha256';
-import {check, encrypt, generateSalt} from '../../../lib/crypt';
+import checkPasswordCorrect from '../../../lib/crypt';
 import LoginResponse from '../../../models/LoginResponse';
+import getConnection from '../../../lib/dbConnection';
+
 const auth = express.Router();
 
 /*
@@ -31,32 +32,28 @@ auth.post('/login', loginMiddleware);
 async function loginMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
 
     const { username, password } = req.body;
-    const passwordCorrect = await checkPassword(username, password);
-
+    const correct = checkPasswordCorrect(await queryUserPassword(username), password);
+ 
     let success: boolean = false;
-    let token: string | undefined;
+    let token: string | null = null;
 
-    if (passwordCorrect) {
+    if (correct) {
         success = true;
         token = createToken(username)
+    } else {
+        success = false;
     }
-    const x = encrypt(username);
-    check(x, username);
+
     res.set('Content-Type', 'application/json');
     res.send(new LoginResponse(success, token));
 }
 
-async function checkPassword(username: string, password: string): Promise<boolean> {
-    const con = await mysql.createConnection({
-        host: process.env.MOODR_DB_HOST,
-        user: process.env.MOODR_DB_USER,
-        database: process.env.MOODR_DB_NAME,
-        password: process.env.MOODR_DB_PASS
-    });
-    const result = await con.execute('SELECT fn_Check_Password(?,?) AS passwordCorrect', [username, password]) as any;
-    return result[0][0].passwordCorrect === 1;
+async function queryUserPassword(username: string): Promise<string> {
+    const con = await getConnection();
+    const result = await con.execute('SELECT password FROM tbl_user WHERE username=?', [username]) as any;
+    console.dir(result);
+    // return result[0][0].password;
+    return Promise.resolve('yo');
 }
-
-
 
 export default auth;

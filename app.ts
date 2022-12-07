@@ -48,7 +48,7 @@ app.use(authenticate);
  * 
  ******************************/
 
-app.use('/auth', authRouter); // auth api
+// app.use('/auth', authRouter); // auth api
 app.use('/authtest/', auth);
 /******************************
  * 

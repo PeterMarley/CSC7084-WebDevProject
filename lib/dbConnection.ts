@@ -1,20 +1,13 @@
-import mysql from 'mysql';
+import mysql2, { Connection } from 'mysql2';
 
-/**
- * 
- * @param {*} multipleStatements 
- * @returns mysqli.Connection
- */
-function getConnection(multipleStatements = false) {
-  const connection = mysql.createConnection({
+async function getConnection(): Promise<Connection> {
+  const con = await mysql2.createConnection({
     host: process.env.MOODR_DB_HOST,
     user: process.env.MOODR_DB_USER,
-    password: process.env.MOODR_DB_PASS,
     database: process.env.MOODR_DB_NAME,
-    multipleStatements: multipleStatements
+    password: process.env.MOODR_DB_PASS
   });
-  connection.connect();
-  return connection;
+  return con;
 }
 
 //module.exports = getConnection;
