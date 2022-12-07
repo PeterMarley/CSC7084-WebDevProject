@@ -1,5 +1,4 @@
-import express from 'express';
-import mysql from 'mysql2/promise';
+import express, {Request, Response, NextFunction} from 'express';
 import { createToken, verifyToken } from '../../../lib/jwtHelpers';
 import checkPasswordCorrect from '../../../lib/crypt';
 import LoginResponse from '../../../models/LoginResponse';
@@ -29,7 +28,7 @@ auth.post('/login', loginMiddleware);
 //     }
 // }
 
-async function loginMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
+async function loginMiddleware(req: Request, res: Response, next: NextFunction) {
 
     const { username, password } = req.body;
     const correct = checkPasswordCorrect(await queryUserPassword(username), password);
@@ -51,9 +50,8 @@ async function loginMiddleware(req: express.Request, res: express.Response, next
 async function queryUserPassword(username: string): Promise<string> {
     const con = await getConnection();
     const result = await con.execute('SELECT password FROM tbl_user WHERE username=?', [username]) as any;
-    console.dir(result);
-    // return result[0][0].password;
-    return Promise.resolve('yo');
+    con.end();
+    return result[0][0].password;
 }
 
 export default auth;

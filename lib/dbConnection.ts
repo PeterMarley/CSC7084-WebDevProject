@@ -1,6 +1,6 @@
-import mysql2, { Connection } from 'mysql2';
+import mysql2 from 'mysql2/promise';
 
-async function getConnection(): Promise<Connection> {
+async function getConnection(): Promise<mysql2.Connection> {
   const con = await mysql2.createConnection({
     host: process.env.MOODR_DB_HOST,
     user: process.env.MOODR_DB_USER,
