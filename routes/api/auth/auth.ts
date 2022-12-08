@@ -1,4 +1,4 @@
-import express, {Request, Response, NextFunction} from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import { createToken, verifyToken } from '../../../lib/jwtHelpers';
 import checkPasswordCorrect from '../../../lib/crypt';
 import LoginResponse from '../../../models/LoginResponse';
@@ -30,28 +30,43 @@ auth.post('/login', loginMiddleware);
 
 async function loginMiddleware(req: Request, res: Response, next: NextFunction) {
 
-    const { username, password } = req.body;
-    const correct = checkPasswordCorrect(await queryUserPassword(username), password);
- 
     let success: boolean = false;
-    let token: string | null = null;
+    let token: string | undefined;
+    let error: Array<string> = [];
+    const { username, password } = req.body;
 
-    if (correct) {
-        success = true;
-        token = createToken(username)
+    if (username && password) {
+        const { id, passwordFromDb, email } = await queryUserPassword(username);
+        const correct = checkPasswordCorrect(passwordFromDb, password);
+        if (correct) {
+            success = true;
+            token = createToken(id, username, email);
+        }
     } else {
-        success = false;
+        if (!username) error.push('no username provided');
+        if (!password) error.push('no password provided');
     }
-
     res.set('Content-Type', 'application/json');
-    res.send(new LoginResponse(success, token));
+    res.send(new LoginResponse(success, token, error));
 }
 
-async function queryUserPassword(username: string): Promise<string> {
+async function queryUserPassword(username: string): Promise<PasswordQueryResponse> {
     const con = await getConnection();
-    const result = await con.execute('SELECT password FROM tbl_user WHERE username=?', [username]) as any;
+    const result = await con.execute('SELECT user_id, password, email FROM tbl_user WHERE username=?', [username]) as any;
     con.end();
-    return result[0][0].password;
+    return new PasswordQueryResponse(result[0][0].user_id, result[0][0].password, result[0][0].email);
+}
+
+class PasswordQueryResponse {
+    id: number;
+    passwordFromDb: string;
+    email: string;
+
+    constructor(id: number, password: string, email: string) {
+        this.id = id;
+        this.passwordFromDb = password;
+        this.email = email;
+    }
 }
 
 export default auth;
