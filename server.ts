@@ -10,4 +10,8 @@ require('dotenv').config();
 
 expressApp.listen(port, () => {
   console.log('Moodr listening on port ' + port);
+	// for (const thing in process.env) {
+	// 	console.log(thing);
+		
+	// }
 });

@@ -2,9 +2,8 @@
 
 <% if (authed === false) { %>
 <%- include('forms/login_form.ejs'); %>
-Login was unsuccessful, sorry not sorry
 <% } else { %>
-Welcome <%= username %>, you are already logged in :)
+Welcome <%= username %>, you are successfully logged in :)
 <% } %>
 
 <%- include('partials/bottom.ejs') %>

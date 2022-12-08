@@ -28,9 +28,19 @@ import { nextTick } from 'process';
 import { NextFunction } from 'connect';
 
 app.use(express.static('public'));
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+// app.use(function cookiePassthrough(req: Request, res: Response, next: NextFunction) {
+// 	if (req.cookies && req.cookies.token) {
+// 		console.log('setting cookie in cookiePassthrough()');
+// 		res.cookie('token', req.cookies.token);
+// 	}
+// 	next();
+// });
 app.use(authenticate);
+
+
+
 
 /******************************
  * 
@@ -48,78 +58,76 @@ app.use('/auth', auth);
  ******************************/
 
 async function authenticatePost(username: string, password: string) {
-  const url = 'http://localhost:3000/auth/login';
-  const postBodyUrlForm = new URLSearchParams([['username', username], ['password', password]]);
-  const fetchResponse = await fetch(url, {
-    method: 'POST',
-    body: postBodyUrlForm,
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    }
-  });
-  const body = await fetchResponse.text();
-  return JSON.parse(body);
+	const url = 'http://localhost:3000/auth/login';
+	const postBodyUrlForm = new URLSearchParams([['username', username], ['password', password], ['requestor', process.env.REQUESTOR!]]);
+	const fetchResponse = await fetch(url, {
+		method: 'POST',
+		body: postBodyUrlForm,
+		headers: {
+			'Content-Type': 'application/x-www-form-urlencoded'
+		}
+	});
+	const body = await fetchResponse.text();
+	console.log('body' + body);
+	
+	return JSON.parse(body);
 }
 
-app.post('/logintest', async (req: Request, res: Response, next: NextFunction) => {
-  // const url = 'http://localhost:3000/auth/login';
-  // post to /auth/login to get token
-  console.dir(req.body);
-  if (!req.body || !req.body.username || !req.body.password) {
-    res.statusCode = 401;
-    res.send('invalid body');
-    return;
-  }
-  const { username, password } = req.body;
-  const authResponse = await authenticatePost(username, password);
-
-  if (authResponse.success && authResponse.token) {
-    res.cookie('token', authResponse.token);
-  }
-
-  // build express response
-  res.set('Content-Type', 'application/json');
-  
-  res.send('bruh');
-  // {
-  //   method: 'POST', // *GET, POST, PUT, DELETE, etc.
-  //   mode: 'same-origin', // no-cors, *cors, same-origin
-  //   cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-  //   credentials: 'same-origin', // include, *same-origin, omit
-  //   headers: {
-  //     'Content-Type': 'application/x-www-form-urlencoded'
-  //     // 'Content-Type': 'application/x-www-form-urlencoded',
-  //   },
-  //   // redirect: 'follow', // manual, *follow, error
-  //   referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-  //   body: JSON.stringify({
-  //     username: 'username',
-  //     password: 'password'
-  //   }) // body data type must match "Content-Type" header
-  // }
-  ;
-})
-
-app.get('/', (req: Request, res: Response) => {
-  res.render('welcome');
+app.get('/logout', (req: Request, res: Response) => {
+	req.cookies.token = undefined;
+	res.clearCookie('token');
+	res.statusCode = 200;
+	res.redirect('/');
 });
 
 app.get('/login', (req: Request, res: Response) => {
-  res.render('login');
+	// if (req.cookies && req.cookies.token) {
+	// 	console.log('setting cookie in /login');
+	// 	res.cookie('token', req.cookies.token);
+	// }
+	res.render('login');
+});
+
+app.post('/login' ,async (req: Request, res: Response, next: NextFunction) => {
+	// const url = 'http://localhost:3000/auth/login';
+	// post to /auth/login to get token
+	// console.dir(req.body);
+	debugger;
+	if (!req.body || !req.body.username || !req.body.password) {
+		res.statusCode = 401;
+		res.send('invalid login post body');
+		return;
+	} else {
+		res.statusCode = 200;
+	}
+
+	const { username, password } = req.body;
+	const authResponse = await authenticatePost(username, password);
+
+	// build response
+	if (authResponse.success && authResponse.token) {
+		res.cookie('token', authResponse.token);
+	}
+	//res.set('Content-Type', 'text/html');
+	res.redirect(req.body.redirect ? req.body.redirect : '/login');
+})
+
+app.get('/', (req: Request, res: Response) => {
+	res.render('welcome');
 });
 
 app.get('/register', (req: Request, res: Response) => {
-  res.render('register');
+	res.render('register');
 });
 
 app.get('/test', (req: Request, res: Response) => {
-  res.render('test');
+	res.render('test');
 });
 
 // 404 NOT FOUND fallback route
 app.get('*', (req: Request, res: Response) => {
-  res.statusCode = 404;
-  res.send('that aint no valid route SONNY JIM MBOY');
+	res.statusCode = 404;
+	res.send('that aint no valid route SONNY JIM MBOY: ' + req.originalUrl);
 });
 
 module.exports = app;
