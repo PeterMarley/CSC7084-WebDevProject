@@ -11,8 +11,9 @@ import cookieParser from 'cookie-parser';
 
 // app imports
 import authenticate from './routes/middleware/authenticate';
-import auth from './routes/api/auth/auth';							// auth API
-import main from './routes/routers/main';							// normal routing
+import authAPI from './routes/api/auth/authAPI';							// auth API
+import mainRouter from './routes/routers/mainRouter';							// normal routing
+import userRouter from './routes/routers/userRouter';
 
 // configure express
 const app = express();
@@ -31,7 +32,7 @@ app.use(authenticate);
  * 
  ******************************/
 
-app.use('/auth', auth);
+app.use('/auth', authAPI);
 
 /******************************
  * 
@@ -39,7 +40,8 @@ app.use('/auth', auth);
  * 
  ******************************/
 
-app.use('/', main);
+app.use('/', mainRouter);
+app.use('/', userRouter);
 
 // 404 NOT FOUND fallback route
 app.get('*', (req: Request, res: Response) => {

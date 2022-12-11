@@ -3,8 +3,10 @@ import { Request, Response, NextFunction } from 'express';
 
 function authenticate(req: Request, res: Response, next: NextFunction) {
 	let success = false;
-	if (req.cookies && req.cookies.token) {
+	console.log('req.cookies:');
+	console.log(req.cookies);
 
+	if (req.cookies && req.cookies.token) {
 		try {
 			const token: any = verifyToken(req.cookies.token);
 			if (Date.now() < token.expiry) {

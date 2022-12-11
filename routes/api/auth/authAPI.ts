@@ -7,7 +7,7 @@ import getConnection from '../../../lib/dbConnection';
 import PasswordQueryResponse from '../../../models/PasswordQueryResponse';
 import { encrypt } from '../../../lib/crypt';
 import { JwtPayload } from 'jsonwebtoken';
-const auth = express.Router();
+const authAPI = express.Router();
 
 /*
 API DESCRIPTION
@@ -16,8 +16,8 @@ API DESCRIPTION
 - require a website token perhaps to limit outside access?
         - this token can live in .env file/ environment variables
 */
-auth.use(express.urlencoded({ extended: false }));
-auth.use(authenticateRequestSource);
+authAPI.use(express.urlencoded({ extended: false }));
+authAPI.use(authenticateRequestSource);
 
 /*******************************************************
  * 
@@ -25,9 +25,9 @@ auth.use(authenticateRequestSource);
  * 
  *******************************************************/
 
-auth.post('/login', login);
-auth.post('/register', register);
-auth.delete('/deleteuser', deleteuser);
+authAPI.post('/login', login);
+authAPI.post('/register', register);
+authAPI.delete('/deleteuser', deleteuser);
 
 /*******************************************************
  * 
@@ -177,4 +177,4 @@ async function login(req: Request, res: Response, next: NextFunction) {
     res.status((error.length === 0) ? 200 : 401).json(new LoginResponse(success, token, error));
 }
 
-export default auth;
+export default authAPI;
