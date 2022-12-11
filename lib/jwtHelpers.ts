@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 /**
  * Create a jwt token
@@ -23,8 +23,8 @@ function createToken(id: number, username: string, email: string) {
  * @param {string} token 
  * @returns decrypted token as an object literal
  */
-function verifyToken(token: string): string | jwt.JwtPayload {
-  return jwt.verify(token, process.env.MOODR_TOKEN_SECRET!);
+function verifyToken(token: string): JwtPayload {
+  return jwt.verify(token, process.env.MOODR_TOKEN_SECRET!) as JwtPayload;
 }
 
 //module.exports = { createToken, verifyToken };

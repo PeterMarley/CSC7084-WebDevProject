@@ -9,7 +9,7 @@ function authenticate(req: Request, res: Response, next: NextFunction) {
 			const token: any = verifyToken(req.cookies.token);
 			if (Date.now() < token.expiry) {
 				success = true;
-				console.log('success is true!');
+				console.log('token authenticated!');
 				res.locals.username = token.username;
 			} else {
 				res.clearCookie('token');

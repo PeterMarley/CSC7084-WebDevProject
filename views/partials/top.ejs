@@ -19,9 +19,8 @@
       <% if (authed) { %>
       <div>
         Your account deets
-        <form method="GET" action="auth/logout?redirect=/" style="display: inline-block;">
+        <form method="GET" action="/logout" style="display: inline-block;">
           <input type="submit" name="action" value="Log Out" class="login-control">
-          <input type="text" name="redirect" value="/" hidden>
         </form>
       </div>
       <% } else { // if not authenticated%>

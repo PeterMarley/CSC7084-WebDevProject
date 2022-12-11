@@ -1,6 +1,4 @@
-const expressApp = require('./app.ts');
-const port  = 3000;
-
+import expressApp from './app';
 require('dotenv').config();
 
 /*
@@ -8,10 +6,8 @@ require('dotenv').config();
  * this file is ran, not app.js
  */
 
+const port  = 3000;
+
 expressApp.listen(port, () => {
   console.log('Moodr listening on port ' + port);
-	// for (const thing in process.env) {
-	// 	console.log(thing);
-		
-	// }
 });

@@ -19,10 +19,13 @@ export function encrypt(password: string, salt: string | undefined = undefined) 
 
 export default function checkPasswordCorrect(cipher: string, plain:string) {
     const salt = cipher.substring(0,6);
-    const theRest = cipher.substring(6);
     const e = encrypt(plain, salt);
-    // console.log('enc password: ' + cipher);
-    // console.log('new enc pswd: ' + e);
+    console.log('cipher: ' + cipher);
+    console.log('plain : ' + plain);
+    console.log('e     : ' + e);
+    
+    
+    
     return e === cipher;
 }
 
