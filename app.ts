@@ -10,10 +10,10 @@ import path from 'path';
 import cookieParser from 'cookie-parser';
 
 // app imports
-import authenticate from './routes/middleware/authenticate';
 import authAPI from './routes/api/auth/authAPI';							// auth API
 import mainRouter from './routes/routers/mainRouter';							// normal routing
 import userRouter from './routes/routers/userRouter';
+import authenticate from './routes/middleware/authenticate';
 
 // configure express
 const app = express();

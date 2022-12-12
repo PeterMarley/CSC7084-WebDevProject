@@ -46,10 +46,8 @@ function logoutGet(req: Request, res: Response) {
 async function deleteUser(req: Request, res: Response, next: NextFunction) {
     if (req.body.confirmation) {
         const r = await apiDeleteUser(req.body.confirmation, req.cookies.token);
-        // console.log(r);
-        // console.log(Object.keys(r));
         res.clearCookie('token');
-        res.redirect('/');
+        res.redirect(302, '/');
     }
 }
 
@@ -63,29 +61,22 @@ async function registerPost(req: Request, res: Response, next: NextFunction) {
 }
 
 async function loginPost(req: Request, res: Response) {
-    // const url = 'http://localhost:3000/auth/login';
-    // post to /auth/login to get token
-    // console.dir(req.body);
     if (!req.body || !req.body.username || !req.body.password) {
         res.statusCode = 401;
         res.send('invalid login post body');
         return;
     } else {
         res.statusCode = 200;
-        console.log('---------------------------\nUSERNAME: ' + req.body.username + '\nPASSWORD: ' + req.body.password + '\n---------------------------');
-
     }
 
     const { username, password } = req.body;
     const authResponse = await apiCheckPassword(username, password);
 
-    // console.log('---------------------------\nauthResponse: ' + authResponse + '\n---------------------------'); 
 
     // build response
     if (authResponse.success && authResponse.token) {
         res.cookie('token', authResponse.token);
     }
-    //res.set('Content-Type', 'text/html');
     res.redirect(req.body.redirect ? req.body.redirect : '/login');
 }
 
@@ -107,7 +98,6 @@ async function apiDeleteUser(confirmation: boolean, token: string) {
         }
     });
     const body = JSON.parse(await fetchResponse.text());
-    // console.log('body: ' + body);
     return body;
 }
 
@@ -122,7 +112,6 @@ async function apiRegisterUser(username: string, email: string, password: string
         }
     });
     const body = JSON.parse(await fetchResponse.text()).success;
-    // console.log('body: ' + body);
     return body;
 }
 
@@ -137,7 +126,6 @@ async function apiCheckPassword(username: string, password: string) {
         }
     });
     const body = JSON.parse(await fetchResponse.text());
-    // console.log('body: ' + body);
     return body;
 }
 

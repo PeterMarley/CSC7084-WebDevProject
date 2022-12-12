@@ -38,24 +38,18 @@ authAPI.delete('/deleteuser', deleteuser);
 async function deleteuser(req: Request, res: Response, next: NextFunction) {
     let success = false;
     let error: string | undefined;
-    if (req.body && req.body.confirmation) {
+    if (req.body && req.body.confirmation && res.locals.authed) {
         try {
             const token: JwtPayload = verifyToken(req.cookies.token)
-            console.log(token);
-            console.log(Object.keys(token));
-            console.log(token.username);
-
             const con = await getConnection();
-            con.execute('DELETE FROM tbl_user WHERE username=? AND user_id=?', [token.username, token.id])
+            con.execute('DELETE FROM tbl_user WHERE username=? AND user_id=? AND email=?', [token.username, token.id, token.email]);
             con.end();
             success = true;
         } catch (err: any) {
             error = err.message as string;
         }
     }
-
     res.send(new DeleteAccountResponse(success, error));
-    //con.execute('DELETE FROM tbl_user WHERE username=?', [token.username]);
 }
 
 class DeleteAccountResponse {
@@ -123,8 +117,7 @@ async function register(req: Request, res: Response, next: NextFunction) {
  * Express Middleware: Allows only authorized calls to this API.
  */
 function authenticateRequestSource(req: Request, res: Response, next: NextFunction) {
-    const authorizationHeader = req.get('Authorization');
-    if (authorizationHeader !== 'Bearer ' + process.env.REQUESTOR) {
+    if (req.get('Authorization') !== 'Bearer ' + process.env.REQUESTOR) {
         res.statusCode = 401;
         res.send({ error: 'You are not authorized.' })
         return;
@@ -145,35 +138,34 @@ async function login(req: Request, res: Response, next: NextFunction) {
     let token: string | undefined;
     let error: Array<string> = [];
     const { username, password: passwordFromForm } = req.body;
-
-    console.log('un: ' + username + ' pw: ' + passwordFromForm);
-
     if (username && passwordFromForm) {
 
         // query db for user data
         const con = await getConnection();
         const result = await con.execute('SELECT user_id, password, email FROM tbl_user WHERE username=?', [username]) as any;
         con.end();
-        const { user_id, password: passwordFromDb, email } = result[0][0];
 
-        // check if passwords match by encrypting form password with db passwords salt and checking equality
-        const correct = checkPasswordCorrect(passwordFromDb, passwordFromForm);
-        if (correct) {
-            success = true;
-            token = createToken(user_id, username, email);
+        if (result[0][0] === undefined) {
+            error.push('user does not exist');
+        } else {
+            // destructure data from DB resultset
+            const { user_id, password: passwordFromDb, email } = result[0][0];
+
+            // check if passwords match by encrypting form password with db passwords salt and checking equality
+            if (checkPasswordCorrect(passwordFromDb, passwordFromForm)) {
+                success = true;
+                token = createToken(user_id, username, email);
+            }
         }
+
     } else {
         // validate post body properties
         if (!username) error.push('no username provided');
         if (!passwordFromForm) error.push('no password provided');
     }
 
-    // prepare response
+    // prepare and send json response
     res.set('Content-Type', 'application/json');
-
-    console.log('---------------------------\nAUTH/LOGIN/ login() - \nSUCCESS: ' + success + '\nTOKEN: ' + token + '\nERROR: ' + error + '\n---------------------------');
-
-    // send json response
     res.status((error.length === 0) ? 200 : 401).json(new LoginResponse(success, token, error));
 }
 
