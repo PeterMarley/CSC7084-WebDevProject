@@ -1,6 +1,19 @@
 /****************************
-  LAYOUT
+  FONTS
 ****************************/
+
+@font-face {
+  font-family: opensans;
+  src: url("/fonts/OpenSans-Regular.ttf");
+}
+
+/****************************
+  BASIC AND NORMALIZE
+****************************/
+
+* {
+  font-family: opensans;
+}
 
 body {
   margin: 0;
@@ -10,39 +23,77 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/****************************
+ HEADER
+****************************/
+
 #header {
-  background-color: darkkhaki;
+  background-color: rgb(88, 101, 242);
   padding: 10px;
   display: flex;
+  align-items: center;
+  border-bottom: 2px solid rgb(67, 81, 240);
+  /* box-shadow: inset 0px -20px 25px -20px white; */
 }
 
 #header>div:not(:first-child) {
-  background-color: grey;
+  background-color: rgb(199, 199, 199);
   margin-left: 10px;
+  border-radius: 15px;
+  border: 3px solid grey;
+  height: 2rem;
+  padding: 10px;
+  transition: background-color 0.5s ease;
+}
+
+#header>div:not(:first-child):hover {
+  background-color: rgb(138, 137, 137);
 }
 
 #header>div:last-child {
   margin-left: auto;
 }
 
+#header>div {
+  display: flex;
+  align-items: center;
+}
+
+/****************************
+ NAV
+****************************/
+
+nav {
+  /* display: none; */
+}
+
+/****************************
+  BODY
+****************************/
+
 #body {
-  background-color: green;
+  background-color: white;
   display: flex;
   flex-direction: row;
   flex-grow: 1;
 }
 
-#body>div:first-child {
+nav {
+  display: none;
   width: 20%;
   background-color: bisque;
-  margin: 10px;
+  margin: 10px 0px 10px 10px;
 }
 
-#body>div:last-child {
+#body>div {
   background-color: bisque;
   flex-grow: 1;
-  margin: 10px;
+  margin: 0px;
 }
+
+/****************************
+  FOOTER
+****************************/
 
 #footer {
   background-color: cornflowerblue;
@@ -57,4 +108,41 @@ body {
 .login-control {
   border: 0px; 
   background: none;
+}
+
+/****************************
+  ENTRY
+****************************/
+
+.mood-day {
+  background-color: goldenrod;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.mood-day-entry {
+  background-color: brown;
+  margin: 5px 0px;
+  padding: 10px;
+}
+
+.mood-day-entry>div {
+  margin: 10px 0px;
+}
+
+.mood-day-entry>div:first-child {
+  margin-top: 0px;
+}
+
+.mood-day-entry>div:last-child {
+  margin-bottom: 0px;
+}
+
+.mood-day-entry>div>span:first-child {
+  font-weight: bold;
+}
+
+.mood-day-entry>div>span:last-child {
+  font-size: 0.75em;
 }
