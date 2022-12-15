@@ -42,6 +42,9 @@ async function deleteuser(req: Request, res: Response, next: NextFunction) {
         try {
             const token: JwtPayload = verifyToken(req.cookies.token)
             const con = await getConnection();
+            con.execute('DELETE FROM tbl_activity WHERE user_id=?', [token.id]);
+            con.execute('DELETE FROM tbl_activity_group WHERE user_id=?', [token.id]);
+            con.execute('DELETE FROM tbl_mood WHERE user_id=?', [token.id]);
             con.execute('DELETE FROM tbl_user WHERE username=? AND user_id=? AND email=?', [token.username, token.id, token.email]);
             con.end();
             success = true;
@@ -58,6 +61,46 @@ class DeleteAccountResponse {
     constructor(success: boolean, error: string | undefined = undefined) {
         this.success = success;
         if (error) this.error = error;
+    }
+}
+
+const SQL = {
+    register: {
+        insertUser: 'INSERT INTO tbl_user (username, password, email) VALUES (?,?,?)',
+        insertMoods: 
+            `INSERT INTO tbl_mood
+            (
+                tbl_mood.name, 
+                tbl_mood.order, 
+                tbl_mood.icon_image_id, 
+                tbl_mood.user_id
+            )
+            VALUES 
+            ('Awful', 1, 1, ?),
+            ('Bad', 2, 2, ?),
+            ('Ok', 3, 3, ?),
+            ('Good', 4, 4, ?),
+            ('Great', 5, 5, ?)`,
+        insertActivityGroups: 
+            `INSERT INTO tbl_activity_group
+            (
+                tbl_activity_group.name,
+                tbl_activity_group.icon_image_id,
+                tbl_activity_group.user_id
+            )
+            VALUES
+            ('Default', 1, ?)`,
+        insertDefaultActivities:
+            `INSERT INTO tbl_activity
+            (
+                tbl_activity.name,
+                tbl_activity.icon_image_id,
+                tbl_activity.activity_group_id,
+                tbl_activity.user_id
+            )
+            VALUES
+            ('Work',1,?,?),
+            ('Exersize',2,?,?)`  
     }
 }
 
@@ -102,7 +145,18 @@ async function register(req: Request, res: Response, next: NextFunction) {
 
     con = await getConnection();
     try {
-        const response = await con.execute('INSERT INTO tbl_user (username, password, email) VALUES (?,?,?)', [username, encrypt(password), email]) as any;
+
+        const insertUserResult = await con.execute(SQL.register.insertUser, [username, encrypt(password), email]) as any;
+        const userId: number = insertUserResult.at(0).insertId;
+
+        const insertMoodsResult = await con.execute(SQL.register.insertMoods, Array(5).fill(userId)) as any;
+
+        const insertActivityGroupsResult = await con.execute(SQL.register.insertActivityGroups, [userId]) as any;
+        const activityGroupId: number = insertActivityGroupsResult.at(0).insertId;
+
+        const insertDefaultActivitiesResult = await con.execute(SQL.register.insertDefaultActivities, [activityGroupId, userId, activityGroupId, userId]) as any;
+
+        
         res.status(200).send(new RegistrationResponse(true));
     } catch (err: any) {
         res.status(500).send(new RegistrationResponse(false, ['something went wrong registering you?! ' + err.message]));

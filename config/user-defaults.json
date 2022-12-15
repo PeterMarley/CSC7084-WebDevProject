@@ -1,0 +1,29 @@
+{
+    "moods": [
+        {
+            "mood": "Awful",
+            "order": 1,
+            "icon_image_id": 1
+        },
+        {
+            "mood": "Bad",
+            "order": 2,
+            "icon_image_id": 2
+        },
+        {
+            "mood": "Ok",
+            "order": 3,
+            "icon_image_id": 3
+        },
+        {
+            "mood": "Good",
+            "order": 4,
+            "icon_image_id": 4
+        },
+        {
+            "mood": "Great",
+            "order": 5,
+            "icon_image_id": 5
+        }
+    ]
+}

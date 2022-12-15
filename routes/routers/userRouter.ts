@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import fetch from 'node-fetch';
+import RegistrationResponse from '../../models/RegistrationResponse';
 const userRouter = express.Router();
 
 // log out
@@ -52,10 +53,11 @@ async function deleteUser(req: Request, res: Response, next: NextFunction) {
 }
 
 async function registerPost(req: Request, res: Response, next: NextFunction) {
-    if (await apiRegisterUser(req.body.username, req.body.email, req.body.password)) {
+    const response: RegistrationResponse = await apiRegisterUser(req.body.username, req.body.email, req.body.password);
+    if (response.success) {
         next();
     } else {
-        res.send('registration failed');
+        res.send(response.error);
         next('route');
     }
 }
@@ -111,7 +113,7 @@ async function apiRegisterUser(username: string, email: string, password: string
             'Authorization': 'Bearer ' + process.env.REQUESTOR,
         }
     });
-    const body = JSON.parse(await fetchResponse.text()).success;
+    const body = JSON.parse(await fetchResponse.text());
     return body;
 }
 

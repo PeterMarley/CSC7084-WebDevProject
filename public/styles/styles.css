@@ -89,6 +89,8 @@ nav {
   background-color: bisque;
   flex-grow: 1;
   margin: 0px;
+  display: flex;
+  justify-content: center;
 }
 
 /****************************
@@ -119,6 +121,10 @@ nav {
   margin: 10px;
   padding: 10px;
   border-radius: 5px;
+  width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-self: start;
 }
 
 .mood-day-entry {
@@ -137,6 +143,11 @@ nav {
 
 .mood-day-entry>div:last-child {
   margin-bottom: 0px;
+}
+
+.mood-day-entry>div:nth-child(3) {
+  display: flex;
+  justify-content: center;
 }
 
 .mood-day-entry>div>span:first-child {
