@@ -11,6 +11,7 @@ import cookieParser from 'cookie-parser';
 
 // app imports
 import authAPI from './routes/api/auth/authAPI';							// auth API
+import moodAPI from './routes/api/auth/moodAPI';							// mood API
 import mainRouter from './routes/routers/mainRouter';							// normal routing
 import userRouter from './routes/routers/userRouter';
 import authenticate from './routes/middleware/authenticate';
@@ -33,6 +34,7 @@ app.use(authenticate);
  ******************************/
 
 app.use('/auth', authAPI);
+app.use('/mood', moodAPI);
 
 /******************************
  * 

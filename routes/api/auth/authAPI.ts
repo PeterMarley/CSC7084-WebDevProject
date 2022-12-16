@@ -7,6 +7,7 @@ import getConnection from '../../../lib/dbConnection';
 import PasswordQueryResponse from '../../../models/PasswordQueryResponse';
 import { encrypt } from '../../../lib/crypt';
 import { JwtPayload } from 'jsonwebtoken';
+import authenticateRequestSource from '../../../lib/authenticateRequestSource';
 const authAPI = express.Router();
 
 /*
@@ -167,17 +168,7 @@ async function register(req: Request, res: Response, next: NextFunction) {
     next();
 }
 
-/**
- * Express Middleware: Allows only authorized calls to this API.
- */
-function authenticateRequestSource(req: Request, res: Response, next: NextFunction) {
-    if (req.get('Authorization') !== 'Bearer ' + process.env.REQUESTOR) {
-        res.statusCode = 401;
-        res.send({ error: 'You are not authorized.' })
-        return;
-    }
-    next();
-}
+
 
 /**
  * Express Middleware: Checks a username and password provided in post body against DB and if correct, sets a JWT token into a cookie on users

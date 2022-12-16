@@ -1,5 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
-import fetch from 'node-fetch';
+import fetch, { RequestInit, HeaderInit } from 'node-fetch';
 import RegistrationResponse from '../../models/RegistrationResponse';
 const userRouter = express.Router();
 
@@ -46,18 +46,27 @@ function logoutGet(req: Request, res: Response) {
 
 async function deleteUser(req: Request, res: Response, next: NextFunction) {
     if (req.body.confirmation) {
-        const r = await apiDeleteUser(req.body.confirmation, req.cookies.token);
+        await apiCall(
+            'DELETE',
+            'http://localhost:3000/auth/deleteuser',
+            new URLSearchParams([['confirmation', req.body.confirmation ? 'true' : 'false']]),
+            req.cookies.token
+        );
         res.clearCookie('token');
         res.redirect(302, '/');
     }
 }
 
 async function registerPost(req: Request, res: Response, next: NextFunction) {
-    const response: RegistrationResponse = await apiRegisterUser(req.body.username, req.body.email, req.body.password);
-    if (response.success) {
+    const registrationResponse: RegistrationResponse = await apiCall(
+        'POST', 
+        'http://localhost:3000/auth/register', 
+        new URLSearchParams([['username', req.body.username], ['email', req.body.email], ['password', req.body.password]])
+    );
+    if (registrationResponse.success) {
         next();
     } else {
-        res.send(response.error);
+        res.send(registrationResponse.error); //TODO return an actual page
         next('route');
     }
 }
@@ -72,7 +81,12 @@ async function loginPost(req: Request, res: Response) {
     }
 
     const { username, password } = req.body;
-    const authResponse = await apiCheckPassword(username, password);
+    //const authResponse = await apiCheckPassword(username, password);
+    const authResponse = await apiCall(
+        'POST',
+        'http://localhost:3000/auth/login',
+        new URLSearchParams([['username', username], ['password', password]])
+    );
 
 
     // build response
@@ -88,47 +102,17 @@ async function loginPost(req: Request, res: Response) {
  * 
  *******************************************************/
 
-async function apiDeleteUser(confirmation: boolean, token: string) {
-    const url = 'http://localhost:3000/auth/deleteuser';
+async function apiCall(httpMethod: 'POST' | 'GET' | 'DELETE', url: string, body: URLSearchParams, token: string | undefined = undefined) {
     const fetchResponse = await fetch(url, {
-        method: 'DELETE',
-        body: new URLSearchParams([['confirmation', confirmation ? 'true' : 'false']]),
+        method: httpMethod,
+        body,
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + process.env.REQUESTOR,
-            'Cookie': 'token=' + token,
+            ...(token && { 'Cookie': 'token=' + token })
         }
     });
-    const body = JSON.parse(await fetchResponse.text());
-    return body;
-}
-
-async function apiRegisterUser(username: string, email: string, password: string) {
-    const url = 'http://localhost:3000/auth/register';
-    const fetchResponse = await fetch(url, {
-        method: 'POST',
-        body: new URLSearchParams([['username', username], ['email', email], ['password', password]]),
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Bearer ' + process.env.REQUESTOR,
-        }
-    });
-    const body = JSON.parse(await fetchResponse.text());
-    return body;
-}
-
-async function apiCheckPassword(username: string, password: string) {
-    const url = 'http://localhost:3000/auth/login';
-    const fetchResponse = await fetch(url, {
-        method: 'POST',
-        body: new URLSearchParams([['username', username], ['password', password]]),
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Bearer ' + process.env.REQUESTOR,
-        }
-    });
-    const body = JSON.parse(await fetchResponse.text());
-    return body;
+    return JSON.parse(await fetchResponse.text());
 }
 
 export default userRouter;

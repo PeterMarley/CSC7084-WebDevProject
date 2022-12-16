@@ -18,4 +18,10 @@ mainRouter.get('/test', (req: Request, res: Response) => {
     res.render('test');
 });
 
+mainRouter.get('/entry', (req: Request, res: Response) => {
+    
+    
+    res.render('mood-entry');
+})
+
 export default mainRouter;
