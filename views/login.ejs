@@ -1,5 +1,8 @@
 <%- include('partials/top.ejs') %>
 
+Authed:
+<%- authed %>
+
 <% if (authed === false) { %>
 <%- include('forms/login_form.ejs'); %>
 <% } else { %>

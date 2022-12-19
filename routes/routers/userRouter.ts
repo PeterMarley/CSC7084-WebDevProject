@@ -1,6 +1,8 @@
 import express, { Request, Response, NextFunction } from 'express';
 import fetch, { RequestInit, HeaderInit } from 'node-fetch';
+import app from '../../app';
 import RegistrationResponse from '../../models/RegistrationResponse';
+import authenticate from '../middleware/authenticate';
 const userRouter = express.Router();
 
 // log out
@@ -48,7 +50,7 @@ async function deleteUser(req: Request, res: Response, next: NextFunction) {
     if (req.body.confirmation) {
         await apiCall(
             'DELETE',
-            'http://localhost:3000/auth/deleteuser',
+            'http://localhost:3000/api/auth/deleteuser',
             new URLSearchParams([['confirmation', req.body.confirmation ? 'true' : 'false']]),
             req.cookies.token
         );
@@ -60,7 +62,7 @@ async function deleteUser(req: Request, res: Response, next: NextFunction) {
 async function registerPost(req: Request, res: Response, next: NextFunction) {
     const registrationResponse: RegistrationResponse = await apiCall(
         'POST', 
-        'http://localhost:3000/auth/register', 
+        'http://localhost:3000/api/auth/register', 
         new URLSearchParams([['username', req.body.username], ['email', req.body.email], ['password', req.body.password]])
     );
     if (registrationResponse.success) {
@@ -71,29 +73,27 @@ async function registerPost(req: Request, res: Response, next: NextFunction) {
     }
 }
 
-async function loginPost(req: Request, res: Response) {
+async function loginPost(req: Request, res: Response, next: NextFunction) {
     if (!req.body || !req.body.username || !req.body.password) {
         res.statusCode = 401;
         res.send('invalid login post body');
         return;
-    } else {
-        res.statusCode = 200;
     }
 
     const { username, password } = req.body;
     //const authResponse = await apiCheckPassword(username, password);
     const authResponse = await apiCall(
         'POST',
-        'http://localhost:3000/auth/login',
+        'http://localhost:3000/api/auth/login',
         new URLSearchParams([['username', username], ['password', password]])
     );
-
 
     // build response
     if (authResponse.success && authResponse.token) {
         res.cookie('token', authResponse.token);
     }
-    res.redirect(req.body.redirect ? req.body.redirect : '/login');
+
+		res.redirect(req.body.redirect ? req.body.redirect : '/');
 }
 
 /*******************************************************

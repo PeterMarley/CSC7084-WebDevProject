@@ -14,7 +14,10 @@ import authAPI from './routes/api/auth/authAPI';							// auth API
 import moodAPI from './routes/api/auth/moodAPI';							// mood API
 import mainRouter from './routes/routers/mainRouter';							// normal routing
 import userRouter from './routes/routers/userRouter';
+import entryRouter from './routes/routers/entryRouter';
+
 import authenticate from './routes/middleware/authenticate';
+
 
 // configure express
 const app = express();
@@ -33,8 +36,10 @@ app.use(authenticate);
  * 
  ******************************/
 
-app.use('/auth', authAPI);
-app.use('/mood', moodAPI);
+const API_ROOT = '/api';
+
+app.use(API_ROOT + '/auth', authAPI);
+app.use(API_ROOT + '/mood', moodAPI);
 
 /******************************
  * 
@@ -44,6 +49,7 @@ app.use('/mood', moodAPI);
 
 app.use('/', mainRouter);
 app.use('/', userRouter);
+app.use('/entry', entryRouter);
 
 // 404 NOT FOUND fallback route
 app.get('*', (req: Request, res: Response) => {
