@@ -79,28 +79,22 @@ moodAPI.get('/entry', async (req: Request, res: Response) => {
 		});
 	});
 
-	// console.log(activities);
+	console.log(activities);
 	
 	// add all activities to entry objects
-	activities.forEach(e => {
-		let x = entriesMap.get(e.entry_id);
-		// console.log(x);
+	
+	// activities.forEach(e => {
+	// 	let x = entriesMap.get(e.entry_id);
+	// 	// console.log(x);
 		
-		x?.activities.push({
-			name: e.activityName,
-			icon: {
-				url: e.activityIconUrl,
-				altText: e.activityIconAltText
-			},
-			group: {
-				name: e.activityGroup,
-				icon: {
-					url: e.activityGroupIconUrl,
-					altText: e.activityGroupIconAltText
-				}
-			}
-		})
-	});
+	// 	x?.activities.push({
+	// 		name: e.activityName,
+	// 		icon: {
+	// 			url: e.activityIconUrl,
+	// 			altText: e.activityIconAltText
+	// 		}
+	// 	})
+	// });
 
 	res.json(Object.fromEntries(entriesMap));
 })
@@ -110,18 +104,18 @@ interface entry {
 	entry_id: number,
 	entry_notes: string,
 	images: image[]
-	activities: activity[]
+	activities: activityGroup[]
 }
 
 interface activity {
 	name: string,
-	icon: image,
-	group: activityGroup
+	icon: image
 }
 
 interface activityGroup {
 	name: string,
-	icon: image
+	icon: image,
+	activities: activity[]
 }
 
 interface image {
