@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
+import fetch from 'node-fetch';
 import authenticate from '../middleware/authenticate';
 const entryRouter = express.Router();
 
@@ -10,7 +11,16 @@ entryRouter.use(authenticate);
  * 
  *******************************************************/
 
-entryRouter.get('/list', (req: Request, res: Response) => {
+entryRouter.get('/list', async (req: Request, res: Response) => {
+    const fetchResponse = await fetch('http://localhost:300/api/mood/entry/94', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': 'Bearer ' + process.env.REQUESTOR,
+            ...(token && { 'Cookie': 'token=' + token })
+        }
+    });
+    return JSON.parse(await fetchResponse.text());
     res.render('mood-entry-list');
 })
 

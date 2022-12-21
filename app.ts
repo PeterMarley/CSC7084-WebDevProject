@@ -52,7 +52,7 @@ app.use('/', userRouter);
 app.use('/entry', entryRouter);
 
 // 404 NOT FOUND fallback route
-app.get('*', (req: Request, res: Response) => {
+app.all('*', (req: Request, res: Response) => {
 	res.statusCode = 404;
 	res.send('that aint no valid route SONNY JIM MBOY: ' + req.originalUrl);
 });

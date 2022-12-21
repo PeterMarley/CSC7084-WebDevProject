@@ -1,12 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { createToken, verifyToken } from '../../../lib/jwtHelpers';
-import checkPasswordCorrect from '../../../lib/crypt';
-import LoginResponse from '../../../models/LoginResponse';
-import RegistrationResponse from '../../../models/RegistrationResponse';
+import { verifyToken } from '../../../lib/jwtHelpers';
 import getConnection from '../../../lib/dbConnection';
-import PasswordQueryResponse from '../../../models/PasswordQueryResponse';
-import { encrypt } from '../../../lib/crypt';
-import { JwtPayload } from 'jsonwebtoken';
 import mysql from 'mysql2';
 import authenticateRequestSource from '../../../lib/authenticateRequestSource';
 
@@ -15,68 +9,83 @@ const moodAPI = express.Router();
 moodAPI.use(express.urlencoded({ extended: false }));
 moodAPI.use(authenticateRequestSource);
 
-moodAPI.get('/entry', getEntries)
+/*******************************************************
+ * 
+ * ROUTES
+ * 
+ *******************************************************/
+
+const ENTRY = '/entry/';
+moodAPI.get(ENTRY + '*', getEntries)
+
+/*******************************************************
+ * 
+ * MIDDLEWEAR
+ * 
+ *******************************************************/
 
 async function getEntries(req: Request, res: Response) {
 
-	let token;
-	try {
-		token = verifyToken(req.cookies.token);
-	} catch {
-		res.status(401).send('token verification failed!');
-		return;
-	}
+	const userId = req.url.replace(ENTRY, '');
 
+	// get database data & close connection quickly
 	const con = await getConnection();
-
 	let map = new Map<number, Entry>();
 
-	// get database data
-	const entries = (await con.execute(SQL.entry.entries, [token.id])).at(0) as Array<any>;
+	const entries = (await con.execute(SQL.entry.entries, [userId])).at(0) as Array<any>;
 	const entryIds = entries.map(e => e.entryId);
 
 	if (entryIds.length === 0) {
-		res.json({entries:[]});
+		res.json({ entries: [] });
 		return;
 	}
 
 	const activities = (await con.execute(mysql.format(SQL.entry.activity, [entryIds]))).at(0) as Array<any>;
 	const entryImages = (await con.execute(mysql.format(SQL.entry.images, [entryIds]))).at(0) as Array<any>;
-	await con.end();
-	
+	con.end();
+
 	// process data
-	entries.forEach(e => map.set(e.entryId, {
-		entryId: e.entryId,
-		mood: {
-			name: e.mood,
+	try {
+		entries.forEach(e => map.set(e.entryId, {
+			entryId: e.entryId,
+			mood: {
+				name: e.mood,
+				image: {
+					url: e.iconUrl,
+					altText: e.iconAltText
+				}
+			},
+			notes: e.entryNotes,
+			activities: [],
+			images: []
+		}));
+		activities.forEach(e => map.get(e.entryId)?.activities.push({
+			name: e.activityName,
 			image: {
-				url: e.iconUrl,
-				altText: e.iconAltText
+				url: e.activityIconUrl,
+				altText: e.activityIconAltText
+			},
+			group: {
+				name: e.activityGroup,
+				image: {
+					url: e.activityGroupIconUrl,
+					altText: e.activityGroupIconAltText
+				}
 			}
-		},
-		notes: e.entryNotes,
-		activities: [],
-		images: []
-	}));
-	activities.forEach(e => map.get(e.entryId)?.activities.push({
-		name: e.activityName,
-		image: {
-			url: e.activityIconUrl,
-			altText: e.activityIconAltText
-		},
-		group: {
-			name:e.activityGroup,
-			image: {
-				url: e.activityGroupIconUrl,
-				altText: e.activityGroupIconAltText
-			}
-		}
-	}));
-	entryImages.forEach(e => map.get(e.entryId)?.images.push({ url: e.url, altText: e.altText }));
+		}));
+		entryImages.forEach(e => map.get(e.entryId)?.images.push({ 
+			url: e.url, 
+			altText: e.altText 
+		}));
+	} catch (err: any) {
+		res.status(500).json({ error: "server ded. rip." });
+		return;
+	}
 
 	res.json({ entries: Array.from(map.values()) });
 
 }
+
 interface Entry {
 	entryId: number;
 	mood: Mood,
@@ -121,4 +130,5 @@ const SQL = {
 		images: 'SELECT url, alt_text as altText, entry_id as entryId FROM tbl_entry_images WHERE entry_id IN (?)'
 	}
 }
+
 export default moodAPI;
