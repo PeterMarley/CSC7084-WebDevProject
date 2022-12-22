@@ -11,16 +11,17 @@ entryRouter.use(authenticate);
  * 
  *******************************************************/
 
-entryRouter.get('/list', async (req: Request, res: Response) => {
-    const fetchResponse = await fetch('http://localhost:300/api/mood/entry/94', {
+entryRouter.get('/list', async (req: Request, res: Response, next: NextFunction) => {
+    const fetchResponse = await fetch('http://localhost:3000/api/mood/entry/94', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + process.env.REQUESTOR,
-            ...(token && { 'Cookie': 'token=' + token })
         }
     });
-    return JSON.parse(await fetchResponse.text());
+    const body = await fetchResponse.text();
+    const json = JSON.parse(body);
+    res.locals.entries = json.entries;
     res.render('mood-entry-list');
 })
 

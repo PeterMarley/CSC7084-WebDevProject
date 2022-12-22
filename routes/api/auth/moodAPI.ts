@@ -48,6 +48,15 @@ async function getEntries(req: Request, res: Response) {
 	try {
 		entries.forEach(e => map.set(e.entryId, {
 			entryId: e.entryId,
+			datetime: {
+				dayOfWeek: e.timestamp.getDay(),
+				time: e.timestamp.toLocaleTimeString('en-US'),
+				date: {
+					day: e.timestamp.getDate(),
+					month: e.timestamp.getMonth() + 1,
+					year: e.timestamp.getFullYear(),
+				}
+			},
 			mood: {
 				name: e.mood,
 				image: {
@@ -73,9 +82,9 @@ async function getEntries(req: Request, res: Response) {
 				}
 			}
 		}));
-		entryImages.forEach(e => map.get(e.entryId)?.images.push({ 
-			url: e.url, 
-			altText: e.altText 
+		entryImages.forEach(e => map.get(e.entryId)?.images.push({
+			url: e.url,
+			altText: e.altText
 		}));
 	} catch (err: any) {
 		res.status(500).json({ error: "server ded. rip." });
@@ -83,15 +92,23 @@ async function getEntries(req: Request, res: Response) {
 	}
 
 	res.json({ entries: Array.from(map.values()) });
-
 }
 
 interface Entry {
-	entryId: number;
+	entryId: number,
+	datetime: {
+		dayOfWeek: number,
+		time: string,
+		date: {
+			day: number,
+			month: number,
+			year: number,
+		}
+	},
 	mood: Mood,
 	notes: string,
-	images: Image[]
-	activities: any[]
+	images: Image[],
+	activities: any[],
 }
 
 interface Image {
@@ -107,7 +124,7 @@ interface Mood {
 const SQL = {
 	entry: {
 		entries:
-			`SELECT e.entry_id as entryId, e.notes as entryNotes, m.name as mood, mi.url as iconUrl, mi.alt_text as iconAltText FROM tbl_entry e
+			`SELECT e.entry_id as entryId,e.timestamp as timestamp, e.notes as entryNotes, m.name as mood, mi.url as iconUrl, mi.alt_text as iconAltText FROM tbl_entry e
 			INNER JOIN tbl_mood m ON m.mood_id = e.mood_id
 			INNER JOIN tbl_mood_image mi ON mi.mood_image_id = m.icon_image_id
 			WHERE e.user_id = ?

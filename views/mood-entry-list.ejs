@@ -1,34 +1,52 @@
 <%- include('partials/top.ejs') %>
 
-<div class="mood-day">
+<% 
+const days = new Map();
+days.set(0,'Monday');
+days.set(1,'Tuesday');
+days.set(2,'Wednesday');
+days.set(3,'Thursday');
+days.set(4,'Friday');
+days.set(5,'Saturday');
+days.set(6,'Sunday');
+ 
+for (const entry of entries) {
+   
+    const { entryId, datetime, mood, notes, activities, images } = entry;
+    // console.log(entryId);
+    // console.dir(datetime);
+    // console.log(mood);
+    // console.log(notes);
+    // console.log(activities);
+    // console.log(images);
+    // console.log('----');
+%>
+
+    <div class="mood-day">
     <div>
-        Monday, 13/12/2022
+        <%- days.get(datetime.dayOfWeek) %>, <%- datetime.date.day %>/<%- datetime.date.month %>/<%- datetime.date.year %>
     </div>
     <div class="mood-day-entry">
-        <div>
-            <span>Good</span>
-            <span>(23:13)</span>
+        <div class="mood-day-entry--mood">
+        <span><%- mood.name %> <img src="<%- mood.image.url %>" width="24px" height="24px"></span>
+        <span>(<%- datetime.time %>)</span>
         </div>
-        <div>
-            Family [icon]
+        <div class="mood-day-entry--activities">
+        <% for (const activity of activities) { %>
+        <%- activity.name %> <img src="<%- activity.image.url %>" height="24px" width="24px">
+        <% } %>
         </div>
-        <div>
-            <img src="/image/ex.png" width="400px" height="400px">
+        <div class="mood-day-entry--notes">
+        <%- notes %>
         </div>
+        <div class="mood-day-entry--images">
+        <% for (const image of images) { %>
+        <img src="<%- image.url %>" alt="<%- image.altText %>">
+        <% } %>
+        </div>
+    </div>
     </div>
 
-    <div class="mood-day-entry">
-        <div>
-            <span>Good</span>
-            <span>(23:13)</span>
-        </div>
-        <div>
-            Family [icon]
-        </div>
-        <div>
-            <img src="/image/ex.png" width="400px" height="400px">
-        </div>
-    </div>
-</div>
+<% } %>
 
 <%- include('partials/bottom.ejs') %>
