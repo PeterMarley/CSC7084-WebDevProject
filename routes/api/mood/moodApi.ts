@@ -1,5 +1,4 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { verifyToken } from '../../../lib/jwtHelpers';
 import getConnection from '../../../lib/dbConnection';
 import mysql from 'mysql2';
 import authenticateRequestSource from '../../../lib/authenticateRequestSource';

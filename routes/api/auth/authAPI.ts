@@ -43,6 +43,7 @@ async function deleteuser(req: Request, res: Response, next: NextFunction) {
         try {
             const token: JwtPayload = verifyToken(req.cookies.token)
             const con = await getConnection();
+            //TODO more probably needed here
             con.execute('DELETE FROM tbl_activity WHERE user_id=?', [token.id]);
             con.execute('DELETE FROM tbl_activity_group WHERE user_id=?', [token.id]);
             con.execute('DELETE FROM tbl_mood WHERE user_id=?', [token.id]);
