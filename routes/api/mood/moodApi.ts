@@ -26,13 +26,18 @@ moodAPI.get(ENTRY + '*', getEntries)
 
 async function getEntries(req: Request, res: Response) {
 
-	const userId = req.url.replace(ENTRY, '');
+	// validate user id
+	const userId = parseInt(req.url.replace(ENTRY, ''));
+	if (userId === null || userId === undefined || Number.isNaN(userId)) {
+		res.status(400).json({ success: false });
+		return;
+	}
 
 	// get database data & close connection quickly
 	const con = await getConnection();
-	let map = new Map<number, Entry>();
+	const map = new Map<number, Entry>();
 
-	const entries = (await con.execute(SQL.entry.entries, [userId])).at(0) as Array<any>;
+	const entries = (await con.execute(mysql.format(SQL.entry.entries, [userId]))).at(0) as Array<any>;
 	const entryIds = entries.map(e => e.entryId);
 
 	if (entryIds.length === 0) {
@@ -90,8 +95,8 @@ async function getEntries(req: Request, res: Response) {
 		res.status(500).json({ error: "server ded. rip." });
 		return;
 	}
-
-	res.json({ entries: Array.from(map.values()) });
+	console.dir({ entries: Array.from(map.values()) });
+	res.status(200).json({ entries: Array.from(map.values()) });
 }
 
 interface Entry {

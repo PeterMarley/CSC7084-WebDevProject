@@ -10,6 +10,7 @@ function authenticate(req: Request, res: Response, next: NextFunction) {
 			if (Date.now() < token.expiry) {
 				success = true;
 				res.locals.username = token.username;
+				res.locals.id = token.id;
 			} else {
 				res.clearCookie('token');
 			}

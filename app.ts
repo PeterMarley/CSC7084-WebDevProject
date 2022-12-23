@@ -10,8 +10,7 @@ import path from 'path';
 import cookieParser from 'cookie-parser';
 
 // app imports
-import authAPI from './routes/api/auth/authAPI';							// auth API
-import moodAPI from './routes/api/auth/moodAPI';							// mood API
+import api from './routes/api/api';							// auth API
 import mainRouter from './routes/routers/mainRouter';							// normal routing
 import userRouter from './routes/routers/userRouter';
 import entryRouter from './routes/routers/entryRouter';
@@ -32,14 +31,11 @@ app.use(authenticate);
 
 /******************************
  * 
- * APIs
+ * Database API
  * 
  ******************************/
 
-const API_ROOT = '/api';
-
-app.use(API_ROOT + '/auth', authAPI);
-app.use(API_ROOT + '/mood', moodAPI);
+app.use('/api', api);
 
 /******************************
  * 
