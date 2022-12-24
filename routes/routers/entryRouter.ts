@@ -26,10 +26,11 @@ entryRouter.get('/list', async (req: Request, res: Response, next: NextFunction)
     });
 
     const body = await fetchResponse.text();
-
+    
     try {
         const json = JSON.parse(body);
-        res.locals.entries = json.entries ? json.entries : {};
+        console.dir(json);
+        res.locals.entries = json ? json : {};
     } catch {
         res.locals.entries = {};
     }

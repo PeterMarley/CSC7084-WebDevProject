@@ -52,15 +52,7 @@ async function getEntries(req: Request, res: Response) {
 	try {
 		entries.forEach(e => map.set(e.entryId, {
 			entryId: e.entryId,
-			datetime: {
-				dayOfWeek: e.timestamp.getDay(),
-				time: e.timestamp.toTimeString().substring(0,8),
-				date: {
-					day: e.timestamp.getDate(),
-					month: e.timestamp.getMonth() + 1,
-					year: e.timestamp.getFullYear(),
-				}
-			},
+			datetime: e.timestamp,
 			mood: {
 				name: e.mood,
 				image: {
@@ -95,71 +87,34 @@ async function getEntries(req: Request, res: Response) {
 		return;
 	}
 
-	// map to day
-	const mappedToDate = new Map<string, Entry[]>();
-	const resp: any = {};
-	for (const value of map.values()) {
-		// console.log(value);
-		const { day, month, year } = value.datetime.date;
-		const date = day + '/' + month + '/' + year;
-		if (resp[date]) {
-			resp[date].push(value);
-		} else {
-			resp[date] = [value];
-		}
-
-	}
-	console.dir(resp);
-	for (const value of Object.getOwnPropertyNames(resp)) {
-		// console.log(value);
-		//console.log(resp[value]);
+	// map to date
+	const response: any = {};
+	for (const entry of map.values()) {
 		
-		resp[value].sort((a: Entry, b: Entry) => {
-			console.log('a: ' + a.datetime.time);
-			console.log('b: ' + b.datetime.time);
-
-			if (a.datetime.time < b.datetime.time) {
-				console.log(-1);
-				return -1;
-			}
-			if (a.datetime.time > b.datetime.time) {
-				console.log(1);
-				return 1;
-			}
-			console.log(0);
-			return 0;
-			//return a.localeCompare(b);
-		});
-		 console.log(resp[value]);
-		console.log('----------');
-
+		const date = entry.datetime.toISOString().substring(0,10);
+		const x = new Date(date);
+		if (response[date]) {
+			response[date].push(entry);
+		} else {
+			response[date] = [entry];
+		}
 	}
 
-	// for (const x in resp) {
-	// 	for (const y of resp[x]) {
-	// 		console.log(y);
+	// sort entries mapped to each day by datetime
+	for (const property of Object.getOwnPropertyNames(response)) {
+		response[property].sort((a: Entry, b: Entry) => {
+			if (a.datetime < b.datetime) return -1;
+			if (a.datetime > b.datetime) return 1;
+			return 0;
+		});
+	}
 
-	// 	}
-	// 	// console.log(x);
-
-	// 	console.log('==============');
-
-	// }
-	// console.dir({ entries: Array.from(map.values()) });
-	res.status(200).json({ entries: Array.from(map.values()) });
+	res.status(200).json(response);
 }
 
 interface Entry {
 	entryId: number,
-	datetime: {
-		dayOfWeek: number,
-		time: string,
-		date: {
-			day: number,
-			month: number,
-			year: number,
-		}
-	},
+	datetime: Date,
 	mood: Mood,
 	notes: string,
 	images: Image[],

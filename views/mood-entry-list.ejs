@@ -2,7 +2,7 @@
 
 <% 
 
-if (authed) {
+if (authed) { // if authenticated
 
     const days = new Map();
     days.set(0,'Monday');
@@ -12,10 +12,25 @@ if (authed) {
     days.set(4,'Friday');
     days.set(5,'Saturday');
     days.set(6,'Sunday');
-    
-    for (const entry of entries) {
-    
+    const dayKeys = Object.getOwnPropertyNames(entries);
+    dayKeys.sort((a, b) => {
+			if (a < b) return -1;
+			if (a > b) return 1;
+			return 0;
+		});
+    for (const day of dayKeys) {
+      const date = new Date(day);
+      // TODO get day of week gracefully - maybe better to go back and look at how i map the entries to days, maybe use a new Date.toString() kinda deal for key
+%>
+<div class="mood-day">
+  <div>
+    <%- date.toLocaleString('en-GB', { weekday: 'long' }) // day of week %>, 
+    <%- date.toLocaleDateString('en-GB') // date string %>
+  </div>
+<%
+      for (const entry of entries[day]) {
         const { entryId, datetime, mood, notes, activities, images } = entry;
+        const entryDate = new Date(datetime);
         // console.log(entryId);
         // console.dir(datetime);
         // console.log(mood);
@@ -23,16 +38,13 @@ if (authed) {
         // console.log(activities);
         // console.log(images);
         // console.log('----');
+      
 %>
 
-<div class="mood-day">
-  <div>
-    <%- days.get(datetime.dayOfWeek) %>, <%- datetime.date.day %>/<%- datetime.date.month %>/<%- datetime.date.year %>
-  </div>
   <div class="mood-day-entry">
     <div class="mood-day-entry--mood">
       <span><%- mood.name %> <img src="<%- mood.image.url %>" width="24px" height="24px"></span>
-      <span>(<%- datetime.time %>)</span>
+      <span>( <%- entryDate.toTimeString().substring(0,8) %> )</span>
     </div>
     <div class="mood-day-entry--activities">
       <% for (const activity of activities) { %>
@@ -48,12 +60,15 @@ if (authed) {
       <% } %>
     </div>
   </div>
-</div>
 
-<% } 
-} else {
-%><div>nah mate</div><%    
-}
+
+<% } %>
+</div>
+<%
+  }  
+} else { // if not authenticated
 %>
+<div>nah mate</div>
+<% } %>
 
 <%- include('partials/bottom.ejs') %>
