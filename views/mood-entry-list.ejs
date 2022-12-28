@@ -4,51 +4,54 @@
 
 if (authed) { // if authenticated
 
-    const days = new Map();
-    days.set(0,'Monday');
-    days.set(1,'Tuesday');
-    days.set(2,'Wednesday');
-    days.set(3,'Thursday');
-    days.set(4,'Friday');
-    days.set(5,'Saturday');
-    days.set(6,'Sunday');
-    const dayKeys = Object.getOwnPropertyNames(entries);
-    dayKeys.sort((a, b) => {
-			if (a < b) return -1;
-			if (a > b) return 1;
-			return 0;
-		});
-    for (const day of dayKeys) {
-      const date = new Date(day);
-      // TODO get day of week gracefully - maybe better to go back and look at how i map the entries to days, maybe use a new Date.toString() kinda deal for key
+  const days = new Map();
+  days.set(0,'Monday');
+  days.set(1,'Tuesday');
+  days.set(2,'Wednesday');
+  days.set(3,'Thursday');
+  days.set(4,'Friday');
+  days.set(5,'Saturday');
+  days.set(6,'Sunday');
+  const dayKeys = Object.getOwnPropertyNames(entries);
+  
+  if (dayKeys.length === 0) {
 %>
 <div class="mood-day">
   <div>
-    <%- date.toLocaleString('en-GB', { weekday: 'long' }) // day of week %>, 
-    <%- date.toLocaleDateString('en-GB') // date string %>
+    No Mood entries. Add some!
   </div>
+</div>
 <%
-      for (const entry of entries[day]) {
-        const { entryId, datetime, mood, notes, activities, images } = entry;
-        const entryDate = new Date(datetime);
-        // console.log(entryId);
-        // console.dir(datetime);
-        // console.log(mood);
-        // console.log(notes);
-        // console.log(activities);
-        // console.log(images);
-        // console.log('----');
-      
+  }
+  
+  dayKeys.sort((a, b) => {
+    if (a < b) return -1;
+    if (a > b) return 1;
+    return 0;
+  });
+  for (const day of dayKeys) {
+    const date = new Date(day);
 %>
+
+<div class="mood-day">
+  <div>
+    <%- date.toLocaleString('en-GB', { weekday: 'long' }) // day of week %>, <%- date.toLocaleDateString('en-GB') // date string %>
+  </div>
+  
+  <%
+    for (const entry of entries[day]) {
+      const { entryId, datetime, mood, notes, activities, images } = entry;
+      const entryDate = new Date(datetime);
+  %>
 
   <div class="mood-day-entry">
     <div class="mood-day-entry--mood">
-      <span><%- mood.name %> <img src="<%- mood.image.url %>" width="24px" height="24px"></span>
+      <span><%- mood.name %> <img src="<%- mood.image.url %>" alt="<%- mood.image.altText %>" width="24px" height="24px"></span>
       <span>( <%- entryDate.toTimeString().substring(0,8) %> )</span>
     </div>
     <div class="mood-day-entry--activities">
       <% for (const activity of activities) { %>
-      <%- activity.name %> <img src="<%- activity.image.url %>" height="24px" width="24px">
+      <%- activity.name %> <img src="<%- activity.image.url %>" alt="<%- activity.image.altText %>" height="24px" width="24px">
       <% } %>
     </div>
     <div class="mood-day-entry--notes">
@@ -62,13 +65,17 @@ if (authed) { // if authenticated
   </div>
 
 
-<% } %>
+  <%   
+    } 
+   %>
 </div>
 <%
   }  
 } else { // if not authenticated
 %>
 <div>nah mate</div>
-<% } %>
-
+<% 
+} 
+%>
+<script src="/script/mood-entry-list.js"></script>
 <%- include('partials/bottom.ejs') %>

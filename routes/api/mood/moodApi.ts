@@ -15,13 +15,17 @@ moodAPI.use(authenticateRequestSource);
  *******************************************************/
 
 const ENTRY = '/entry/';
-moodAPI.get(ENTRY + '*', getEntries)
+moodAPI.get(ENTRY + '*', getEntries);
+moodAPI.post(ENTRY + 'new', newEntry);
 
 /*******************************************************
  * 
  * MIDDLEWEAR
  * 
  *******************************************************/
+async function newEntry(req: Request, res: Response) {
+	
+}
 
 async function getEntries(req: Request, res: Response) {
 
@@ -40,7 +44,7 @@ async function getEntries(req: Request, res: Response) {
 	const entryIds = entries.map(e => e.entryId);
 
 	if (entryIds.length === 0) {
-		res.json({ entries: [] });
+		res.json({});
 		return;
 	}
 
@@ -90,9 +94,7 @@ async function getEntries(req: Request, res: Response) {
 	// map to date
 	const response: any = {};
 	for (const entry of map.values()) {
-		
 		const date = entry.datetime.toISOString().substring(0,10);
-		const x = new Date(date);
 		if (response[date]) {
 			response[date].push(entry);
 		} else {

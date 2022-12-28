@@ -1,7 +1,7 @@
-<%_ if (locals.authed) { %>
+<%_ if (authed) { %>
   You're already logged in mate
 <% } else { %>
-  <form method="POST" action="auth/register">
+  <form method="POST" action="/register">
   <label for="username">Enter a username:</label>
   <input type="text" name="username" id="username"><br>
 

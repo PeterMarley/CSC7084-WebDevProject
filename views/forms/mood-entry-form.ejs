@@ -1,25 +1,30 @@
-<form method="POST" action="/endpoint">
-	<select name="mood">
-		<!-- Load moods from db -->
-		<option>Mood 1</option>
-		<option>Mood 2</option>
-		<option>Mood 3</option>
-		<option>Mood 4</option>
-		<option>Mood 5</option>
-	</select>
+<% if (authed) { %>
+<form method="POST" action="/entry/new">
+  <select name="mood">
+    <!-- Load moods from db -->
+    <option>Mood 1</option>
+    <option>Mood 2</option>
+    <option>Mood 3</option>
+    <option>Mood 4</option>
+    <option>Mood 5</option>
+  </select>
+  <label for="some activity name id">Some activity name</label>
+  <input type="checkbox" id="some activity name id" name="some activity name">
+  <select name="activity">
+    <!-- Load activities from db -->
+    <option>Work</option>
+    <option>Exersize</option>
+  </select>
 
-	<select name="activity">
-		<!-- Load activities from db -->
-		<option>Work</option>
-		<option>Exersize</option>
-	</select>
+  <select name="activity-group">
+    <!-- Load activity groups from db -->
+    <option>Default</option>
+  </select>
 
-	<select name="activity-group">
-		<!-- Load activity groups from db -->
-		<option>Default</option>
-	</select>
+  <textarea name="notes"></textarea>
 
-	<textarea></textarea>
-
-	<input type="submit" value="Add Entry">
+  <input type="submit" value="Add Entry">
 </form>
+<% } else { %>
+	Oh no no no no no hueueueueueue
+<% } %>

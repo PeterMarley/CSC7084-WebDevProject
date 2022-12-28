@@ -12,31 +12,34 @@
 <body>
   <div id="header">
     <!-- TODO this link doesnt work when served from routes, eg /entry/ -->
-    <div><a href="/"><img src="icons/main_icon_128x128.png" alt="Moodr Icon" width="50%"></a></div>
-    <div><a href="">Add Entry</a></div>
+    <div><a href="/"><img src="/icons/main_icon_128x128.png" alt="Moodr Icon" width="50%"></a></div>
+    <% if (authed) { %>
+    <div><a href="/entry/new">Add Entry</a></div>
+    <div><a href="/entry/list">Moods</a></div>
     <div>Visualise</div>
     <div>Manage Moods</div>
+    <% } %>
     <div>
       <% if (authed) { // if authenticated%>
-      <div>
-        Your account deets
-        <form method="GET" action="/logout" style="display: inline-block;">
-          <input type="submit" name="action" value="Log Out" class="login-control">
-        </form>
-      </div>
-      <% } else { // if not authenticated%>
-      <form method="GET" action="/login" style="display: inline-block;">
-        <input type="submit" value="Log In" class="login-control">
-        <input type="text" name="redirect" value="/" hidden>
+    <div>
+      Your account deets
+      <form method="GET" action="/logout" style="display: inline-block;">
+        <input type="submit" name="action" value="Log Out" class="login-control">
       </form>
-      <form method="GET" action="/register" style="display: inline-block;">
-        <input type="submit" value="Register" class="login-control">
-      </form>
-      <% } %>
     </div>
+    <% } else { // if not authenticated%>
+    <form method="GET" action="/login" style="display: inline-block;">
+      <input type="submit" value="Log In" class="login-control">
+      <input type="text" name="redirect" value="/" hidden>
+    </form>
+    <form method="GET" action="/register" style="display: inline-block;">
+      <input type="submit" value="Register" class="login-control">
+    </form>
+    <% } %>
+  </div>
   </div>
   <div id="body">
     <nav>
       Nav
     </nav>
-  <div>
+    <div>

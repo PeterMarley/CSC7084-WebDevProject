@@ -1,10 +1,10 @@
 import express, { Request, Response, NextFunction } from 'express';
-import fetch, { RequestInit, HeaderInit } from 'node-fetch';
-import app from '../../app';
 import RegistrationResponse from '../../models/RegistrationResponse';
+import apiCall from '../../lib/apiCall';
 import authenticate from '../middleware/authenticate';
 const userRouter = express.Router();
 
+userRouter.use(authenticate);
 // log out
 
 userRouter.get('/logout', logoutGet);
@@ -94,25 +94,6 @@ async function loginPost(req: Request, res: Response, next: NextFunction) {
     }
 
 		res.redirect(req.body.redirect ? req.body.redirect : '/');
-}
-
-/*******************************************************
- * 
- * API CALLING FUNCTIONS
- * 
- *******************************************************/
-
-async function apiCall(httpMethod: 'POST' | 'GET' | 'DELETE', url: string, body: URLSearchParams, token: string | undefined = undefined) {
-    const fetchResponse = await fetch(url, {
-        method: httpMethod,
-        body,
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Bearer ' + process.env.REQUESTOR,
-            ...(token && { 'Cookie': 'token=' + token })
-        }
-    });
-    return JSON.parse(await fetchResponse.text());
 }
 
 export default userRouter;
