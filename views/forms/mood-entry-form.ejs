@@ -1,36 +1,37 @@
 <% if (authed) { %>
-	<form method="POST" action="/entry/new">
-		<select name="mood">
-			<!-- Load moods from db -->
-			<% for (const mood of formData.moods) { %>
-				<option><%- mood.name %></option>
-				<% } %>
-		</select>
-		
-		<label for="some activity name id">Some activity name</label>
+<form method="POST" action="/entry/new" id="mood-entry-form">
+  <div class="mood-selection-container">
+    <div class="mood-selection">
+      <% for (const mood of formData.moods) { %>
+      <span class="mood">
+        <span><img src="<%- mood.image.url %>" class="mood-image"></span>
+        <span class="mood-name"><%- mood.name %></span>
+      </span>
+      <% } %>
+    </div>
+  </div>
+  <textarea name="notes" id="mood-entry-notes"></textarea>
+  <div class="activity-selection-container">
+    <div class="activity-selection">
+      Activity Groups
+      <% for (const actGroup of formData.activityGroups) { %>
+      <div class="activity-group">
+        <div class="activity-group-name"><img src="<%- actGroup.image.url %>" alt="<%- actGroup.image.altText %>"><span><%- actGroup.activityGroupName %></span></div>
+        <div class="activity-group-activities">
+          <% for (const act of actGroup.activities) { %>
+          <div class="activity"><img src="<%- act.image.url %>" alt="<%- act.image.altText %>">
+            <div>Text</div>
+          </div>
+          <% } %>
+        </div>
+      </div>
+      <% } %>
+    </div>
+  </div>
+  <input type="submit" value="Add Entry">
+</form>
 
-		<textarea name="notes"></textarea>
-
-		<input type="submit" value="Add Entry">
-
-		<div class="activity-selection-container">
-			<div class="activity-selection">
-				Activity Groups
-				<% for (const actGroup of formData.activityGroups) { %>
-				<div class="activity-group">
-					<div class="activity-group-name"><img src="<%- actGroup.image.url %>" alt="<%- actGroup.image.altText %>"><span><%- actGroup.activityGroupName %></span></div>
-					<div class="activity-group-activities">
-						<% for (const act of actGroup.activities) { %>
-						<div class="activity"><img src="<%- act.image.url %>" alt="<%- act.image.altText %>"><div>Text</div></div>
-						<% } %>
-					</div>
-				</div>
-				<% } %>
-			</div>
-		</div>
-	</form>
-	
-
-	<% } else { %>
-		Oh no no no no no hueueueueueue
-		<% } %>
+<script src="/script/mood-entry-new.js"></script>
+<% } else { %>
+Oh no no no no no hueueueueueue
+<% } %>

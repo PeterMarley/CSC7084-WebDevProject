@@ -38,6 +38,9 @@ entryRouter.get('/new', async (req: Request, res: Response) => {
 
 entryRouter.post('/new', async (req: Request, res: Response) => {
 	const { mood, activities, notes } = req.body;
+	console.log(mood);
+	console.log(activities);
+	console.log(notes);
 	if (!mood || !activities || !notes) {
 		res.status(400).json({ success: false, mood, activities, notes });
 		return;
