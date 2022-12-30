@@ -31,7 +31,7 @@ entryRouter.get('/new', async (req: Request, res: Response) => {
 		'http://localhost:3000/api/mood/entry/new/' + (res.locals.id ? res.locals.id : ''),
 		undefined
 	);
-	
+		
 	res.locals.formData = response || {};
 	res.render('mood-entry-new');
 })

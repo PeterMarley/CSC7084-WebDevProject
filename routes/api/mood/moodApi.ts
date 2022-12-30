@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import getConnection from '../../../lib/dbConnection';
 import mysql from 'mysql2';
-import { directive } from '@babel/types';
+import {verifyToken} from '../../../lib/jwtHelpers'
 const moodAPI = express.Router();
 
 moodAPI.use(express.urlencoded({ extended: false }));
@@ -29,9 +29,9 @@ async function newEntryFormDetails(req: Request, res: Response) {
 
 	// query database and close connection
 	const con = await getConnection();
-	const moods = (await con.execute(mysql.format(SQL.new.moods, [userId])) as Array<any>).at(0);
-	const activities = (await con.execute(mysql.format(SQL.new.activities, [userId])) as Array<any>).at(0);
-	const activityGroups = (await con.execute(mysql.format(SQL.new.activityGroups, [userId])) as Array<any>).at(0);
+	const moods = (await con.execute(mysql.format(SQL.new.list.moods, [userId])) as Array<any>).at(0);
+	const activities = (await con.execute(mysql.format(SQL.new.list.activities, [userId])) as Array<any>).at(0);
+	const activityGroups = (await con.execute(mysql.format(SQL.new.list.activityGroups, [userId])) as Array<any>).at(0);
 	con.end();
 
 	// build response
@@ -53,7 +53,7 @@ async function newEntryFormDetails(req: Request, res: Response) {
 
 	// process activity groups and activities
 	let activityMap = new Map<number, ActivityGroup>();
-	
+
 	activityGroups.forEach((ag: any) => {
 		const { activityGroupName, activityGroupId, iconUrl: url, iconAltText: altText } = ag;
 		activityMap.set(ag.activityGroupId, {
@@ -86,7 +86,14 @@ async function newEntryFormDetails(req: Request, res: Response) {
 }
 
 async function newEntry(req: Request, res: Response) {
+	const userId = new RegExp(numRegex).exec(req.url);
+	
+	const con = await getConnection();
 
+	const format = mysql.format(SQL.new.add.getMoodId, [req.body.moodName, userId]);
+	const moodId = await con.execute(format);
+
+	res.send(format);
 }
 
 async function getEntries(req: Request, res: Response) {
@@ -248,8 +255,9 @@ const SQL = {
 		images: 'SELECT url, alt_text as altText, entry_id as entryId FROM tbl_entry_images WHERE entry_id IN (?)'
 	},
 	new: {
-		moods:
-			`SELECT
+		list: {
+			moods:
+				`SELECT
 				m.name AS moodName,
 				m.order AS moodOrder,
 				mi.url AS iconUrl,
@@ -257,8 +265,8 @@ const SQL = {
 			FROM tbl_mood m
 			LEFT JOIN tbl_mood_image mi ON mi.mood_image_id = m.icon_image_id
 			WHERE m.user_id = ?`,
-		activities:
-			`SELECT
+			activities:
+				`SELECT
 				a.name AS activityName,
 				a.activity_group_id AS activityGroupId,
 				ai.url AS iconUrl,
@@ -266,8 +274,8 @@ const SQL = {
 			FROM tbl_activity a 
 			INNER JOIN tbl_activity_image ai ON ai.activity_image_id = a.icon_image_id
 			WHERE a.user_id = ?`,
-		activityGroups:
-			`SELECT
+			activityGroups:
+				`SELECT
 				ag.name AS activityGroupName,
 				ag.activity_group_id AS activityGroupId,
 				agi.url AS iconUrl,
@@ -275,6 +283,13 @@ const SQL = {
 			FROM tbl_activity_group ag
 			INNER JOIN tbl_activity_group_image agi ON agi.activity_group_image_id = ag.icon_image_id 
 			WHERE ag.user_id = ?`
+		},
+		add: {
+			getMoodId: `SELECT mood_id FROM tbl_mood WHERE tbl_mood.name = 'Ok' AND tbl_mood.user_id = 94`,
+			addEntry:
+				`INSERT INTO tbl_entry (tbl_entry.notes, tbl_entry.user_id, tbl_entry.mood_id)
+				VALUES (? ,? ,? )`
+		}
 	}
 }
 

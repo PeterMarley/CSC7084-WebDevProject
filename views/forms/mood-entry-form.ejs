@@ -6,54 +6,30 @@
 				<option><%- mood.name %></option>
 				<% } %>
 		</select>
-		<div class="activity-tray">
-		<% for (const actGroup of formData.activityGroups) { %>
-			<div class="activity-group">
-				<span><img src="<%- actGroup.image.url  %>" alt="<%- actGroup.image.altText  %>"></span>
-				<span><%- actGroup.activityGroupName %></span>
-				<div class="activity-inner-tray">
-					<% for (const act of actGroup.activities) { console.log(act)%>
-						<div class="activity">
-							<div><img src="<%- act.image.url  %>" alt="<%- act.image.altText  %>"></div>
-							<span><%- act.activityName %></span>
-						</div>
+		
+		<label for="some activity name id">Some activity name</label>
+
+		<textarea name="notes"></textarea>
+
+		<input type="submit" value="Add Entry">
+
+		<div class="activity-selection-container">
+			<div class="activity-selection">
+				Activity Groups
+				<% for (const actGroup of formData.activityGroups) { %>
+				<div class="activity-group">
+					<div class="activity-group-name"><img src="<%- actGroup.image.url %>" alt="<%- actGroup.image.altText %>"><span><%- actGroup.activityGroupName %></span></div>
+					<div class="activity-group-activities">
+						<% for (const act of actGroup.activities) { %>
+						<div class="activity"><img src="<%- act.image.url %>" alt="<%- act.image.altText %>"><div>Text</div></div>
 						<% } %>
+					</div>
 				</div>
+				<% } %>
 			</div>
-			<% } %>
 		</div>
-				<label for="some activity name id">Some activity name</label>
-				<input type="checkbox" id="some activity name id" name="some activity name">
-				<select name="activity">
-					<!-- Load activities from db -->
-					<option>Work</option>
-					<option>Exersize</option>
-				</select>
-
-				<select name="activity-group">
-					<!-- Load activity groups from db -->
-					<option>Default</option>
-				</select>
-
-				<textarea name="notes"></textarea>
-
-				<input type="submit" value="Add Entry">
 	</form>
-	<div class="activity-tray">
-		<div class="activity-group">
-			<span>AG Icon</span>
-			<span>AG Name</span>
-			<span>
-				<div class="activity">
-					<span>A Icon</span>
-					<span>A Name</span>
-				</div>
-			</span>
-			<span>
-
-			</span>
-		</div>
-	</div>
+	
 
 	<% } else { %>
 		Oh no no no no no hueueueueueue

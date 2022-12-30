@@ -1,5 +1,5 @@
 <%- include('partials/top.ejs') %>
-
+<div class="mood-entry-list">
 <% 
 
 if (authed) { // if authenticated
@@ -77,5 +77,7 @@ if (authed) { // if authenticated
 <% 
 } 
 %>
+
 <script src="/script/mood-entry-list.js"></script>
+</div>
 <%- include('partials/bottom.ejs') %>
