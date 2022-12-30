@@ -5,7 +5,8 @@
  ******************************/
 
 // express imports
-import express from 'express';
+import express, { Request, Response } from 'express';
+import authenticateRequestSource from '../../lib/authenticateRequestSource';
 
 // app imports
 import authAPI from './auth/authApi';
@@ -20,13 +21,12 @@ const api = express.Router();
  * 
  ******************************/
 
+api.use(authenticateRequestSource);
+
 api.use('/auth', authAPI);
 api.use('/mood', moodAPI);
 
 // 404 NOT FOUND fallback route
-api.all('*', (req: express.Request, res: express.Response) => {
-	res.statusCode = 404;
-	res.send('that aint no valid API JIMBOB ME SON: ' + req.originalUrl);
-});
+api.all('*', (req: Request, res: Response) => res.status(404).send('that aint no valid API JIMBOB ME SON: ' + req.originalUrl));
 
 export default api;

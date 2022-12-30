@@ -7,6 +7,7 @@ function authenticate(req: Request, res: Response, next: NextFunction) {
 	if (req.cookies && req.cookies.token) {
 		try {
 			const token: any = verifyToken(req.cookies.token);
+			//TODO add a timed checked to ensure token is still valid from data
 			if (Date.now() < token.expiry) {
 				success = true;
 				res.locals.username = token.username;

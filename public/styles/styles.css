@@ -90,9 +90,6 @@ nav {
   background-color: bisque;
   flex-grow: 1;
   margin: 0px;
-  display: flex;
-	flex-direction: column;
-	align-items: center;
 }
 
 /****************************
@@ -115,7 +112,7 @@ nav {
 }
 
 /****************************
-  ENTRY
+  ENTRY LIST
 ****************************/
 
 .mood-day {
@@ -166,4 +163,56 @@ nav {
 
 .mood-day-entry--images>img {
   max-width: 100%;
+}
+
+/****************************
+  ENTRY FORM
+****************************/
+.activity-tray {
+	display: grid;
+	grid-template: 1fr / 3fr;
+	grid-auto-flow: row;
+}
+
+.activity-group {
+	display: grid;
+	grid-template: 1fr / 3fr;
+	padding: 10px;
+	border: 1px solid black;
+	border-radius: 10px;
+	align-items: center;
+}
+
+.activity-group>span{
+	font-weight: normal;
+	padding: 10px;
+}
+
+.activity-group>span:nth-child(1) {
+	border: 1px solid green;
+	border-radius: 10px;
+	padding: 10px;
+	font-weight: bold;
+}
+
+.activity {
+	border: 1px solid red;
+	border-radius: 10px;
+	padding: 10px;
+	display: flex;
+}
+
+.activity>div,
+.activity>span:nth-child(1) {
+	display: inline-block;
+	border: 1px solid purple;
+	border-radius: 10px;
+	padding: 5px;
+	font-weight: bold;
+}
+
+.activity-inner-tray {
+	display: grid;
+	width: 32%;
+	grid-template: 3fr/ 1fr;
 }

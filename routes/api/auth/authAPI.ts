@@ -18,7 +18,7 @@ API DESCRIPTION
         - this token can live in .env file/ environment variables
 */
 authAPI.use(express.urlencoded({ extended: false }));
-authAPI.use(authenticateRequestSource);
+// authAPI.use(authenticateRequestSource);
 
 /*******************************************************
  * 
