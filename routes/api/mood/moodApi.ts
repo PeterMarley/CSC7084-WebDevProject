@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import getConnection from '../../../lib/dbConnection';
-import mysql from 'mysql2';
-import {verifyToken} from '../../../lib/jwtHelpers'
+import mysql2, { Connection } from 'mysql2';
+import { verifyToken } from '../../../lib/jwtHelpers'
 const moodAPI = express.Router();
 
 moodAPI.use(express.urlencoded({ extended: false }));
@@ -29,9 +29,9 @@ async function newEntryFormDetails(req: Request, res: Response) {
 
 	// query database and close connection
 	const con = await getConnection();
-	const moods = (await con.execute(mysql.format(SQL.new.list.moods, [userId])) as Array<any>).at(0);
-	const activities = (await con.execute(mysql.format(SQL.new.list.activities, [userId])) as Array<any>).at(0);
-	const activityGroups = (await con.execute(mysql.format(SQL.new.list.activityGroups, [userId])) as Array<any>).at(0);
+	const moods = (await con.execute(mysql2.format(SQL.new.list.moods, [userId])) as Array<any>).at(0);
+	const activities = (await con.execute(mysql2.format(SQL.new.list.activities, [userId])) as Array<any>).at(0);
+	const activityGroups = (await con.execute(mysql2.format(SQL.new.list.activityGroups, [userId])) as Array<any>).at(0);
 	con.end();
 
 	// build response
@@ -86,14 +86,54 @@ async function newEntryFormDetails(req: Request, res: Response) {
 }
 
 async function newEntry(req: Request, res: Response) {
-	const userId = new RegExp(numRegex).exec(req.url);
-	
-	const con = await getConnection();
+	let success = false;
 
-	const format = mysql.format(SQL.new.add.getMoodId, [req.body.moodName, userId]);
-	const moodId = await con.execute(format);
+	let con: any;
 
-	res.send(format);
+	try {
+		const userId = parseInt(new RegExp(numRegex).exec(req.url)?.at(0)!);
+		const { mood: moodName, activities, notes } = req.body;
+		con = await getConnection();
+		console.dir(Object.getOwnPropertyNames(con));
+
+		// gather ids
+
+		const moodId = (await con.execute(mysql2.format(SQL.new.add.getMoodId, [moodName, userId])) as Array<any>).at(0).at(0).mood_id;
+
+		// add entry
+
+		const insertEntryResult = await con.execute(mysql2.format(SQL.new.add.insertEntry, [notes, userId, moodId])) as any;
+		const entryId = insertEntryResult.at(0).insertId
+
+		// add activities
+
+		const activitiesQueryResult = ((await con.execute(mysql2.format(SQL.new.add.getActivities, [userId, req.body.activities.split(',')]))) as Array<any>).at(0);
+		const activityMap = new Map<string, number>();
+		activitiesQueryResult.forEach((a: { name: string, activity_id: number }) => activityMap.set(a.name, a.activity_id));
+		
+
+		const insertEntryActivitiesSQL = buildEntryActivitiesSql(entryId, activities.split(','), activityMap);
+
+		await con.execute(insertEntryActivitiesSQL);
+
+		success = true;
+		console.log(Object.getOwnPropertyNames(con));
+
+	} catch (err){
+		req.statusCode = 500;
+	} finally {
+		if (con !== undefined && Object.hasOwnProperty('end') ) con.end();
+	}
+
+	res.json({ success });
+}
+
+function buildEntryActivitiesSql(entryId: number, activities: string[], activityMap: Map<string, number>) {
+	let sql = SQL.new.add.insertActivity.insert;
+	activities.forEach(e => {
+		sql += mysql2.format(SQL.new.add.insertActivity.values, [entryId, activityMap.get(e)]) + ','
+	});
+	return sql.substring(0, sql.length - 1);
 }
 
 async function getEntries(req: Request, res: Response) {
@@ -116,9 +156,9 @@ async function getEntries(req: Request, res: Response) {
 	// get database data & close connection quickly
 	const con = await getConnection();
 	const map = new Map<number, Entry>();
-	console.log(mysql.format(SQL.entry.entries, [userId]));
+	// console.log(mysql.format(SQL.entry.entries, [userId]));
 
-	const entries = (await con.execute(mysql.format(SQL.entry.entries, [userId]))).at(0) as Array<any>;
+	const entries = (await con.execute(mysql2.format(SQL.entry.entries, [userId]))).at(0) as Array<any>;
 	const entryIds = entries.map(e => e.entryId);
 
 	if (entryIds.length === 0) {
@@ -126,44 +166,15 @@ async function getEntries(req: Request, res: Response) {
 		return;
 	}
 
-	const activities = (await con.execute(mysql.format(SQL.entry.activity, [entryIds]))).at(0) as Array<any>;
-	const entryImages = (await con.execute(mysql.format(SQL.entry.images, [entryIds]))).at(0) as Array<any>;
+	const activities = (await con.execute(mysql2.format(SQL.entry.activity, [entryIds]))).at(0) as Array<any>;
+	const entryImages = (await con.execute(mysql2.format(SQL.entry.images, [entryIds]))).at(0) as Array<any>;
 	con.end();
 
 	// process data
 	try {
-		entries.forEach(e => map.set(e.entryId, {
-			entryId: e.entryId,
-			datetime: e.timestamp,
-			mood: {
-				name: e.mood,
-				image: {
-					url: e.iconUrl,
-					altText: e.iconAltText
-				}
-			},
-			notes: e.entryNotes,
-			activities: [],
-			images: []
-		}));
-		activities.forEach(e => map.get(e.entryId)?.activities.push({
-			name: e.activityName,
-			image: {
-				url: e.activityIconUrl,
-				altText: e.activityIconAltText
-			},
-			group: {
-				name: e.activityGroup,
-				image: {
-					url: e.activityGroupIconUrl,
-					altText: e.activityGroupIconAltText
-				}
-			}
-		}));
-		entryImages.forEach(e => map.get(e.entryId)?.images.push({
-			url: e.url,
-			altText: e.altText
-		}));
+		entries.forEach(e => map.set(e.entryId, entry(e)));
+		activities.forEach(e => map.get(e.entryId)?.activities.push(activity(e)));
+		entryImages.forEach(e => map.get(e.entryId)?.images.push(image(e)));
 	} catch (err: any) {
 		res.status(500).json({ error: "server ded. rip." });
 		return;
@@ -190,43 +201,6 @@ async function getEntries(req: Request, res: Response) {
 	}
 
 	res.status(200).json(response);
-}
-
-interface NewEntryFormResponse {
-	moods: Mood[],
-	activityGroups: ActivityGroup[]
-}
-
-interface ActivityGroup {
-	activityGroupName: string,
-	activityGroupId: number,
-	image: Image,
-	activities: Activity[],
-}
-
-interface Activity {
-	activityName: string,
-	activityGroupId: number,
-	image: Image,
-}
-
-interface Entry {
-	entryId: number,
-	datetime: Date,
-	mood: Mood,
-	notes: string,
-	images: Image[],
-	activities: any[],
-}
-
-interface Image {
-	url: string,
-	altText: string
-}
-
-interface Mood {
-	name: string,
-	image: Image
 }
 
 const SQL = {
@@ -276,21 +250,120 @@ const SQL = {
 			WHERE a.user_id = ?`,
 			activityGroups:
 				`SELECT
-				ag.name AS activityGroupName,
-				ag.activity_group_id AS activityGroupId,
-				agi.url AS iconUrl,
-				agi.alt_text AS iconAltText
-			FROM tbl_activity_group ag
-			INNER JOIN tbl_activity_group_image agi ON agi.activity_group_image_id = ag.icon_image_id 
-			WHERE ag.user_id = ?`
+					ag.name AS activityGroupName,
+					ag.activity_group_id AS activityGroupId,
+					agi.url AS iconUrl,
+					agi.alt_text AS iconAltText
+				FROM tbl_activity_group ag
+				INNER JOIN tbl_activity_group_image agi ON agi.activity_group_image_id = ag.icon_image_id 
+				WHERE ag.user_id = ?`
 		},
 		add: {
-			getMoodId: `SELECT mood_id FROM tbl_mood WHERE tbl_mood.name = 'Ok' AND tbl_mood.user_id = 94`,
-			addEntry:
+			getMoodId: `SELECT mood_id FROM tbl_mood WHERE tbl_mood.name = ? AND tbl_mood.user_id = ?`,
+			getActivities:
+				`SELECT 
+					a.activity_id,
+					a.name,
+					ai.url,
+					ai.alt_text
+				FROM tbl_activity a 
+				INNER JOIN tbl_activity_image ai ON ai.activity_image_id = a.icon_image_id
+				WHERE a.user_id = ? 
+				AND a.name IN (?)`,
+			insertEntry:
 				`INSERT INTO tbl_entry (tbl_entry.notes, tbl_entry.user_id, tbl_entry.mood_id)
-				VALUES (? ,? ,? )`
+				VALUES (?,?,?)`,
+			insertActivity: {
+				insert: `INSERT INTO tbl_entry_activity (entry_id, activity_id) VALUES `,
+				values: `(?, ?)`,
+			}
 		}
 	}
 }
+
+interface NewEntryAddedResponse {
+	success: boolean,
+	entry: Entry | undefined,
+}
+
+interface NewEntryFormResponse {
+	moods: Mood[],
+	activityGroups: ActivityGroup[]
+}
+
+interface ActivityGroup {
+	activityGroupName: string,
+	activityGroupId: number,
+	image: Image,
+	activities: Activity[],
+}
+
+function activity(e: any): { name: string, image: Image, group: { name: string, image: Image } } {
+	return {
+		name: e.activityName,
+		image: {
+			url: e.activityIconUrl,
+			altText: e.activityIconAltText
+		},
+		group: {
+			name: e.activityGroup,
+			image: {
+				url: e.activityGroupIconUrl,
+				altText: e.activityGroupIconAltText
+			}
+		}
+	};
+}
+
+interface Activity {
+	activityName: string,
+	activityGroupId: number,
+	image: Image,
+}
+
+function entry(e: any): Entry {
+	return {
+		entryId: e.entryId,
+		datetime: e.timestamp,
+		mood: {
+			name: e.mood,
+			image: {
+				url: e.iconUrl,
+				altText: e.iconAltText
+			}
+		},
+		notes: e.entryNotes,
+		activities: [],
+		images: []
+	};
+}
+
+interface Entry {
+	entryId: number,
+	datetime: Date,
+	mood: Mood,
+	notes: string,
+	images: Image[],
+	activities: any[],
+}
+
+function image(e: any): Image {
+	return {
+		url: e.url,
+		altText: e.altText
+	}
+}
+
+interface Image {
+	url: string,
+	altText: string
+}
+
+interface Mood {
+	name: string,
+	image: Image
+}
+
+
 
 export default moodAPI;

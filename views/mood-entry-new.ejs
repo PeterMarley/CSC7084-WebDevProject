@@ -1,5 +1,8 @@
 <%- include('partials/top.ejs') %>
 
+<% if (entryAdded) { %>
+Entry added!
+<% } else { %>
 <%- include('forms/mood-entry-form.ejs') %>
-
+<% } %>
 <%- include('partials/bottom.ejs') %>

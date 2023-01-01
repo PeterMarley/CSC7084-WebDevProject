@@ -1,12 +1,9 @@
 import cookieParser from 'cookie-parser';
 import express, { Request, Response, NextFunction } from 'express';
-import fetch from 'node-fetch';
 import apiCall from '../../lib/apiCall';
-import getConnection from '../../lib/dbConnection';
-import { verifyToken } from '../../lib/jwtHelpers';
 import authenticate from '../middleware/authenticate';
-const entryRouter = express.Router();
 
+const entryRouter = express.Router();
 entryRouter.use(authenticate);
 entryRouter.use(cookieParser())
 
@@ -16,43 +13,48 @@ entryRouter.use(cookieParser())
  * 
  *******************************************************/
 
-entryRouter.get('/list', async (req: Request, res: Response, next: NextFunction) => {
-	const response = await apiCall('GET',
-		'http://localhost:3000/api/mood/entry/list/' + (res.locals.id ? res.locals.id : ''),
-		undefined
-	);
+entryRouter.get('/list', getList);
+entryRouter.get('/new', getNew);
+entryRouter.post('/new', postNew);
 
-	res.locals.entries = response || {};
-	res.render('mood-entry-list');
-})
+/*******************************************************
+ * 
+ * MIDDLEWARE
+ * 
+ *******************************************************/
 
-entryRouter.get('/new', async (req: Request, res: Response) => {
-	const response = await apiCall('GET',
-		'http://localhost:3000/api/mood/entry/new/' + (res.locals.id ? res.locals.id : ''),
-		undefined
-	);
-		
-	res.locals.formData = response || {};
-	res.render('mood-entry-new');
-})
-
-entryRouter.post('/new', async (req: Request, res: Response) => {
+async function postNew(req: Request, res: Response) {
 	const { mood, activities, notes } = req.body;
-	console.log(mood);
-	console.log(activities);
-	console.log(notes);
-	if (!mood || !activities || !notes) {
-		res.status(400).json({ success: false, mood, activities, notes });
+	if (mood === undefined || activities === undefined || notes === undefined) {
+		// TODO more gracefull bad request handling and validation of body
+		res.status(400).json({ success: false, body: req.body });
 		return;
 	}
 
 	const response = await apiCall('POST',
 		'http://localhost:3000/api/mood/entry/new/' + (res.locals.id ? res.locals.id : ''),
-		undefined
-		//new URLSearchParams([['mood', mood], ['activities', activities], ['notes', notes]])
+		new URLSearchParams([['mood', mood], ['activities', activities], ['notes', notes]])
 	);
 
+	res.locals.entryAdded = response.success ? true : false;
+
+	// TODO redirect to single entry page, not list
+	res.redirect('/entry/list');
+}
+
+async function getNew(req: Request, res: Response) {
+	const response = await apiCall('GET', 'http://localhost:3000/api/mood/entry/new/' + (res.locals.id ? res.locals.id : ''));
+
+	res.locals.formData = response || {};
+	res.locals.entryAdded = false;
 	res.render('mood-entry-new');
-});
+}
+
+async function getList(req: Request, res: Response) {
+	const response = await apiCall('GET', 'http://localhost:3000/api/mood/entry/list/' + (res.locals.id ? res.locals.id : ''));
+
+	res.locals.entries = response || {};
+	res.render('mood-entry-list');
+}
 
 export default entryRouter;

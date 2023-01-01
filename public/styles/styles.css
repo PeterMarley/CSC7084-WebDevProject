@@ -186,6 +186,12 @@ nav {
 
 .activity {
   margin: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid black;
+  border-radius: 0.6rem;
+  padding: 3px;
 }
 .activity-selection-container {
   display: flex;
@@ -203,10 +209,10 @@ nav {
   border-radius: 5px;
   margin: 5px;
 }
-.activity-group-activities {
-  display: flex; 
-  border: 1px solid red;
-  border-radius: 5px;
+.activity-group-activities { 
+  display: grid;
+  grid-template: 1fr / repeat(4, 1fr);
+  grid-auto-flow: row;
   /* justify-content: space-evenly;
   margin: 5px; */
 }

@@ -47,6 +47,11 @@ app.use('/', mainRouter);
 app.use('/', userRouter);
 app.use('/entry', entryRouter);
 
+// 500 ISE
+app.all('/500', (req: Request, res: Response) => {
+	res.statusCode = 500;
+	res.send('big fat 500: ' + req.originalUrl);
+})
 // 404 NOT FOUND fallback route
 app.all('*', (req: Request, res: Response) => {
 	res.statusCode = 404;

@@ -69,7 +69,7 @@ class DeleteAccountResponse {
 const SQL = {
     register: {
         insertUser: 'INSERT INTO tbl_user (username, password, email) VALUES (?,?,?)',
-        insertMoods: 
+        insertMoods:
             `INSERT INTO tbl_mood
             (
                 tbl_mood.name, 
@@ -83,7 +83,7 @@ const SQL = {
             ('Ok', 3, 3, ?),
             ('Good', 4, 4, ?),
             ('Great', 5, 5, ?)`,
-        insertActivityGroups: 
+        insertActivityGroups:
             `INSERT INTO tbl_activity_group
             (
                 tbl_activity_group.name,
@@ -102,7 +102,7 @@ const SQL = {
             )
             VALUES
             ('Work',1,?,?),
-            ('Exersize',2,?,?)`  
+            ('Exersize',2,?,?)`
     }
 }
 
@@ -158,7 +158,7 @@ async function register(req: Request, res: Response, next: NextFunction) {
 
         const insertDefaultActivitiesResult = await con.execute(SQL.register.insertDefaultActivities, [activityGroupId, userId, activityGroupId, userId]) as any;
 
-        
+
         res.status(200).send(new RegistrationResponse(true));
     } catch (err: any) {
         res.status(500).send(new RegistrationResponse(false, ['something went wrong registering you?! ' + err.message]));
@@ -187,7 +187,13 @@ async function login(req: Request, res: Response, next: NextFunction) {
     if (username && passwordFromForm) {
 
         // query db for user data
-        const con = await getConnection();
+        let con;
+        try {
+            con = await getConnection();
+        } catch (err) {
+            res.status(500).json(err);
+            return;
+        }
         const result = await con.execute('SELECT user_id, password, email FROM tbl_user WHERE username=?', [username]) as any;
         con.end();
 

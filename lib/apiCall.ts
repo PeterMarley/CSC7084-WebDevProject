@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 
-export default async function apiCall(httpMethod: 'POST' | 'GET' | 'DELETE', url: string, body: URLSearchParams | undefined, token: string | undefined = undefined) {
+export default async function apiCall(httpMethod: 'POST' | 'GET' | 'DELETE', url: string, body: URLSearchParams | undefined = undefined, token: string | undefined = undefined) {
 	const fetchResponse = await fetch(url, {
 		method: httpMethod,
 		body,
@@ -10,9 +10,8 @@ export default async function apiCall(httpMethod: 'POST' | 'GET' | 'DELETE', url
 			...(token && { 'Cookie': 'token=' + token })
 		}
 	});
-	const r = await fetchResponse.text();
 	try {
-		return JSON.parse(r);
+		return JSON.parse(await fetchResponse.text());
 	} catch (err) {
 		return { success: false }
 	}

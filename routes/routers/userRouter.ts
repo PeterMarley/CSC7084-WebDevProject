@@ -61,8 +61,8 @@ async function deleteUser(req: Request, res: Response, next: NextFunction) {
 
 async function registerPost(req: Request, res: Response, next: NextFunction) {
     const registrationResponse: RegistrationResponse = await apiCall(
-        'POST', 
-        'http://localhost:3000/api/auth/register', 
+        'POST',
+        'http://localhost:3000/api/auth/register',
         new URLSearchParams([['username', req.body.username], ['email', req.body.email], ['password', req.body.password]])
     );
     if (registrationResponse.success) {
@@ -89,11 +89,13 @@ async function loginPost(req: Request, res: Response, next: NextFunction) {
     );
 
     // build response
-    if (authResponse.success && authResponse.token) {
+    if (authResponse.success && authResponse.token)  {
         res.cookie('token', authResponse.token);
+    } else {
+        res.redirect('/500');
+        return;
     }
-
-		res.redirect(req.body.redirect ? req.body.redirect : '/');
+    res.redirect(req.body.redirect ? req.body.redirect : '/');
 }
 
 export default userRouter;

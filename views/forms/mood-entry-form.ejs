@@ -20,7 +20,7 @@
         <div class="activity-group-activities">
           <% for (const act of actGroup.activities) { %>
           <div class="activity"><img src="<%- act.image.url %>" alt="<%- act.image.altText %>">
-            <div>Text</div>
+            <div><%- act.activityName %></div>
           </div>
           <% } %>
         </div>
@@ -28,10 +28,12 @@
       <% } %>
     </div>
   </div>
-  <input type="submit" value="Add Entry">
+  <input hidden type="text" id="activities-hidden-input" name="activities">
+  <input hidden type="text" id="mood-hidden-input" name="mood">
+  <input type="button" value="Add Entry" id="mood-entry-form-submit">
 </form>
 
-<script src="/script/mood-entry-new.js"></script>
+<script src="/script/mood-entry-form.js"></script>
 <% } else { %>
-Oh no no no no no hueueueueueue
+Not authorized
 <% } %>
