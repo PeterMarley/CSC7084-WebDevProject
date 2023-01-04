@@ -28,9 +28,9 @@ async function newEntryFormDetails(req: Request, res: Response) {
 
 	// query database and close connection
 	const con = await getConnection();
-	const moods = (await con.execute(mysql2.format(SQL.new.list.moods, [userId])) as Array<any>).at(0);
-	const activities = (await con.execute(mysql2.format(SQL.new.list.activities, [userId])) as Array<any>).at(0);
-	const activityGroups = (await con.execute(mysql2.format(SQL.new.list.activityGroups, [userId])) as Array<any>).at(0);
+	const moods: DbMoodsResult[] = (await con.execute(mysql2.format(SQL.new.list.moods, [userId])) as Array<any>).at(0);
+	const activities: DbActivitiesResult[] = (await con.execute(mysql2.format(SQL.new.list.activities, [userId])) as Array<any>).at(0);
+	const activityGroups: DbActivityGroupsResult[] = (await con.execute(mysql2.format(SQL.new.list.activityGroups, [userId])) as Array<any>).at(0);
 	con.end();
 
 	// process activity groups and activities
@@ -62,10 +62,13 @@ async function newEntryFormDetails(req: Request, res: Response) {
 	});
 
 	// send response
-	res.json(new NewEntryFormResponse(
+	const response = new NewEntryFormResponse(
 		moods.map((mood: any): Mood => moodFactory(mood)),
 		Array.from(activityMap.values())
-	));
+	);
+	console.dir(response);
+
+	res.json(response);
 }
 
 async function newEntry(req: Request, res: Response) {
@@ -180,22 +183,62 @@ async function getEntries(req: Request, res: Response) {
 
 /*******************************************************
  * 
- * SQL STATEMENT STRINGS & FUNCTIONS
+ * DATABASE OPERATIONS
  * 
  *******************************************************/
+interface DbActivityGroupsResult {
+	activityGroupName: string,
+	activityGroupId: string,
+	iconUrl: string,
+	iconAltText: string,
+}
 
-interface dbActivity {
-	entryId: number,
+interface DbActivitiesResult {
 	activityName: string,
-	activityIconUrl: string,
-	activityIconAltText: string,
-	activityGroup: string,
-	activityGroupIconUrl: string,
-	activityGroupIconAltText: string,
+	activityGroupId: string,
+	iconUrl: string,
+	iconAltText: string,
+}
+
+interface DbMoodsResult {
+	moodName: string,
+	moodOrder: string,
+	iconUrl: string,
+	iconAltText: string,
 }
 
 const SQL = {
 	entry: {
+		// 	entries:
+		// 		`SELECT 
+		// 			e.entry_id as entryId,
+		// 			e.timestamp as datetime, 
+		// 			e.notes as notes, 
+		// 			m.name as mood, 
+		// 			mi.url as imageUrl, 
+		// 			mi.alt_text as imageAltText 
+		// 		FROM tbl_entry e
+		// 		INNER JOIN tbl_mood m ON m.mood_id = e.mood_id
+		// 		INNER JOIN tbl_mood_image mi ON mi.mood_image_id = m.icon_image_id
+		// 		WHERE e.user_id = ?
+		// 		LIMIT 50`, // 10 WAS DEFAULT
+		// 	activity:
+		// 		`SELECT 
+		// 			ea.entry_id as entryId,
+		// 			a.name as activityName,
+		// 			ai.url as activityIconUrl,
+		// 			ai.alt_text as activityIconAltText,
+		// 			ag.name as activityGroup,
+		// 			agi.url as activityGroupIconUrl,
+		// 			agi.alt_text as activityGroupIconAltText
+		// 		FROM tbl_entry_activity ea 
+		// 		INNER JOIN tbl_activity a ON ea.activity_id = a.activity_id
+		// 		INNER JOIN tbl_activity_image ai ON a.icon_image_id = ai.activity_image_id
+		// 		INNER JOIN tbl_activity_group ag ON a.activity_group_id = ag.activity_group_id
+		// 		INNER JOIN tbl_activity_group_image agi ON agi.activity_group_image_id = ag.icon_image_id
+		// 		WHERE ea.entry_id IN (?)`,
+		// 	images: 'SELECT url, alt_text as altText, entry_id as entryId FROM tbl_entry_images WHERE entry_id IN (?)'
+		// },
 		entries:
 			`SELECT e.entry_id as entryId,e.timestamp as timestamp, e.notes as entryNotes, m.name as mood, mi.url as iconUrl, mi.alt_text as iconAltText FROM tbl_entry e
 			INNER JOIN tbl_mood m ON m.mood_id = e.mood_id
@@ -223,22 +266,22 @@ const SQL = {
 		list: {
 			moods:
 				`SELECT
-				m.name AS moodName,
-				m.order AS moodOrder,
-				mi.url AS iconUrl,
-				mi.alt_text As iconAltText
-			FROM tbl_mood m
-			LEFT JOIN tbl_mood_image mi ON mi.mood_image_id = m.icon_image_id
-			WHERE m.user_id = ?`,
+					m.name AS moodName,
+					m.order AS moodOrder,
+					mi.url AS iconUrl,
+					mi.alt_text As iconAltText
+				FROM tbl_mood m
+				LEFT JOIN tbl_mood_image mi ON mi.mood_image_id = m.icon_image_id
+				WHERE m.user_id = ?`,
 			activities:
 				`SELECT
-				a.name AS activityName,
-				a.activity_group_id AS activityGroupId,
-				ai.url AS iconUrl,
-				ai.alt_text AS iconAltText
-			FROM tbl_activity a 
-			INNER JOIN tbl_activity_image ai ON ai.activity_image_id = a.icon_image_id
-			WHERE a.user_id = ?`,
+					a.name AS activityName,
+					a.activity_group_id AS activityGroupId,
+					ai.url AS iconUrl,
+					ai.alt_text AS iconAltText
+				FROM tbl_activity a 
+				INNER JOIN tbl_activity_image ai ON ai.activity_image_id = a.icon_image_id
+				WHERE a.user_id = ?`,
 			activityGroups:
 				`SELECT
 					ag.name AS activityGroupName,
@@ -301,6 +344,15 @@ function activityFactory(e: any): { name: string, image: Image, group: { name: s
 			}
 		}
 	};
+}
+
+function activityGroupFactory(e: any) {
+	return {
+		activityGroupName: e.activityGroupName,
+		activityGroupId: e.activityGroupId,
+		image: imageFactory(e.image),
+		activities: e.activities,
+	}
 }
 
 function entryFactory(e: any): Entry {
