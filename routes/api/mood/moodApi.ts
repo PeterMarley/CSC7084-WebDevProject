@@ -28,9 +28,9 @@ async function newEntryFormDetails(req: Request, res: Response) {
 
 	// query database and close connection
 	const con = await getConnection();
-	const moods: DbMoodsResult[] = (await con.execute(mysql2.format(SQL.new.list.moods, [userId])) as Array<any>).at(0);
-	const activities: DbActivitiesResult[] = (await con.execute(mysql2.format(SQL.new.list.activities, [userId])) as Array<any>).at(0);
-	const activityGroups: DbActivityGroupsResult[] = (await con.execute(mysql2.format(SQL.new.list.activityGroups, [userId])) as Array<any>).at(0);
+	const moods: DbMood[] = (await con.execute(mysql2.format(SQL.new.list.moods, [userId])) as Array<any>).at(0);
+	const activities: DbActivity[] = (await con.execute(mysql2.format(SQL.new.list.activities, [userId])) as Array<any>).at(0);
+	const activityGroups: DbActivityGroup[] = (await con.execute(mysql2.format(SQL.new.list.activityGroups, [userId])) as Array<any>).at(0);
 	con.end();
 
 	// process activity groups and activities
@@ -63,7 +63,7 @@ async function newEntryFormDetails(req: Request, res: Response) {
 
 	// send response
 	const response = new NewEntryFormResponse(
-		moods.map((mood: any): Mood => moodFactory(mood)),
+		moods.map((mood: any): Mood => createMood(mood)),
 		Array.from(activityMap.values())
 	);
 	console.dir(response);
@@ -121,7 +121,7 @@ async function getEntries(req: Request, res: Response) {
 	let userId;
 
 	try {
-		userId = new RegExp(numRegex).exec(req.url)?.at(0);
+		userId = parseInt(new RegExp(numRegex).exec(req.url)?.at(0) || '-1');
 	} catch {
 		console.log('regex parsing failed in getEntries()');
 	} finally {
@@ -134,25 +134,27 @@ async function getEntries(req: Request, res: Response) {
 	// get database data & close connection quickly
 	const con = await getConnection();
 	const map = new Map<number, Entry>();
-	// console.log(mysql.format(SQL.entry.entries, [userId]));
 
-	const entries = (await con.execute(mysql2.format(SQL.entry.entries, [userId]))).at(0) as Array<any>;
-	const entryIds = entries.map(e => e.entryId);
+	const entries = ((await con.execute(mysql2.format(SQL.entry.entries, [userId])) as Array<any>).at(0).at(0)) as Array<DbEntry>;
+	const entryIds = entries.map((e: any) => e.entryId).join(',');
 
 	if (entryIds.length === 0) {
 		res.json({});
 		return;
 	}
 
-	const activities = (await con.execute(mysql2.format(SQL.entry.activity, [entryIds]))).at(0) as Array<any>;
-	const entryImages = (await con.execute(mysql2.format(SQL.entry.images, [entryIds]))).at(0) as Array<any>;
+	const activities: Array<DbEntryActivities> =
+		((await con.execute(mysql2.format(SQL.entry.activity, [entryIds])) as Array<any>).at(0).at(0));
+	const entryImages: Array<DbEntriesImagesResult> =
+		((await con.execute(mysql2.format(SQL.entry.images, [entryIds])) as Array<any>).at(0).at(0));
+
 	con.end();
 
 	// process data
 	try {
-		entries.forEach(e => map.set(e.entryId, entryFactory(e)));
-		activities.forEach(e => map.get(e.entryId)?.activities.push(activityFactory(e)));
-		entryImages.forEach(e => map.get(e.entryId)?.images.push(imageFactory(e)));
+		entries.forEach((e: DbEntry) => map.set(e.entryId, createEntry(e)));
+		activities.forEach((a: DbEntryActivities) => map.get(a.entryId)?.activities.push(createActivity(a)));
+		entryImages.forEach((ei: DbEntriesImagesResult) => map.get(ei.entryId)?.images.push(createImage(ei)));
 	} catch (err: any) {
 		res.status(500).json({ error: "server ded. rip." });
 		return;
@@ -186,81 +188,58 @@ async function getEntries(req: Request, res: Response) {
  * DATABASE OPERATIONS
  * 
  *******************************************************/
-interface DbActivityGroupsResult {
+
+interface DbActivityGroup {
 	activityGroupName: string,
 	activityGroupId: string,
 	iconUrl: string,
 	iconAltText: string,
 }
 
-interface DbActivitiesResult {
+interface DbActivity {
 	activityName: string,
 	activityGroupId: string,
 	iconUrl: string,
 	iconAltText: string,
 }
 
-interface DbMoodsResult {
+interface DbMood {
 	moodName: string,
 	moodOrder: string,
 	iconUrl: string,
 	iconAltText: string,
 }
 
+interface DbEntry {
+	entryId: number,
+	timestamp: string,
+	entryNotes: string,
+	mood: string,
+	iconUrl: string,
+	iconAltText: string,
+}
+
+interface DbEntryActivities {
+	entryId: number,
+	activityName: string,
+	activityIconUrl: string,
+	activityIconAltText: string,
+	activityGroup: string,
+	activityGroupIconUrl: string,
+	activityGroupIconAltText: string,
+}
+
+interface DbEntriesImagesResult {
+	url: string,
+	altText: string,
+	entryId: number
+}
+
 const SQL = {
 	entry: {
-		// 	entries:
-		// 		`SELECT 
-		// 			e.entry_id as entryId,
-		// 			e.timestamp as datetime, 
-		// 			e.notes as notes, 
-		// 			m.name as mood, 
-		// 			mi.url as imageUrl, 
-		// 			mi.alt_text as imageAltText 
-		// 		FROM tbl_entry e
-		// 		INNER JOIN tbl_mood m ON m.mood_id = e.mood_id
-		// 		INNER JOIN tbl_mood_image mi ON mi.mood_image_id = m.icon_image_id
-		// 		WHERE e.user_id = ?
-		// 		LIMIT 50`, // 10 WAS DEFAULT
-		// 	activity:
-		// 		`SELECT 
-		// 			ea.entry_id as entryId,
-		// 			a.name as activityName,
-		// 			ai.url as activityIconUrl,
-		// 			ai.alt_text as activityIconAltText,
-		// 			ag.name as activityGroup,
-		// 			agi.url as activityGroupIconUrl,
-		// 			agi.alt_text as activityGroupIconAltText
-		// 		FROM tbl_entry_activity ea 
-		// 		INNER JOIN tbl_activity a ON ea.activity_id = a.activity_id
-		// 		INNER JOIN tbl_activity_image ai ON a.icon_image_id = ai.activity_image_id
-		// 		INNER JOIN tbl_activity_group ag ON a.activity_group_id = ag.activity_group_id
-		// 		INNER JOIN tbl_activity_group_image agi ON agi.activity_group_image_id = ag.icon_image_id
-		// 		WHERE ea.entry_id IN (?)`,
-		// 	images: 'SELECT url, alt_text as altText, entry_id as entryId FROM tbl_entry_images WHERE entry_id IN (?)'
-		// },
-		entries:
-			`SELECT e.entry_id as entryId,e.timestamp as timestamp, e.notes as entryNotes, m.name as mood, mi.url as iconUrl, mi.alt_text as iconAltText FROM tbl_entry e
-			INNER JOIN tbl_mood m ON m.mood_id = e.mood_id
-			INNER JOIN tbl_mood_image mi ON mi.mood_image_id = m.icon_image_id
-			WHERE e.user_id = ?
-			LIMIT 50`, // 10 WAS DEFAULT
-		activity:
-			`SELECT 
-				ea.entry_id as entryId,
-				a.name as activityName,
-				ai.url as activityIconUrl,
-				ai.alt_text as activityIconAltText,
-				ag.name as activityGroup,
-				agi.url as activityGroupIconUrl,
-				agi.alt_text as activityGroupIconAltText
-			FROM tbl_entry_activity ea 
-			INNER JOIN tbl_activity a ON ea.activity_id = a.activity_id
-			INNER JOIN tbl_activity_image ai ON a.icon_image_id = ai.activity_image_id
-			INNER JOIN tbl_activity_group ag ON a.activity_group_id = ag.activity_group_id
-			INNER JOIN tbl_activity_group_image agi ON agi.activity_group_image_id = ag.icon_image_id
-			WHERE ea.entry_id IN (?)`,
-		images: 'SELECT url, alt_text as altText, entry_id as entryId FROM tbl_entry_images WHERE entry_id IN (?)'
+		entries: 'CALL usp_select_entries_by_user_id(?)',
+		activity: 'CALL usp_select_activities_by_entry_ids(?)',
+		images: 'CALL usp_select_entry_images_by_entry_ids(?)'
 	},
 	new: {
 		list: {
@@ -329,7 +308,9 @@ function buildEntryActivitiesSql(entryId: number, activities: string[], activity
  * 
  *******************************************************/
 
-function activityFactory(e: any): { name: string, image: Image, group: { name: string, image: Image } } {
+
+// TODO sort out these object literal return types
+function createActivity(e: any): { name: string, image: Image, group: { name: string, image: Image } } {
 	return {
 		name: e.activityName,
 		image: {
@@ -346,16 +327,16 @@ function activityFactory(e: any): { name: string, image: Image, group: { name: s
 	};
 }
 
-function activityGroupFactory(e: any) {
+function createActivityGroup(e: any) {
 	return {
 		activityGroupName: e.activityGroupName,
 		activityGroupId: e.activityGroupId,
-		image: imageFactory(e.image),
+		image: createImage(e.image),
 		activities: e.activities,
 	}
 }
 
-function entryFactory(e: any): Entry {
+function createEntry(e: any): Entry {
 	return {
 		entryId: e.entryId,
 		datetime: e.timestamp,
@@ -372,14 +353,14 @@ function entryFactory(e: any): Entry {
 	};
 }
 
-function imageFactory(e: any): Image {
+function createImage(e: any): Image {
 	return {
 		url: e.url,
 		altText: e.altText
 	}
 }
 
-function moodFactory(e: any): Mood {
+function createMood(e: any): Mood {
 	return {
 		name: e.moodName,
 		image: {
@@ -428,11 +409,14 @@ interface Mood {
 	image: Image
 }
 
+
 /*******************************************************
  * 
  * RESPONSE OBJECTS
  * 
  *******************************************************/
+
+
 
 class NewEntryFormResponse {
 	moods: Mood[];
