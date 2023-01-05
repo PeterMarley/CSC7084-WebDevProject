@@ -51,7 +51,7 @@ if (authed) { // if authenticated
     </div>
     <div class="mood-day-entry--activities">
       <% for (const activity of activities) { %>
-      <%- activity.name %> <img src="<%- activity.image.url %>" alt="<%- activity.image.altText %>" height="24px" width="24px">
+      <%- activity.activityName %> <img src="<%- activity.image.url %>" alt="<%- activity.image.altText %>" height="24px" width="24px">
       <% } %>
     </div>
     <div class="mood-day-entry--notes">
