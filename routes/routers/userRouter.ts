@@ -15,6 +15,7 @@ userRouter.get('/login', loginGet);
 
 userRouter.post('/login', loginPost);
 
+userRouter.get('/loginfailed', loginFailed)
 // register
 
 userRouter.get('/register', registerGet);
@@ -30,6 +31,10 @@ userRouter.delete('/deleteuser', deleteUser);
  * MIDDLEWEAR
  * 
  *******************************************************/
+
+function loginFailed(req: Request, res: Response) {
+    res.render('test');
+}
 
 function registerGet(req: Request, res: Response) {
     res.render('register');
@@ -60,6 +65,22 @@ async function deleteUser(req: Request, res: Response, next: NextFunction) {
 }
 
 async function registerPost(req: Request, res: Response, next: NextFunction) {
+    
+    const errors: String[] = [];
+
+    if (req.method.toUpperCase() != 'POST') errors.push('cannotget')
+    if (!req.body) errors.push('nobody');
+    if (!req.body.username) errors.push('nousername');
+    if (!req.body.email) errors.push('noemail');
+    if (!req.body.password) errors.push('nopassword');
+
+    if (errors.length > 0) {
+        res.statusCode = 401;
+        // TODO expand this       
+        res.redirect('/register?vals=' + errors.join('-'));
+        return;
+    }
+
     const registrationResponse: RegistrationResponse = await apiCall(
         'POST',
         'http://localhost:3000/api/auth/register',
@@ -74,23 +95,38 @@ async function registerPost(req: Request, res: Response, next: NextFunction) {
 }
 
 async function loginPost(req: Request, res: Response, next: NextFunction) {
-    if (!req.body || !req.body.username || !req.body.password) {
+    // validate request
+    const errors: String[] = [];
+
+    if (req.method.toUpperCase() != 'POST') errors.push('cannotget')
+    if (!req.body) errors.push('nobody');
+    if (!req.body.username) errors.push('nousername');
+    if (!req.body.password) errors.push('nopassword');
+
+    if (errors.length > 0) {
         res.statusCode = 401;
-        res.send('invalid login post body');
+        res.locals.validations = errors;
+        // TODO expand this       
+        res.render('loginfailed');//?vals=' + errors.join('-')
         return;
     }
 
+    // cal auth api to check username/ password combination
     const { username, password } = req.body;
-    //const authResponse = await apiCheckPassword(username, password);
     const authResponse = await apiCall(
         'POST',
         'http://localhost:3000/api/auth/login',
         new URLSearchParams([['username', username], ['password', password]])
     );
 
-    // build response
-    if (authResponse.success && authResponse.token)  {
+    // build response & redirect as appropriate
+    if (authResponse.success && authResponse.token) {
         res.cookie('token', authResponse.token);
+    } else if (!authResponse.success) {
+        //res.redirect('/login?vals=loginfail');
+        res.locals.validations = ['login-unsuccessful'];
+        res.render('loginfailed');
+        return;
     } else {
         res.redirect('/500');
         return;

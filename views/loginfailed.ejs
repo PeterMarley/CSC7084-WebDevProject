@@ -1,5 +1,8 @@
 <%- include('partials/top.ejs') %>
 
 Login was unsuccessful, sorry not sorry
+<% for (const x of validations) { //TODO expand these validations from userRouter%>
+    <p><%-x%></p>
+<%}%>
 
 <%- include('partials/bottom.ejs') %>
