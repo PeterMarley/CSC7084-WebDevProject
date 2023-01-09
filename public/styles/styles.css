@@ -1,3 +1,11 @@
+:root {
+  --dark: #07689F;
+  --middle: #A2D5F2;
+  --light: #CEE8F6;
+  --offwhite: #FAFAFA;
+  --accent: #FF7E67;
+}
+
 /****************************
   FONTS
 ****************************/
@@ -28,26 +36,31 @@ body {
 ****************************/
 
 #header {
-  background-color: rgb(88, 101, 242);
+  background-color: var(--dark);
   padding: 10px;
   display: flex;
   align-items: center;
-  border-bottom: 2px solid rgb(67, 81, 240);
+  border-bottom: 2px solid var(--middle);
+  font-size: 1rem;
   /* box-shadow: inset 0px -20px 25px -20px white; */
 }
 
+#header a {
+  color: #000000;
+  text-decoration: none;
+}
+
 #header>div:not(:first-child) {
-  background-color: rgb(199, 199, 199);
+  background-color: var(--offwhite);
   margin-left: 10px;
-  border-radius: 15px;
-  border: 3px solid grey;
-  height: 2rem;
+  border-radius: 0.5rem;
+  border: 2px solid var(--middle);
   padding: 10px;
   transition: background-color 0.5s ease;
 }
 
 #header>div:not(:first-child):hover {
-  background-color: rgb(138, 137, 137);
+  background-color: var(--accent);
 }
 
 #header>div:last-child {
@@ -60,36 +73,30 @@ body {
 }
 
 /****************************
- NAV
-****************************/
-
-nav {
-  /* display: none; */
-}
-
-/****************************
   BODY
 ****************************/
 
 #body {
-  background-color: white;
+  background-color: var(--offwhite);
   display: flex;
   flex-direction: row;
   flex-grow: 1;
 	width: 100vw;
 }
 
+#body>* {
+  margin: 10px;
+}
+
 nav {
-  display: none;
+  /* display: none; */
   width: 20%;
-  background-color: bisque;
-  margin: 10px 0px 10px 10px;
+  background-color: red;
 }
 
 #body>div {
   background-color: bisque;
   flex-grow: 1;
-  margin: 0px;
 }
 
 /****************************
@@ -169,6 +176,59 @@ nav {
 
 .mood-day-entry--images>img {
   max-width: 100%;
+}
+
+/****************************
+  GENERAL FORM
+****************************/
+.bigform  {
+  display: grid;
+  justify-content: center;
+  justify-items: center;
+}
+
+.bigform .row {
+  display: grid;
+}
+
+.bigform>div {
+  display: grid;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid var(--middle);
+  background-color: var(--offwhite);
+  padding: 10px;
+  border-radius: 0.2em;
+}
+
+.bigform input[type="text"],
+.bigform input[type="password"] {
+  border: 1px solid black;
+  padding: 2px 10px 2px 10px;
+  border-radius: 0.3em
+}
+
+.bigform input[type="submit"] {
+  border: 1px solid var(--middle);
+  background-color: var(--light);
+  border-radius: 0.2em;
+  max-width: 200px;
+}
+
+.bigform input[type="submit"]:hover {
+  background-color: var(--accent);
+  transition: background-color 0.5s ease;
+}
+
+.bigform .submitdiv {
+  display: flex;
+  justify-content: center;
+}
+
+.bigform label {
+  text-transform: uppercase;
+  font-size: 0.8em;
+  letter-spacing: 0.05em;
 }
 
 /****************************
