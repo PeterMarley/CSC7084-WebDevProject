@@ -1,14 +1,22 @@
-<% if (authed) { %>
+<% 
+if (authed) { 
+%>
 <form method="POST" action="/entry/new" id="mood-entry-form">
   <div class="mood-selection-container">
+
     <div class="mood-selection">
-      <% for (const mood of formData.moods) { %>
-      <span class="mood">
+      <% 
+      console.log(formData);
+      for (const mood of formData.moods) {
+      const selector = formData.entry && formData.entry.mood.name == mood.name ? 'selected mood' : 'mood'; %>
+
+      <span class="<%- selector %>">
         <span><img src="<%- mood.image.url %>" class="mood-image"></span>
         <span class="mood-name"><%- mood.name %></span>
       </span>
       <% } %>
     </div>
+
   </div>
   <textarea name="notes" id="mood-entry-notes"></textarea>
   <div class="activity-selection-container">
@@ -32,8 +40,6 @@
   <input hidden type="text" id="mood-hidden-input" name="mood">
   <input type="button" value="Add Entry" id="mood-entry-form-submit">
 </form>
-
-<script src="/script/mood-entry-form.js"></script>
 <% } else { %>
 Not authorized
 <% } %>

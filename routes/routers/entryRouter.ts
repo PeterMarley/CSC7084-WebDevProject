@@ -16,12 +16,25 @@ entryRouter.use(cookieParser())
 entryRouter.get('/list', getList);
 entryRouter.get('/new', getNew);
 entryRouter.post('/new', postNew);
+entryRouter.get('/edit/:entryId', getEdit);
 
 /*******************************************************
  * 
  * MIDDLEWARE
  * 
  *******************************************************/
+
+async function getEdit(req: Request, res: Response) {
+	const entryData = await apiCall('GET', 'http://localhost:3000/api/mood/entry/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId);
+
+	res.locals.formData = entryData || {};
+	res.locals.action = 'edit';
+	res.locals.entryAdded = false;
+
+	// console.log(res.locals.formData);
+	
+	res.render('mood-entry-edit');
+}
 
 async function postNew(req: Request, res: Response) {
 	const { mood, activities, notes } = req.body;
@@ -46,13 +59,15 @@ async function getNew(req: Request, res: Response) {
 	const response = await apiCall('GET', 'http://localhost:3000/api/mood/entry/new/' + (res.locals.id ? res.locals.id : ''));
 
 	res.locals.formData = response || {};
+	res.locals.action = 'new';
 	res.locals.entryAdded = false;
+	
 	res.render('mood-entry-new');
 }
 
 async function getList(req: Request, res: Response) {
 	const response = await apiCall('GET', 'http://localhost:3000/api/mood/entry/list/' + (res.locals.id ? res.locals.id : ''));
-
+	
 	res.locals.entries = response || {};
 	res.render('mood-entry-list');
 }

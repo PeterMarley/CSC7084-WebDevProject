@@ -153,14 +153,19 @@ nav {
 
 .mood-day-entry--mood {
   margin-top: 0px;
+  display: flex;
 }
 
 .mood-day-entry--mood>span:first-child {
   font-weight: bold;
 }
 
-.mood-day-entry--mood>span:last-child {
+.mood-day-entry--mood>span:nth-last-child(2) {
   font-size: 0.75em;
+}
+
+.mood-day-entry--mood>span:last-child {
+  margin-left: auto;
 }
 
 .mood-day-entry>div:last-child {

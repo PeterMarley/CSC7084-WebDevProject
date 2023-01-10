@@ -1,3 +1,9 @@
+/*******************************************************
+ * 
+ * CONFIGURATION
+ * 
+ *******************************************************/
+
 import express, { Request, Response, NextFunction } from 'express';
 import getConnection from '../../../lib/dbConnection';
 import mysql2, { Connection } from 'mysql2';
@@ -6,16 +12,42 @@ const moodAPI = express.Router();
 
 moodAPI.use(express.urlencoded({ extended: false }));
 
+const SQL = {
+	getEntries: {
+		entries: 'CALL usp_select_entries_by_user_id(?)',
+		activity: 'CALL usp_select_activities_by_entry_ids(?)',
+		images: 'CALL usp_select_entry_images_by_entry_ids(?)'
+	},
+	newEntry: {
+		entryComponents: {
+			moods: 'CALL usp_select_moods_by_user_id(?)',
+			activities: 'CALL usp_select_activities_by_user_id(?)',
+			activityGroups: 'CALL usp_select_activity_groups_by_user_id(?)'
+		},
+		addEntry: {
+			getMoodId: ' CALL usp_select_mood_by_user_id_and_mood_name(?, ?)',
+			getActivities: 'CALL usp_select_activities_by_user_id_and_activity_names(?,?)',
+			insertEntry: 'CALL usp_insert_entry(?, ?, ?)',
+			insertActivity: {
+				insert: `INSERT INTO tbl_entry_activity (entry_id, activity_id) VALUES `,
+				values: `(?, ?)`,
+			}
+		}
+	},
+	getSingleEntry: 'CALL usp_select_entry_by_user_id_and_entry_id(?, ?)',
+}
+
 /*******************************************************
  * 
  * ROUTES
  * 
  *******************************************************/
 
-const numRegex = '[0-9]{1,}';
-moodAPI.get('/entry/new/' + numRegex, newEntryFormDetails)
-moodAPI.post('/entry/new/' + numRegex, newEntry);
-moodAPI.get('/entry/list/' + numRegex, getEntries);
+const ENTRY_ROUTE = '/entry';
+moodAPI.get(ENTRY_ROUTE + '/new/:userId', newEntryFormDetails)
+moodAPI.post(ENTRY_ROUTE + '/new/:userId', newEntryPost);
+moodAPI.get(ENTRY_ROUTE + '/list/:id', getEntries);
+moodAPI.get(ENTRY_ROUTE + '/:userId/:entryId', newEntryFormDetails, getEntry);
 
 /*******************************************************
  * 
@@ -23,8 +55,39 @@ moodAPI.get('/entry/list/' + numRegex, getEntries);
  * 
  *******************************************************/
 
-async function newEntryFormDetails(req: Request, res: Response) {
-	const userId = parseInt(new RegExp(numRegex).exec(req.url)?.at(0)!);
+async function getEntry(req: Request, res: Response) {
+	// get ids from route params
+	const entryId = parseInt(req.params.entryId);
+	const userId = parseInt(req.params.userId);
+
+	// validate ids
+	const errors: string[] = [];
+	if (!entryId) errors.push('no-entry-id');
+	if (!userId) errors.push('no-user-id');
+	if (errors.length !== 0) {
+		res.status(401).json({ success: false, errors });
+		return;
+	}
+
+	// do the thing
+	const con = await getConnection();
+	const moods: IDbMood[] = (await con.execute(mysql2.format(SQL.newEntry.entryComponents.moods, [userId])) as Array<any>)[0][0];
+	// console.log(moods);
+
+	const response = (await con.execute(mysql2.format(SQL.getSingleEntry, [userId, entryId])) as Array<any>)[0][0][0];
+
+	response.mood = moods.at(moods.findIndex((e: IDbMood) => e.moodId === response.moodId))?.moodName;
+	// console.log(response);
+
+	// res.json({entry: response, formData: res.locals.formData});
+	res.locals.formData.entry = new Entry(response);
+
+	res.json(res.locals.formData);
+}
+
+async function newEntryFormDetails(req: Request, res: Response, next: NextFunction) {
+	// get userid from url
+	const userId = req.params.userId;
 
 	// query database and close connection
 	const con = await getConnection();
@@ -63,32 +126,37 @@ async function newEntryFormDetails(req: Request, res: Response) {
 
 	// send response
 	const response = new NewEntryFormResponse(
-		moods.map((mood: any): IMood => new Mood(mood)),
+		moods.map((mood: IDbMood): IMood => new Mood(mood)),
 		Array.from(activityMap.values())
 	);
 
+	if (parseInt(req.params.entryId)) {
+		res.locals.formData = response;
+		next();
+		return;
+	}
 	res.json(response);
 }
 
-async function newEntry(req: Request, res: Response) {
+async function newEntryPost(req: Request, res: Response) {
 	let success = false;
 
 	let con: any;
 
 	try {
-		const userId = parseInt(new RegExp(numRegex).exec(req.url)?.at(0)!);
+		const userId = req.params.userId;
 		const { mood: moodName, activities, notes } = req.body;
 		con = await getConnection();
 		// TODO limit number of entries than can be added to a single day maybe?
-		
+
 		// get mood id
 
 		const { moodId }: { moodId: number } = (await con.execute(mysql2.format(SQL.newEntry.addEntry.getMoodId, [moodName, userId])) as Array<any>)[0][0][0];
-		
+
 		// add entry & get id
 		const { entryId } = (await con.execute(mysql2.format(SQL.newEntry.addEntry.insertEntry, [notes, userId, moodId])) as any)[0][0][0];
-		
-		
+
+
 		// add activities
 		const activitiesQueryResult: Array<{ activityId: number, activityName: string, url: string, altText: string }> =
 			((await con.execute(mysql2.format(SQL.newEntry.addEntry.getActivities, [userId, req.body.activities]))) as Array<any>).at(0).at(0);
@@ -106,9 +174,9 @@ async function newEntry(req: Request, res: Response) {
 	} catch (err: any) {
 		req.statusCode = 500;
 		console.log(err.message);
-		
+
 	} finally {
-		if (con !== undefined && Object.hasOwnProperty('end')) con.end();
+		if (con !== undefined && con.hasOwnProperty('end')) con.end();
 	}
 
 	res.json({ success });
@@ -118,17 +186,11 @@ async function getEntries(req: Request, res: Response) {
 
 	// validate user id
 	//const userId = parseInt(req.url.replace(ENTRY, ''));
-	let userId;
+	const userId = req.params.id;
 
-	try {
-		userId = parseInt(new RegExp(numRegex).exec(req.url)?.at(0) || '-1');
-	} catch {
-		console.log('regex parsing failed in getEntries()');
-	} finally {
-		if (userId === null || userId === undefined || Number.isNaN(userId)) {
-			res.status(400).json({ success: false });
-			return;
-		}
+	if (userId === null || userId === undefined || Number.isNaN(userId)) {
+		res.status(400).json({ success: false });
+		return;
 	}
 
 	// get database data & close connection quickly
@@ -202,6 +264,7 @@ interface IDbActivity {
 }
 
 interface IDbMood {
+	moodId: number,
 	moodName: string,
 	moodOrder: string,
 	iconUrl: string,
@@ -233,34 +296,10 @@ interface DbEntriesImages {
 	entryId: number
 }
 
-const SQL = {
-	getEntries: {
-		entries: 'CALL usp_select_entries_by_user_id(?)',
-		activity: 'CALL usp_select_activities_by_entry_ids(?)',
-		images: 'CALL usp_select_entry_images_by_entry_ids(?)'
-	},
-	newEntry: {
-		entryComponents: {
-			moods: 'CALL usp_select_moods_by_user_id(?)',
-			activities: 'CALL usp_select_activities_by_user_id(?)',
-			activityGroups: 'CALL usp_select_activity_groups_by_user_id(?)'
-		},
-		addEntry: {
-			getMoodId: ' CALL usp_select_mood_by_user_id_and_mood_name(?, ?)',
-			getActivities: 'CALL usp_select_activities_by_user_id_and_activity_names(?,?)',
-			insertEntry: 'CALL usp_insert_entry(?, ?, ?)',
-			insertActivity: {
-				insert: `INSERT INTO tbl_entry_activity (entry_id, activity_id) VALUES `,
-				values: `(?, ?)`,
-			}
-		}
-	}
-}
+
 
 function buildEntryActivitiesSql(entryId: number, activities: string[], activityMap: Map<string, number>) {
 	let sql = SQL.newEntry.addEntry.insertActivity.insert;
-	// console.log(activities);
-	// console.log(activityMap.get('Work'));
 	activities.forEach(e => sql += mysql2.format(SQL.newEntry.addEntry.insertActivity.values, [entryId, activityMap.get(e)]) + ',');
 	return sql.substring(0, sql.length - 1);
 }
@@ -312,7 +351,7 @@ class Image implements IImage {
 interface IEntry {
 	entryId: number,
 	datetime: Date,
-	mood: IMood,
+	mood: IMood, //| string,
 	notes: string,
 	images: IImage[],
 	activities: IActivity[],
@@ -321,12 +360,13 @@ interface IEntry {
 class Entry implements IEntry {
 	entryId: number;
 	datetime: Date;
-	mood: IMood;
+	mood: IMood;// | string;
 	notes: string;
 	images: IImage[];
 	activities: IActivity[];
 
 	constructor(data: IDbEntry) {
+
 		this.entryId = data.entryId;
 		this.datetime = new Date(data.timestamp);
 		this.mood = {
@@ -349,10 +389,12 @@ interface IMood {
 }
 
 class Mood implements IMood {
+	moodId: number;
 	name: string;
 	image: IImage;
 
 	constructor(iMood: IDbMood) {
+		this.moodId = iMood.moodId
 		this.name = iMood.moodName;
 		this.image = {
 			url: iMood.iconUrl,
@@ -370,11 +412,6 @@ interface IActivityGroup {
 	image: IImage,
 	activities: IActivity[],
 }
-
-
-
-
-
 
 
 /*******************************************************
