@@ -58,7 +58,7 @@ async function postNew(req: Request, res: Response) {
 async function getNew(req: Request, res: Response) {
 	const response = await apiCall('GET', 'http://localhost:3000/api/mood/entry/new/' + (res.locals.id ? res.locals.id : ''));
 
-	res.locals.formData = response || {};
+	res.locals.entryFormData = response || {};
 	res.locals.action = 'new';
 	res.locals.entryAdded = false;
 	

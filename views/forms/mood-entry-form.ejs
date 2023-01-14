@@ -6,27 +6,60 @@ if (authed) {
 
     <div class="mood-selection">
       <% 
-      console.log(formData);
-      for (const mood of formData.moods) {
-      const selector = formData.entry && formData.entry.mood.name == mood.name ? 'selected mood' : 'mood'; %>
+      console.log('entryFormData:');
+      console.log(entryFormData);
+      for (const mood of entryFormData.moods) {
+        const selector = (entryFormData.entry && entryFormData.entry.mood.name == mood.name ? 'selected ' : '') + 'mood'; 
+      %>
 
       <span class="<%- selector %>">
         <span><img src="<%- mood.image.url %>" class="mood-image"></span>
         <span class="mood-name"><%- mood.name %></span>
       </span>
-      <% } %>
+      <% 
+      } 
+      %>
     </div>
 
   </div>
-  <textarea name="notes" id="mood-entry-notes"></textarea>
+  <textarea name="notes" id="mood-entry-notes">
+  <%_ if (entryFormData.entry && entryFormData.entry.notes) { %>
+    <%- entryFormData.entry.notes %>
+  <% } %>
+  </textarea>
   <div class="activity-selection-container">
     <div class="activity-selection">
       Activity Groups
-      <% for (const actGroup of formData.activityGroups) { %>
+      <% 
+      for (const actGroup of entryFormData.activityGroups) { 
+        // const a = entryFormData.entry.activities.filter(e => {
+        //   return e.activityGroupId === actGroup.activityGroupId;
+        //   console.log('e.activityGroupId: ', e.activityGroupId);
+        //   console.log('actGroup.activityGroupId: ', actGroup.activityGroupId);
+        // });
+        // console.log('===actgroup===');
+        // console.log(actGroup);
+        // const a = entryFormData.entry.activities.map(e => {
+        //   return e.activityId;
+        //   console.log('e.activityGroupId: ', e.activityGroupId);
+        //   console.log('actGroup.activityGroupId: ', actGroup.activityGroupId);
+        // });
+
+
+        // console.log('===actgroup===');
+        // console.log(actGroup);
+        // console.log('===a===');
+        // console.log(a);
+      %>
       <div class="activity-group">
         <div class="activity-group-name"><img src="<%- actGroup.image.url %>" alt="<%- actGroup.image.altText %>"><span><%- actGroup.activityGroupName %></span></div>
         <div class="activity-group-activities">
-          <% for (const act of actGroup.activities) { %>
+          <% 
+          for (const act of actGroup.activities) { 
+            // console.log('===act===');
+            // console.log(act);
+            //const selector = a.find(e => e) 'activity';
+          %>
           <div class="activity"><img src="<%- act.image.url %>" alt="<%- act.image.altText %>">
             <div><%- act.activityName %></div>
           </div>

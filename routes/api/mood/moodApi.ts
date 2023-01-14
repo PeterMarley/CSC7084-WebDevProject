@@ -34,7 +34,20 @@ const SQL = {
 			}
 		}
 	},
-	getSingleEntry: 'CALL usp_select_entry_by_user_id_and_entry_id(?, ?)',
+	getSingleEntry: {
+		entry: 'CALL usp_select_entry_by_user_id_and_entry_id(?, ?)',
+		entryActivities: //'SELECT * FROM tbl_activity WHERE user_id=? AND entry_id=?'
+			`SELECT 
+			a.name as activityName,
+			a.activity_id as activityId,
+			a.activity_group_id as activityGroupId,
+			e.entry_id
+		FROM tbl_entry_activity ea
+		INNER JOIN tbl_activity a ON ea.activity_id = a.activity_id
+		INNER JOIN tbl_activity_group ag ON a.activity_group_id = ag.activity_group_id
+		INNER JOIN tbl_entry e ON e.entry_id = ea.entry_id
+		WHERE ea.entry_id=?`
+	}
 }
 
 /*******************************************************
@@ -47,7 +60,7 @@ const ENTRY_ROUTE = '/entry';
 moodAPI.get(ENTRY_ROUTE + '/new/:userId', newEntryFormDetails)
 moodAPI.post(ENTRY_ROUTE + '/new/:userId', newEntryPost);
 moodAPI.get(ENTRY_ROUTE + '/list/:id', getEntries);
-moodAPI.get(ENTRY_ROUTE + '/:userId/:entryId', newEntryFormDetails, getEntry);
+//moodAPI.get(ENTRY_ROUTE + '/:userId/:entryId', newEntryFormDetails, getEntry);
 
 /*******************************************************
  * 
@@ -72,22 +85,43 @@ async function getEntry(req: Request, res: Response) {
 	// do the thing
 	const con = await getConnection();
 	const moods: IDbMood[] = (await con.execute(mysql2.format(SQL.newEntry.entryComponents.moods, [userId])) as Array<any>)[0][0];
+	const activities: IDbActivity[] = (await con.execute(mysql2.format(SQL.newEntry.entryComponents.activities, [userId])) as Array<any>).at(0).at(0);
+	const activityGroups: IDbActivityGroup[] = (await con.execute(mysql2.format(SQL.newEntry.entryComponents.activityGroups, [userId])) as Array<any>).at(0).at(0);
+
 	// console.log(moods);
 
-	const response = (await con.execute(mysql2.format(SQL.getSingleEntry, [userId, entryId])) as Array<any>)[0][0][0];
+	const response = (await con.execute(mysql2.format(SQL.getSingleEntry.entry, [userId, entryId])) as Array<any>)[0][0][0];
+	const entryActivities = (await con.execute(mysql2.format(SQL.getSingleEntry.entryActivities, [entryId])) as Array<any>)[0];
+	// console.log('entryActivities');
+	// console.log(entryActivities);
+	con.end();
+
+
+
 
 	response.mood = moods.at(moods.findIndex((e: IDbMood) => e.moodId === response.moodId))?.moodName;
+
+	//console.log(entryActivities);
+	response.activities = entryActivities;
+	console.log(response);
+
+	//response.entryActivities = entryActivities;
+	// activities.filter(a => {
+
+	// });
 	// console.log(response);
 
 	// res.json({entry: response, formData: res.locals.formData});
-	res.locals.formData.entry = new Entry(response);
+	//res.locals.formData.entry = new Entry(response);
+	// console.log(res.locals.formData.entry);
 
+	// res.locals.entryData = new EditEntryFormResponse();
 	res.json(res.locals.formData);
 }
 
 async function newEntryFormDetails(req: Request, res: Response, next: NextFunction) {
 	// get userid from url
-	const userId = req.params.userId;
+	const userId = Number(req.params.userId);
 
 	// query database and close connection
 	const con = await getConnection();
@@ -97,45 +131,30 @@ async function newEntryFormDetails(req: Request, res: Response, next: NextFuncti
 	con.end();
 
 	// process activity groups and activities
-	let activityMap = new Map<number, IActivityGroup>();
-
-	activityGroups.forEach((ag: any) => {
-		const { activityGroupName, activityGroupId, iconUrl: url, iconAltText: altText } = ag;
-		activityMap.set(ag.activityGroupId, {
-			activityGroupName,
-			activityGroupId,
-			image: {
-				url,
-				altText
-			},
-			activities: []
-		});
+	const activityMap = new Map<number, ActivityGroup>();
+	activityGroups.forEach((activityGroup: IDbActivityGroup) => {
+		const { activityGroupName, iconUrl, iconAltText } = activityGroup;
+		const activityGroupId = parseInt(activityGroup.activityGroupId);
+		activityMap.set(activityGroupId, new ActivityGroup(activityGroupName, activityGroupId, new Image(iconUrl, iconAltText)));
+	});
+	activities.forEach((activity: any) => {
+		const { activityName, activityGroupId, iconUrl, iconAltText, activityId } = activity;
+		activityMap.get(activityGroupId)?.activities.push(new Activity(activityName, activityId, new Image(iconUrl, iconAltText)));
 	});
 
-	activities.forEach((a: any) => {
-		const { activityName, activityGroupId, iconUrl: url, iconAltText: altText } = a;
-		activityMap.get(activityGroupId)?.activities.push({
-			activityName,
-			activityGroupId,
-			image: {
-				url,
-				altText
-			}
-		});
-	});
-
-	// send response
-	const response = new NewEntryFormResponse(
-		moods.map((mood: IDbMood): IMood => new Mood(mood)),
+	// build response
+	const entryFormData = new NewEntryFormResponse(
+		moods.map((mood: IDbMood): Mood => new Mood(mood.moodId, mood.moodName, new Image(mood.iconUrl, mood.iconAltText))),
 		Array.from(activityMap.values())
 	);
 
-	if (parseInt(req.params.entryId)) {
-		res.locals.formData = response;
+	// if entry id and user id specified in parameter (therefore an edit entry action) then call next method, otherwise, return response object
+	if (req.params.entryId && req.params.user_id) {
+		res.locals.entryFormData = entryFormData;
 		next();
 		return;
 	}
-	res.json(response);
+	res.json(entryFormData);
 }
 
 async function newEntryPost(req: Request, res: Response) {
@@ -145,29 +164,28 @@ async function newEntryPost(req: Request, res: Response) {
 
 	try {
 		const userId = req.params.userId;
-		const { mood: moodName, activities, notes } = req.body;
+		const { mood: moodNameForm, activities: activitesDelimitedStrForm, notes: notesForm } = req.body;
 		con = await getConnection();
 		// TODO limit number of entries than can be added to a single day maybe?
 
 		// get mood id
 
-		const { moodId }: { moodId: number } = (await con.execute(mysql2.format(SQL.newEntry.addEntry.getMoodId, [moodName, userId])) as Array<any>)[0][0][0];
+		const moodId: number = (await con.execute(mysql2.format(SQL.newEntry.addEntry.getMoodId, [moodNameForm, userId])) as Array<any>)[0][0][0].moodId;
 
 		// add entry & get id
-		const { entryId } = (await con.execute(mysql2.format(SQL.newEntry.addEntry.insertEntry, [notes, userId, moodId])) as any)[0][0][0];
+		const entryId: number = (await con.execute(mysql2.format(SQL.newEntry.addEntry.insertEntry, [notesForm, userId, moodId])) as any)[0][0][0].entryId;
 
 
 		// add activities
-		const activitiesQueryResult: Array<{ activityId: number, activityName: string, url: string, altText: string }> =
-			((await con.execute(mysql2.format(SQL.newEntry.addEntry.getActivities, [userId, req.body.activities]))) as Array<any>).at(0).at(0);
+		const activitiesSelectSql = mysql2.format(SQL.newEntry.addEntry.getActivities, [userId, activitesDelimitedStrForm]);
+		const activities: IDbActivity[] = (await con.execute(activitiesSelectSql) as Array<any>)[0][0];
 
 		const activityMap = new Map<string, number>();
-		activitiesQueryResult.forEach((a: { activityName: string, activityId: number }) => activityMap.set(a.activityName, a.activityId));
+		activities.forEach((a: IDbActivity) => activityMap.set(a.activityName, a.activityId));
 
+		const entryActivitiesInsertSQL = buildEntryActivitiesSql(entryId, activitesDelimitedStrForm.split(','), activityMap);
 
-		const insertEntryActivitiesSQL = buildEntryActivitiesSql(entryId, activities.split(','), activityMap);
-
-		await con.execute(insertEntryActivitiesSQL);
+		await con.execute(entryActivitiesInsertSQL);
 
 		success = true;
 
@@ -195,7 +213,7 @@ async function getEntries(req: Request, res: Response) {
 
 	// get database data & close connection quickly
 	const con = await getConnection();
-	const map = new Map<number, IEntry>();
+	const map = new Map<number, Entry>();
 
 	const entries = ((await con.execute(mysql2.format(SQL.getEntries.entries, [userId])) as Array<any>).at(0).at(0)) as Array<IDbEntry>;
 	const entryIds = entries.map((e: any) => e.entryId).join(',');
@@ -212,9 +230,18 @@ async function getEntries(req: Request, res: Response) {
 
 	// process data
 	try {
-		entries.forEach((e: IDbEntry) => map.set(e.entryId, new Entry(e)));
-		activities.forEach((a: IDbEntryActivities) => map.get(a.entryId)?.activities.push(new Activity(a)));
-		entryImages.forEach((ei: DbEntriesImages) => map.get(ei.entryId)?.images.push(new Image(ei)));
+		entries.forEach((dbEntry: IDbEntry) => {
+			const { entryId, timestamp, moodId, mood, moodIconUrl, moodIconAltText, entryNotes } = dbEntry;
+			map.set(entryId, new Entry(entryId, timestamp, moodId, mood, new Image(moodIconUrl, moodIconAltText), entryNotes))
+		});
+		activities.forEach((dbActivity: IDbEntryActivities) => {
+			const { entryId, activityName, activityId, activityIconUrl, activityIconAltText } = dbActivity;
+			map.get(entryId)?.activities.push(new Activity(activityName, activityId, new Image(activityIconUrl, activityIconAltText)))
+		});
+		entryImages.forEach((entryImage: DbEntriesImages) => {
+			const { entryId, url, altText } = entryImage;
+			map.get(entryId)?.images.push(new Image(url, altText))
+		});
 	} catch (err: any) {
 		res.status(500).json({ error: "server ded. rip." });
 		return;
@@ -233,19 +260,22 @@ async function getEntries(req: Request, res: Response) {
 
 	// sort entries mapped to each day by datetime
 	for (const property of Object.getOwnPropertyNames(response)) {
-		response[property].sort((a: IEntry, b: IEntry) => {
-			if (a.datetime < b.datetime) return -1;
-			if (a.datetime > b.datetime) return 1;
+		response[property].sort((a: Entry, b: Entry) => {
+			if (a.datetime.getTime() < b.datetime.getTime()) return -1;
+			if (a.datetime.getTime() > b.datetime.getTime()) return 1;
 			return 0;
 		});
 	}
-
+	console.log(response);
+	
 	res.status(200).json(response);
 }
 
 /*******************************************************
  * 
- * DATABASE OPERATIONS
+ * Database Result Interfaces
+ * 
+ * These describe the objects returned from database queries
  * 
  *******************************************************/
 
@@ -258,6 +288,7 @@ interface IDbActivityGroup {
 
 interface IDbActivity {
 	activityName: string,
+	activityId: number,
 	activityGroupId: string,
 	iconUrl: string,
 	iconAltText: string,
@@ -276,6 +307,7 @@ interface IDbEntry {
 	timestamp: string,
 	entryNotes: string,
 	mood: string,
+	moodId: number,
 	moodIconUrl: string,
 	moodIconAltText: string,
 }
@@ -283,6 +315,7 @@ interface IDbEntry {
 interface IDbEntryActivities {
 	entryId: number,
 	activityName: string,
+	activityId: number,
 	activityIconUrl: string,
 	activityIconAltText: string,
 	activityGroup: string,
@@ -296,8 +329,6 @@ interface DbEntriesImages {
 	entryId: number
 }
 
-
-
 function buildEntryActivitiesSql(entryId: number, activities: string[], activityMap: Map<string, number>) {
 	let sql = SQL.newEntry.addEntry.insertActivity.insert;
 	activities.forEach(e => sql += mysql2.format(SQL.newEntry.addEntry.insertActivity.values, [entryId, activityMap.get(e)]) + ',');
@@ -306,113 +337,78 @@ function buildEntryActivitiesSql(entryId: number, activities: string[], activity
 
 /*******************************************************
  * 
- * Interfaces and Classes
+ * Classes
  * 
  *******************************************************/
 
-// Activities
-interface IActivity {
-	activityName: string,
-	activityGroupId?: number,
-	group?: IActivityGroup
-	image: IImage,
-}
-
-class Activity implements IActivity {
+class Activity {
 	activityName: string;
-	image: IImage;
+	activityId: number;
+	image: Image;
 
-	constructor(iDbEntryActivities: IDbEntryActivities) {
-		this.activityName = iDbEntryActivities.activityName;
-		this.image = {
-			url: iDbEntryActivities.activityIconUrl,
-			altText: iDbEntryActivities.activityIconAltText
-		}
+	constructor(name: string, id: number, image: Image) {
+		this.activityName = name;
+		this.image = image;
+		this.activityId = id;
 	}
 }
 
-// Images
-interface IImage {
-	url: string,
-	altText: string
-}
-
-class Image implements IImage {
+class Image {
 	url: string;
 	altText: string;
 
-	constructor(data: DbEntriesImages) {
-		this.url = data.url;
-		this.altText = data.altText
+	constructor(imgUrl: string, imgAltText: string) {
+		this.url = imgUrl;
+		this.altText = imgAltText;
 	}
 }
 
-// Entries
-interface IEntry {
-	entryId: number,
-	datetime: Date,
-	mood: IMood, //| string,
-	notes: string,
-	images: IImage[],
-	activities: IActivity[],
-}
 
-class Entry implements IEntry {
+class Entry {
 	entryId: number;
 	datetime: Date;
-	mood: IMood;// | string;
+	mood: Mood;// | string;
 	notes: string;
-	images: IImage[];
-	activities: IActivity[];
+	images: Image[];
+	activities: Activity[];
 
-	constructor(data: IDbEntry) {
+	constructor(id: number, timestamp: string, moodId: number, moodName: string, moodImage: Image, notes: string, activities: Activity[] = []) {
 
-		this.entryId = data.entryId;
-		this.datetime = new Date(data.timestamp);
-		this.mood = {
-			name: data.mood,
-			image: {
-				url: data.moodIconUrl,
-				altText: data.moodIconAltText
-			}
-		}
-		this.notes = data.entryNotes;
+		this.entryId = id;
+		this.datetime = new Date(timestamp);
+		this.mood = new Mood(moodId, moodName, moodImage);
+		this.notes = notes;
 		this.images = [];
-		this.activities = [];
+		this.activities = activities || [];
 	}
 }
 
-// Moods
-interface IMood {
-	name: string,
-	image: IImage
-}
-
-class Mood implements IMood {
+class Mood {
 	moodId: number;
 	name: string;
-	image: IImage;
+	image: Image;
 
-	constructor(iMood: IDbMood) {
-		this.moodId = iMood.moodId
-		this.name = iMood.moodName;
-		this.image = {
-			url: iMood.iconUrl,
-			altText: iMood.iconAltText,
-		}
+	constructor(id: number, moodName: string, image: Image) {
+		this.moodId = id
+		this.name = moodName;
+		this.image = image;
 	}
 
 }
 
-// Activity Groups
+class ActivityGroup {
+	activityGroupName: string;
+	activityGroupId: number;
+	image: Image;
+	activities: Activity[];
 
-interface IActivityGroup {
-	activityGroupName: string,
-	activityGroupId: number,
-	image: IImage,
-	activities: IActivity[],
+	constructor(name: string, id: number, image: Image, activities: Activity[] = []) {
+		this.activityGroupName = name;
+		this.activityGroupId = id;
+		this.image = image;
+		this.activities = activities;
+	}
 }
-
 
 /*******************************************************
  * 
@@ -423,12 +419,23 @@ interface IActivityGroup {
 
 
 class NewEntryFormResponse {
-	moods: IMood[];
-	activityGroups: IActivityGroup[];
-	constructor(moods: IMood[], activityGroups: IActivityGroup[]) {
+	moods: Mood[];
+	activityGroups: ActivityGroup[];
+	constructor(moods: Mood[], activityGroups: ActivityGroup[]) {
 		this.moods = moods;
 		this.activityGroups = activityGroups;
 	}
 }
+
+// class EditEntryFormResponse {
+// 	selectedMood: IMood[];
+// 	activities: IActivity[];
+// 	activityGroups: IActivityGroup[];
+// 	constructor(moods: IMood[], activities: IActivity[], activityGroups: IActivityGroup[]) {
+// 		this.moods = moods;
+// 		this.activities = activities;
+// 		this.activityGroups = activityGroups;
+// 	}
+// }
 
 export default moodAPI;
