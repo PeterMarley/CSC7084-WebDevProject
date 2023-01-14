@@ -1,6 +1,7 @@
 import cookieParser from 'cookie-parser';
 import express, { Request, Response, NextFunction } from 'express';
 import apiCall from '../../lib/apiCall';
+import { EntryDataResponse, EntryFormDataResponse } from '../api/mood/moodApiResponses';
 import authenticate from '../middleware/authenticate';
 
 const entryRouter = express.Router();
@@ -25,14 +26,19 @@ entryRouter.get('/edit/:entryId', getEdit);
  *******************************************************/
 
 async function getEdit(req: Request, res: Response) {
-	const entryData = await apiCall('GET', 'http://localhost:3000/api/mood/entry/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId);
+	const entryDataResponse: EntryDataResponse =
+		await apiCall(
+			'GET',
+			process.env.API_BASE_URL + '/api/mood/entry/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId
+		);
 
-	res.locals.formData = entryData || {};
+	res.locals.entryFormData = entryDataResponse.entryFormData;
+	res.locals.entryData = entryDataResponse.entry;
 	res.locals.action = 'edit';
 	res.locals.entryAdded = false;
 
 	// console.log(res.locals.formData);
-	
+
 	res.render('mood-entry-edit');
 }
 
@@ -56,18 +62,22 @@ async function postNew(req: Request, res: Response) {
 }
 
 async function getNew(req: Request, res: Response) {
-	const response = await apiCall('GET', 'http://localhost:3000/api/mood/entry/new/' + (res.locals.id ? res.locals.id : ''));
+	const entryFormDataResponse: EntryFormDataResponse =
+		await apiCall(
+			'GET',
+			process.env.API_BASE_URL + '/api/mood/entry/new/' + (res.locals.id ? res.locals.id : '')
+		);
 
-	res.locals.entryFormData = response || {};
+	res.locals.entryFormData = entryFormDataResponse;
 	res.locals.action = 'new';
 	res.locals.entryAdded = false;
-	
+
 	res.render('mood-entry-new');
 }
 
 async function getList(req: Request, res: Response) {
-	const response = await apiCall('GET', 'http://localhost:3000/api/mood/entry/list/' + (res.locals.id ? res.locals.id : ''));
-	
+	const response = await apiCall('GET', process.env.API_BASE_URL + '/api/mood/entry/list/' + (res.locals.id ? res.locals.id : ''));
+
 	res.locals.entries = response || {};
 	res.render('mood-entry-list');
 }

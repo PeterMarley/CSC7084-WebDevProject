@@ -1,5 +1,14 @@
 <% 
 if (authed) { 
+  let notes;
+  switch (action) {
+    case 'new':
+      notes = '';
+      break;
+    case 'edit':
+      notes = entryData.notes
+      break;
+  }
 %>
 <form method="POST" action="/entry/new" id="mood-entry-form">
   <div class="mood-selection-container">
@@ -9,7 +18,7 @@ if (authed) {
       console.log('entryFormData:');
       console.log(entryFormData);
       for (const mood of entryFormData.moods) {
-        const selector = (entryFormData.entry && entryFormData.entry.mood.name == mood.name ? 'selected ' : '') + 'mood'; 
+        const selector = (action === 'edit' && entryFormData.entry.mood.name == mood.name ? 'selected ' : '') + 'mood'; 
       %>
 
       <span class="<%- selector %>">
@@ -22,11 +31,7 @@ if (authed) {
     </div>
 
   </div>
-  <textarea name="notes" id="mood-entry-notes">
-  <%_ if (entryFormData.entry && entryFormData.entry.notes) { %>
-    <%- entryFormData.entry.notes %>
-  <% } %>
-  </textarea>
+  <textarea name="notes" id="mood-entry-notes"><%- notes %></textarea>
   <div class="activity-selection-container">
     <div class="activity-selection">
       Activity Groups
