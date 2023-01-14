@@ -3,6 +3,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import apiCall from '../../lib/apiCall';
 import { EntryDataResponse, EntryFormDataResponse } from '../api/mood/moodApiResponses';
 import authenticate from '../middleware/authenticate';
+import buildApiUrl from '../../lib/buildApiUrl';
 
 const entryRouter = express.Router();
 entryRouter.use(authenticate);
@@ -15,9 +16,12 @@ entryRouter.use(cookieParser())
  *******************************************************/
 
 entryRouter.get('/list', getList);
+
 entryRouter.get('/new', getNew);
 entryRouter.post('/new', postNew);
+
 entryRouter.get('/edit/:entryId', getEdit);
+entryRouter.post('/edit/:entryId', postEdit);
 
 /*******************************************************
  * 
@@ -25,17 +29,26 @@ entryRouter.get('/edit/:entryId', getEdit);
  * 
  *******************************************************/
 
+async function postEdit(req: Request, res: Response) {
+	const entryDataResponse: any =
+		await apiCall(
+			'PUT',
+			buildApiUrl('/api/mood/entry/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId)
+		);
+	res.json(entryDataResponse);
+}
+
 async function getEdit(req: Request, res: Response) {
 	const entryDataResponse: EntryDataResponse =
 		await apiCall(
 			'GET',
-			process.env.API_BASE_URL + '/api/mood/entry/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId
+			buildApiUrl('/api/mood/entry/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId)
 		);
 
 	res.locals.entryFormData = entryDataResponse.entryFormData;
 	res.locals.entryData = entryDataResponse.entry;
 	res.locals.action = 'edit';
-	res.locals.entryAdded = false;
+	//res.locals.entryAdded = false;
 
 	// console.log(res.locals.formData);
 
@@ -50,8 +63,9 @@ async function postNew(req: Request, res: Response) {
 		return;
 	}
 
-	const response = await apiCall('POST',
-		'http://localhost:3000/api/mood/entry/new/' + (res.locals.id ? res.locals.id : ''),
+	const response = await apiCall(
+		'POST',
+		buildApiUrl('/api/mood/entry/new/' + (res.locals.id ? res.locals.id : '')),
 		new URLSearchParams([['mood', mood], ['activities', activities], ['notes', notes]])
 	);
 
@@ -65,12 +79,12 @@ async function getNew(req: Request, res: Response) {
 	const entryFormDataResponse: EntryFormDataResponse =
 		await apiCall(
 			'GET',
-			process.env.API_BASE_URL + '/api/mood/entry/new/' + (res.locals.id ? res.locals.id : '')
+			buildApiUrl('/api/mood/entry/new/' + (res.locals.id ? res.locals.id : ''))
 		);
 
 	res.locals.entryFormData = entryFormDataResponse;
 	res.locals.action = 'new';
-	res.locals.entryAdded = false;
+	//res.locals.entryAdded = false;
 
 	res.render('mood-entry-new');
 }

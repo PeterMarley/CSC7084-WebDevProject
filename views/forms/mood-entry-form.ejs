@@ -1,24 +1,33 @@
 <% 
 if (authed) { 
-  let notes;
+  let notes, formAction, httpVerb, submitButtonText;
   switch (action) {
     case 'new':
       notes = '';
+      formAction = '/entry/new';
+      httpVerb = 'POST';
+      submitButtonText = 'Add New Entry';
       break;
     case 'edit':
       notes = entryData.notes
+      formAction = 'dunnowhatexactly'
+      httpVerb ='dont know this either'
+      submitButtonText = 'Edit Entry';
       break;
   }
+  console.log('===entryFormData===');
+  console.log(entryFormData);
+  // console.log('===entryData===');
+  // console.log(entryData);
 %>
-<form method="POST" action="/entry/new" id="mood-entry-form">
+<form method="POST" action="<%- formAction %>" id="mood-entry-form">
+  <input hidden name="action" value="<%- action %>">
   <div class="mood-selection-container">
 
     <div class="mood-selection">
       <% 
-      console.log('entryFormData:');
-      console.log(entryFormData);
       for (const mood of entryFormData.moods) {
-        const selector = (action === 'edit' && entryFormData.entry.mood.name == mood.name ? 'selected ' : '') + 'mood'; 
+        const selector = (action === 'edit' && entryData.mood.name == mood.name ? 'selected ' : '') + 'mood'; 
       %>
 
       <span class="<%- selector %>">
@@ -61,11 +70,15 @@ if (authed) {
         <div class="activity-group-activities">
           <% 
           for (const act of actGroup.activities) { 
-            // console.log('===act===');
-            // console.log(act);
+            console.log('===act===');
+            console.log(act);
             //const selector = a.find(e => e) 'activity';
+            let selector = 'activity';
+            if (action === 'edit' && entryData.activities.findIndex(e => e.activityId === act.activityId) !== -1) {
+              selector += ' selected';
+            }
           %>
-          <div class="activity"><img src="<%- act.image.url %>" alt="<%- act.image.altText %>">
+          <div class="<%- selector %>"><img src="<%- act.image.url %>" alt="<%- act.image.altText %>">
             <div><%- act.activityName %></div>
           </div>
           <% } %>
@@ -76,7 +89,7 @@ if (authed) {
   </div>
   <input hidden type="text" id="activities-hidden-input" name="activities">
   <input hidden type="text" id="mood-hidden-input" name="mood">
-  <input type="button" value="Add Entry" id="mood-entry-form-submit">
+  <input type="button" value="<%- submitButtonText %>" id="mood-entry-form-submit">
 </form>
 <% } else { %>
 Not authorized

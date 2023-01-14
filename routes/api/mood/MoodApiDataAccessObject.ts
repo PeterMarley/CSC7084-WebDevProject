@@ -45,11 +45,13 @@ export default class MoodApiDataAccessObject {
 				a.name as activityName,
 				a.activity_id as activityId,
 				a.activity_group_id as activityGroupId,
-				e.entry_id
+				ea.entry_id AS entryId,
+                ai.url as iconUrl,
+                ai.alt_text as iconAltText
 			FROM tbl_entry_activity ea
 			INNER JOIN tbl_activity a ON ea.activity_id = a.activity_id
 			INNER JOIN tbl_activity_group ag ON a.activity_group_id = ag.activity_group_id
-			INNER JOIN tbl_entry e ON e.entry_id = ea.entry_id
+            INNER JOIN tbl_activity_image ai ON ai.activity_image_id = a.icon_image_id
 			WHERE ea.entry_id=?`
 		}
 	}
@@ -61,12 +63,17 @@ export default class MoodApiDataAccessObject {
 		const con = await getConnection();
 		const entry: IDbEntry = (await con.execute(formatSQL(MoodApiDataAccessObject.sql.getSingleEntry.entry, [userId, entryId])) as Array<any>)[0][0][0];
 		const entryImages: IDbEntriesImages[] = (await con.execute(formatSQL(MoodApiDataAccessObject.sql.getSingleEntry.entryImages, [entryId])) as Array<any>)[0];
+		const dbActs: IDbActivity[] = (await con.execute(formatSQL(MoodApiDataAccessObject.sql.getSingleEntry.entryActivities, [entryId])) as Array<any>)[0];
+		
+		
+		const acts: Activity[] = dbActs.map(e => new Activity(e.activityName, e.activityId, new Image(e.iconUrl, e.iconAltText)));
+		// console.log(acts);
 		con.end();
 
 		// process entry and images
 		const images: Image[] = entryImages.map(e => new Image(e.url, e.altText))
 		const responseEntry = new Entry(entryId, entry.timestamp, entry.moodId, entry.mood, new Image(entry.moodIconUrl, entry.moodIconAltText), entry.entryNotes);
-
+		responseEntry.activities = acts;
 		// build response and send as json
 		return new EntryDataResponse(responseEntry, entryFormData, images);
 	}

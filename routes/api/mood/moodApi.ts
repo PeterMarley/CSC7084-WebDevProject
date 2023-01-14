@@ -20,16 +20,45 @@ moodAPI.use(express.urlencoded({ extended: false }));
  *******************************************************/
 
 const ENTRY_ROUTE = '/entry';
+
 moodAPI.get(ENTRY_ROUTE + '/new/:userId', getEntryFormData)
 moodAPI.post(ENTRY_ROUTE + '/new/:userId', createNewEntry);
+
 moodAPI.get(ENTRY_ROUTE + '/list/:userId', getEntryList);
+
 moodAPI.get(ENTRY_ROUTE + '/:userId/:entryId', getEntryFormData, getSingleEntry);
+moodAPI.put(ENTRY_ROUTE + '/:userId/:entryId', updateSingleEntry);
 
 /*******************************************************
  * 
  * MIDDLEWEAR
  * 
  *******************************************************/
+async function updateSingleEntry(req: Request, res: Response) {
+	const entryId = Number(req.params.entryId);
+	const userId = Number(req.params.userId);
+
+	console.log(req.body);
+	
+	const sql = 'UPDATE tbl_entry SET';
+
+	`
+	/*
+	UPDATE tbl_entry e 
+	SET 
+		e.notes=?,
+		e.mood_id=?
+	WHERE e.user_id =? 
+	AND e.entry_id=?  
+	*/
+	DELETE FROM tbl_entry_activity ea 
+	WHERE ea.entry_id=?
+	
+	INSERT INTO tbl_entry_activity ea (ea.entry_id, ea.activity_id)
+	VALUES 
+		(?,?)`
+	res.json({ status: 'not implemented' });
+}
 
 async function getSingleEntry(req: Request, res: Response) {
 	// get ids from route params
