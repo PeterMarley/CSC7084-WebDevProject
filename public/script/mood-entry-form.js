@@ -20,11 +20,15 @@ activityElements.forEach(e => {
         const activityName = e.children[1].textContent;
         const isSelected = e.classList.contains('selected');
         const index = activitiesSelected.findIndex(e => e === activityName);
+        const actHiddenInput = document.querySelector('#activities-hidden-input');
         if (isSelected && index === -1) { // if selected, and not in array, add
             activitiesSelected.push(activityName);
         } else if (!isSelected && index !== -1) { // if unselected and in array, remove
             activitiesSelected.splice(index, 1);
         }
+        actHiddenInput.value=activitiesSelected.join(',');
+        console.log(actHiddenInput.value);
+
     });
 });
 
@@ -40,3 +44,22 @@ function handleFormSubmission() {
     const form = document.querySelector('#mood-entry-form');
     form.submit();
 }
+
+(function setup() {
+    const activitiesDivs = document.querySelectorAll('.activity.selected');
+    for (const div of activitiesDivs) {
+        activitiesSelected.push(div.children[1].textContent);
+    }
+    const actHiddenInput = document.querySelector('#activities-hidden-input');
+    actHiddenInput.value = activitiesSelected.join(',');
+
+    const moodDiv = document.querySelector('.mood.selected');
+    const moodHiddenInput = document.querySelector('#mood-hidden-input');
+    moodHiddenInput.value = moodDiv.children[1].textContent;
+    moodSelected = moodDiv.children[1].textContent;
+
+    console.log('activities selected');
+    console.log(activitiesSelected);
+    console.log('mood selected');
+    console.log(moodSelected);
+})();

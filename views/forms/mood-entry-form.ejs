@@ -1,6 +1,8 @@
 <% 
 if (authed) { 
   let notes, formAction, httpVerb, submitButtonText;
+  let selectedMood = '';
+  let selectedActivities = [];
   switch (action) {
     case 'new':
       notes = '';
@@ -9,14 +11,14 @@ if (authed) {
       submitButtonText = 'Add New Entry';
       break;
     case 'edit':
-      notes = entryData.notes
-      formAction = 'dunnowhatexactly'
-      httpVerb ='dont know this either'
+      notes = entryData.notes;
+      formAction = '/entry/edit/' + entryData.entryId;
+      httpVerb ='dont know this either';
       submitButtonText = 'Edit Entry';
       break;
   }
-  console.log('===entryFormData===');
-  console.log(entryFormData);
+  // console.log('===entryFormData===');
+  // console.log(entryFormData);
   // console.log('===entryData===');
   // console.log(entryData);
 %>
@@ -44,38 +46,19 @@ if (authed) {
   <div class="activity-selection-container">
     <div class="activity-selection">
       Activity Groups
-      <% 
-      for (const actGroup of entryFormData.activityGroups) { 
-        // const a = entryFormData.entry.activities.filter(e => {
-        //   return e.activityGroupId === actGroup.activityGroupId;
-        //   console.log('e.activityGroupId: ', e.activityGroupId);
-        //   console.log('actGroup.activityGroupId: ', actGroup.activityGroupId);
-        // });
-        // console.log('===actgroup===');
-        // console.log(actGroup);
-        // const a = entryFormData.entry.activities.map(e => {
-        //   return e.activityId;
-        //   console.log('e.activityGroupId: ', e.activityGroupId);
-        //   console.log('actGroup.activityGroupId: ', actGroup.activityGroupId);
-        // });
-
-
-        // console.log('===actgroup===');
-        // console.log(actGroup);
-        // console.log('===a===');
-        // console.log(a);
-      %>
+      <% for (const actGroup of entryFormData.activityGroups) { %>
       <div class="activity-group">
         <div class="activity-group-name"><img src="<%- actGroup.image.url %>" alt="<%- actGroup.image.altText %>"><span><%- actGroup.activityGroupName %></span></div>
         <div class="activity-group-activities">
           <% 
           for (const act of actGroup.activities) { 
-            console.log('===act===');
-            console.log(act);
-            //const selector = a.find(e => e) 'activity';
+            // console.log('===act===');
+            // console.log(act);
             let selector = 'activity';
-            if (action === 'edit' && entryData.activities.findIndex(e => e.activityId === act.activityId) !== -1) {
+            const activityIndex = entryData.activities.findIndex(e => e.activityId === act.activityId);
+            if (action === 'edit' && activityIndex !== -1) {
               selector += ' selected';
+              selectedActivities.push(entryData.activities[activityIndex].activityName);
             }
           %>
           <div class="<%- selector %>"><img src="<%- act.image.url %>" alt="<%- act.image.altText %>">
@@ -87,8 +70,8 @@ if (authed) {
       <% } %>
     </div>
   </div>
-  <input hidden type="text" id="activities-hidden-input" name="activities">
-  <input hidden type="text" id="mood-hidden-input" name="mood">
+  <input hidden type="text" id="activities-hidden-input" name="activities" value="<%- selectedActivities.join(',') %>">
+  <input hidden type="text" id="mood-hidden-input" name="mood" value="<%- entryData.mood.name %>">
   <input type="button" value="<%- submitButtonText %>" id="mood-entry-form-submit">
 </form>
 <% } else { %>

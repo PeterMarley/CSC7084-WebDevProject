@@ -53,10 +53,17 @@ export default class MoodApiDataAccessObject {
 			INNER JOIN tbl_activity_group ag ON a.activity_group_id = ag.activity_group_id
             INNER JOIN tbl_activity_image ai ON ai.activity_image_id = a.icon_image_id
 			WHERE ea.entry_id=?`
+		},
+		editSingleEntry: {
+			updateEntry: 'CALL usp_update_entry_by_user_id_and_entry_id(?,?,?,?,?)'
 		}
 	}
 
 	constructor() { throw new Error('MoodApiDataAccessObject is a static class and may not be instantiated'); }
+
+	static updateSingleEntry = async function() {
+
+	}
 
 	static getSingleEntry = async function (userId: number, entryId: number, entryFormData: EntryFormDataResponse) {
 		// get data from database

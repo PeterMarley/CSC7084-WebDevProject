@@ -30,10 +30,14 @@ entryRouter.post('/edit/:entryId', postEdit);
  *******************************************************/
 
 async function postEdit(req: Request, res: Response) {
+	const { activities, mood } = req.body;
+	console.log(req.body);
+	
 	const entryDataResponse: any =
 		await apiCall(
 			'PUT',
-			buildApiUrl('/api/mood/entry/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId)
+			buildApiUrl('/api/mood/entry/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId),
+			new URLSearchParams([['activities', activities],['mood', mood], ['entryId', req.params.entryId]])
 		);
 	res.json(entryDataResponse);
 }
