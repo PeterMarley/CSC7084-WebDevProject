@@ -31,7 +31,7 @@ entryRouter.post('/edit/:entryId', postEdit);
 
 async function postEdit(req: Request, res: Response) {
 	const { activities, mood } = req.body;
-	console.log(req.body);
+	//console.log(req.body);
 	
 	const entryDataResponse: any =
 		await apiCall(

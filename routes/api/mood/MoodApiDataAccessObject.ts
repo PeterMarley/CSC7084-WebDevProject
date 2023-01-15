@@ -61,8 +61,14 @@ export default class MoodApiDataAccessObject {
 
 	constructor() { throw new Error('MoodApiDataAccessObject is a static class and may not be instantiated'); }
 
-	static updateSingleEntry = async function() {
-
+	static updateSingleEntry = async function (userId: number, entryId: number, entryNotes: string, moodName: string, activityCommaDelimStr: string) {
+		const con = await getConnection();
+		const sql = formatSQL(
+			MoodApiDataAccessObject.sql.editSingleEntry.updateEntry,
+			[userId, entryId, entryNotes, moodName, activityCommaDelimStr]
+		);
+		const response = ((await con.execute(sql)) as Array<any>)[0]
+		console.log(response);
 	}
 
 	static getSingleEntry = async function (userId: number, entryId: number, entryFormData: EntryFormDataResponse) {
@@ -71,8 +77,8 @@ export default class MoodApiDataAccessObject {
 		const entry: IDbEntry = (await con.execute(formatSQL(MoodApiDataAccessObject.sql.getSingleEntry.entry, [userId, entryId])) as Array<any>)[0][0][0];
 		const entryImages: IDbEntriesImages[] = (await con.execute(formatSQL(MoodApiDataAccessObject.sql.getSingleEntry.entryImages, [entryId])) as Array<any>)[0];
 		const dbActs: IDbActivity[] = (await con.execute(formatSQL(MoodApiDataAccessObject.sql.getSingleEntry.entryActivities, [entryId])) as Array<any>)[0];
-		
-		
+
+
 		const acts: Activity[] = dbActs.map(e => new Activity(e.activityName, e.activityId, new Image(e.iconUrl, e.iconAltText)));
 		// console.log(acts);
 		con.end();

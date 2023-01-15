@@ -37,25 +37,12 @@ moodAPI.put(ENTRY_ROUTE + '/:userId/:entryId', updateSingleEntry);
 async function updateSingleEntry(req: Request, res: Response) {
 	const entryId = Number(req.params.entryId);
 	const userId = Number(req.params.userId);
-	const { activities: activityNamesCommaDelimStr, mood: moodName } = req.body;
-	//console.log(req.body);
+	const { activities: activityNamesCommaDelimStr, mood: moodName, entryNotes } = req.body;
+	
+	MoodApiDataAccessObject.updateSingleEntry(
+		userId, entryId, entryNotes, moodName, activityNamesCommaDelimStr
+	);
 
-	const updateEntry =
-		`UPDATE tbl_entry e 
-	SET 
-		e.notes=?,
-		e.mood_id=?
-	WHERE e.user_id =? 
-	AND e.entry_id=? `;
-
-	const deleteEntryActivities =
-		`DELETE FROM tbl_entry_activity ea 
-	WHERE ea.entry_id=?`;
-
-	const insertEntryActivities =
-		`INSERT INTO tbl_entry_activity ea (ea.entry_id, ea.activity_id)
-	VALUES 
-	(?,?)`;
 
 
 
