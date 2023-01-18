@@ -23,16 +23,25 @@ entryRouter.post('/new', postNew);
 entryRouter.get('/edit/:entryId', getEdit);
 entryRouter.post('/edit/:entryId', postEdit);
 
+entryRouter.get('/delete/:entryId', deleteEntry);
+
 /*******************************************************
  * 
  * MIDDLEWARE
  * 
  *******************************************************/
 
+async function deleteEntry(req: Request, res: Response) {
+	const deleteEntryResponse: any =
+		await apiCall(
+			'DELETE',
+			buildApiUrl('/api/mood/entry/delete/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId)
+		);
+	res.json(deleteEntryResponse);
+}
+
 async function postEdit(req: Request, res: Response) {
-	const { activities, mood } = req.body;
-	//console.log(req.body);
-	
+	const { activities, mood } = req.body;	
 	const entryDataResponse: any =
 		await apiCall(
 			'PUT',
@@ -85,7 +94,7 @@ async function getNew(req: Request, res: Response) {
 			'GET',
 			buildApiUrl('/api/mood/entry/new/' + (res.locals.id ? res.locals.id : ''))
 		);
-
+			
 	res.locals.entryFormData = entryFormDataResponse;
 	res.locals.action = 'new';
 	//res.locals.entryAdded = false;

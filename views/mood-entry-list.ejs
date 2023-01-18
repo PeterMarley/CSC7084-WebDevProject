@@ -48,7 +48,7 @@ if (authed) { // if authenticated
     <div class="mood-day-entry--mood">
       <span><%- mood.name %> <img src="<%- mood.image.url %>" alt="<%- mood.image.altText %>" width="24px" height="24px"></span>
       <span>( <%- entryDate.toTimeString().substring(0,8) %> )</span>
-      <span><a href="/entry/edit/<%- entryId %>">edit</a></span>
+      <span><a href="/entry/edit/<%- entryId %>">edit</a> <a href="/entry/delete/<%- entryId %>">delete</a></span>
     </div>
     <div class="mood-day-entry--activities">
       <% for (const activity of activities) { %>

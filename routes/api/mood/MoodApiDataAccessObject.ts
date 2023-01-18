@@ -55,11 +55,24 @@ export default class MoodApiDataAccessObject {
 			WHERE ea.entry_id=?`
 		},
 		editSingleEntry: {
-			updateEntry: 'CALL usp_update_entry_by_user_id_and_entry_id(?,?,?,?,?)'
+			updateEntry: 'CALL usp_update_entry(?,?,?,?,?)'
+		},
+		deleteSingleEntry: {
+			deleteEntry: 'CALL usp_delete_entry(?,?)'
 		}
 	}
 
 	constructor() { throw new Error('MoodApiDataAccessObject is a static class and may not be instantiated'); }
+
+	static deleteSingleEntry = async function(userId: number, entryId: number) {
+		const con = await getConnection();
+		const deleteEntrySQL = formatSQL(MoodApiDataAccessObject.sql.deleteSingleEntry.deleteEntry, [userId, entryId]);
+		console.log(deleteEntrySQL);
+		
+		const response = (await con.execute(deleteEntrySQL) as Array<any>);
+		con.end();
+		console.log(response);
+	}
 
 	static updateSingleEntry = async function (userId: number, entryId: number, entryNotes: string, moodName: string, activityCommaDelimStr: string) {
 		const con = await getConnection();
@@ -68,9 +81,10 @@ export default class MoodApiDataAccessObject {
 			[userId, entryId, entryNotes, moodName, activityCommaDelimStr]
 		);
 		const response = ((await con.execute(sql)) as Array<any>)[0]
+		con.end();
 		console.log(response);
 	}
-
+	
 	static getSingleEntry = async function (userId: number, entryId: number, entryFormData: EntryFormDataResponse) {
 		// get data from database
 		const con = await getConnection();

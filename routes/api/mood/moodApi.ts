@@ -29,11 +29,24 @@ moodAPI.get(ENTRY_ROUTE + '/list/:userId', getEntryList);
 moodAPI.get(ENTRY_ROUTE + '/:userId/:entryId', getEntryFormData, getSingleEntry);
 moodAPI.put(ENTRY_ROUTE + '/:userId/:entryId', updateSingleEntry);
 
+moodAPI.delete(ENTRY_ROUTE + '/delete/:userId/:entryId', deleteSingleEntry);
+
 /*******************************************************
  * 
  * MIDDLEWEAR
  * 
  *******************************************************/
+
+async function deleteSingleEntry(req: Request, res: Response) {
+	const entryId = Number(req.params.entryId);
+	const userId = Number(req.params.userId);
+	console.log(`moodApi entryId: ${entryId}, userId: ${userId}`);
+	
+	MoodApiDataAccessObject.deleteSingleEntry(userId, entryId);
+
+	res.json({status: 'no response to deleteSingleEntry implemented'});
+}
+
 async function updateSingleEntry(req: Request, res: Response) {
 	const entryId = Number(req.params.entryId);
 	const userId = Number(req.params.userId);
@@ -43,10 +56,7 @@ async function updateSingleEntry(req: Request, res: Response) {
 		userId, entryId, entryNotes, moodName, activityNamesCommaDelimStr
 	);
 
-
-
-
-	res.json({ status: 'not implemented' });
+	res.json({status: 'no response to updateSingleEntry implemented'});
 }
 
 async function getSingleEntry(req: Request, res: Response) {
