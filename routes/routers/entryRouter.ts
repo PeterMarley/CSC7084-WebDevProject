@@ -41,13 +41,16 @@ async function deleteEntry(req: Request, res: Response) {
 }
 
 async function postEdit(req: Request, res: Response) {
-	const { activities, mood } = req.body;	
+	const { activities, mood, notes } = req.body;
+	console.log(notes);
+	
 	const entryDataResponse: any =
 		await apiCall(
 			'PUT',
 			buildApiUrl('/api/mood/entry/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId),
-			new URLSearchParams([['activities', activities],['mood', mood], ['entryId', req.params.entryId]])
+			new URLSearchParams([['activities', activities], ['mood', mood], ['notes', notes], ['entryId', req.params.entryId]])
 		);
+	//const x: EntryDataResponse = { entry: undefined, entryFormData: entryDataResponse };
 	res.json(entryDataResponse);
 }
 
@@ -75,7 +78,7 @@ async function postNew(req: Request, res: Response) {
 		res.status(400).json({ success: false, body: req.body });
 		return;
 	}
-
+	
 	const response = await apiCall(
 		'POST',
 		buildApiUrl('/api/mood/entry/new/' + (res.locals.id ? res.locals.id : '')),
@@ -94,8 +97,9 @@ async function getNew(req: Request, res: Response) {
 			'GET',
 			buildApiUrl('/api/mood/entry/new/' + (res.locals.id ? res.locals.id : ''))
 		);
-			
+
 	res.locals.entryFormData = entryFormDataResponse;
+	res.locals.entryData = null;
 	res.locals.action = 'new';
 	//res.locals.entryAdded = false;
 

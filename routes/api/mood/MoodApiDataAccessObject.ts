@@ -80,9 +80,14 @@ export default class MoodApiDataAccessObject {
 			MoodApiDataAccessObject.sql.editSingleEntry.updateEntry,
 			[userId, entryId, entryNotes, moodName, activityCommaDelimStr]
 		);
+		// console.log('updateSingleEntry formatted sql: ');
+		// console.log(sql);
+		
+		
 		const response = ((await con.execute(sql)) as Array<any>)[0]
 		con.end();
-		console.log(response);
+		// console.log(response);
+		return response;
 	}
 	
 	static getSingleEntry = async function (userId: number, entryId: number, entryFormData: EntryFormDataResponse) {

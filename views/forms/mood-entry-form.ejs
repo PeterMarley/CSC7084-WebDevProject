@@ -55,7 +55,7 @@ if (authed) {
             // console.log('===act===');
             // console.log(act);
             let selector = 'activity';
-            const activityIndex = entryData.activities.findIndex(e => e.activityId === act.activityId);
+            const activityIndex = entryData ? entryData.activities.findIndex(e => e.activityId === act.activityId) : -1;
             if (action === 'edit' && activityIndex !== -1) {
               selector += ' selected';
               selectedActivities.push(entryData.activities[activityIndex].activityName);
@@ -71,7 +71,7 @@ if (authed) {
     </div>
   </div>
   <input hidden type="text" id="activities-hidden-input" name="activities" value="<%- selectedActivities.join(',') %>">
-  <input hidden type="text" id="mood-hidden-input" name="mood" value="<%- entryData.mood.name %>">
+  <input hidden type="text" id="mood-hidden-input" name="mood" value="<%- entryData ? entryData.mood.name : '' %>">
   <input type="button" value="<%- submitButtonText %>" id="mood-entry-form-submit">
 </form>
 <% } else { %>

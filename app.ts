@@ -47,6 +47,10 @@ app.use('/', mainRouter);
 app.use('/', userRouter);
 app.use('/entry', entryRouter);
 
+app.all('/bulmatest', (req: Request, res: Response) => {
+	res.render('bulmatest');
+});
+
 // 500 ISE
 app.all('/500', (req: Request, res: Response) => {
 	res.statusCode = 500;

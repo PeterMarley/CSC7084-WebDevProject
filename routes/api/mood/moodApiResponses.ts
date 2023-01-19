@@ -16,7 +16,7 @@ export class EntryFormDataResponse {
  * This Response object holds the data for a single entry, additionally it holds the data required to build an Entry form.
  */
 export class EntryDataResponse {
-	entry: Entry;
+	entry?: Entry;
 	entryFormData: EntryFormDataResponse;
 
 	constructor(entry: Entry, entryFormData: EntryFormDataResponse, entryImages: Image[]) {

@@ -50,7 +50,8 @@ async function deleteSingleEntry(req: Request, res: Response) {
 async function updateSingleEntry(req: Request, res: Response) {
 	const entryId = Number(req.params.entryId);
 	const userId = Number(req.params.userId);
-	const { activities: activityNamesCommaDelimStr, mood: moodName, entryNotes } = req.body;
+	const { activities: activityNamesCommaDelimStr, mood: moodName, notes: entryNotes } = req.body;
+	console.log('entryNotes in moodApi.updateSingleEntry: ' + entryNotes);
 	
 	MoodApiDataAccessObject.updateSingleEntry(
 		userId, entryId, entryNotes, moodName, activityNamesCommaDelimStr
