@@ -25,43 +25,18 @@
       <div id="hamburger" class="hamburger-source">
         <img src="/icons/hamburger24x24.png" class="hamburger-source">
         <% if (authed) { // if authenticated%>
-        <div id="user-details-container" hidden>
-          <div id="user-details">
-            <div id="user-details-avatar">
-              <img src="image/defaultavatar.png">
-            </div>
-            <div id="user-details-info">
-              <div>MarlDaeSu</div>
-              <div id="user-details-actions">
-                <div>Account</div>
-                <div>|</div>
-                <div>
-                  <a href="/logout">Log Out</a>
-                  <!-- <form method="GET" action="/logout" style="display: inline-block;">
-                    <input type="submit" name="action" value="Log Out" class="login-control">
-                  </form> -->
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-
+        <%- include('../components/user-details-container.ejs') %>
         <% } else { // if not authenticated%>
-        <div id="login-form-container" hidden><%- include('../forms/login_form.ejs'); %></div>
-        <!-- <form method="GET" action="/login" style="display: inline-block;">
-        <input type="submit" value="Log In" class="login-control">
-      </form>
-      <form method="GET" action="/register" style="display: inline-block;">
-        <input type="submit" value="Register" class="login-control">
-      </form> -->
+        <!-- <div id="login-form-container" hidden> -->
+          <%- include('../forms/login_form.ejs'); %>
+        <!-- </div> -->
         <% } %>
       </div>
     </div>
-    <script src="script/header.js"></script>
+    <script src="/script/header.js"></script>
   </div>
   <div id="body">
     <nav>
-      Nav
+      Nav 
     </nav>
     <div>

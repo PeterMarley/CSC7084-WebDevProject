@@ -1,16 +1,18 @@
-<form method="POST" action="/login" class="bigform">
+<div id="login-form-container" hidden>
+  <form method="POST" action="/login" class="bigform">
     <div class="bigformcontainer">
-        <div class="row">
-            <label for="username">Username:</label>
-            <input type="text" name="username" placeholder="Enter username">
-        </div>
-        <div class="row">
-            <label for="username">Password:</label>
-            <input type="password" name="password" placeholder="Enter password">
-        </div>
-        <div class="submitdiv">
-            <input type="submit" name="log-in" value="login">
-        </div>
-        <input type="text" name="redirect" value="/" hidden>
+      <div class="row">
+        <label for="username">Username:</label>
+        <input type="text" name="username" placeholder="Enter username">
+      </div>
+      <div class="row">
+        <label for="username">Password:</label>
+        <input type="password" name="password" placeholder="Enter password">
+      </div>
+      <div class="submitdiv">
+        <input type="submit" name="log-in" value="login">
+      </div>
+      <input type="text" name="redirect" value="/" hidden>
     </div>
-</form>
+  </form>
+</div>

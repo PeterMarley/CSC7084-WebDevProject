@@ -4,6 +4,5 @@ hamburger.addEventListener('click', (e) => {
     const selector = document.querySelector('#loggedin').textContent === 'true'
         ? '#user-details-container'
         : '#login-form-container';
-    const el = document.querySelector(selector);
-    el.toggleAttribute('hidden');
+    document.querySelector(selector).toggleAttribute('hidden');
 })
