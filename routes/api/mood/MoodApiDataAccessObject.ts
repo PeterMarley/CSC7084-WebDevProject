@@ -209,7 +209,7 @@ export default class MoodApiDataAccessObject {
 			return { error: "server ded. rip." };
 			//res.status(500).json({ error: "server ded. rip." });
 		}
-		console.log(formatSQL('INSERT INTO tbl VALUES (?);', ['); DROP TABLE tbl;']));
+		// console.log(formatSQL('INSERT INTO tbl VALUES (?);', ['); DROP TABLE tbl;']));
 		
 		// map to date
 		const response: any = {};

@@ -40,6 +40,7 @@ body {
  HEADER
 ****************************/
 
+
 #header {
   background-color: var(--dark);
   padding: 10px;
@@ -89,6 +90,12 @@ body {
   display: flex;
   align-items: center;
 }
+#loggedin {
+  display: none;
+  visibility: hidden;
+  width: 0px;
+  height: 0px;
+}
 
 /****************************
   BODY
@@ -133,6 +140,11 @@ nav {
 
 #user-details-container {
   width: 350px;
+}
+
+
+#user-details-container,
+#login-form-container {
   position: absolute;
   top: calc(var(--header-button-padding) * -1);
   right: 2em;
@@ -171,6 +183,10 @@ nav {
 .login-control {
   border: 0px;
   background: none;
+}
+
+.login-form-container {
+  position: absolute;
 }
 
 /****************************

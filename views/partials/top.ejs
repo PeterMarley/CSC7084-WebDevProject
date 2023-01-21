@@ -20,10 +20,11 @@
     <div class="header-button">Visualise</div>
     <div class="header-button">Manage Moods</div>
     <% } %>
-    <div class="header-button" id="hamburger-container">
-      <% if (authed) { // if authenticated%>
-      <div id="hamburger">
-        <img src="icons/hamburger24x24.png">
+    <div id="loggedin" hidden><%- authed %></div>
+    <div class="header-button hamburger-source" id="hamburger-container">
+      <div id="hamburger" class="hamburger-source">
+        <img src="/icons/hamburger24x24.png" class="hamburger-source">
+        <% if (authed) { // if authenticated%>
         <div id="user-details-container" hidden>
           <div id="user-details">
             <div id="user-details-avatar">
@@ -45,16 +46,17 @@
           </div>
         </div>
 
-      </div>
-      <% } else { // if not authenticated%>
+
+        <% } else { // if not authenticated%>
         <div id="login-form-container" hidden><%- include('../forms/login_form.ejs'); %></div>
-      <form method="GET" action="/login" style="display: inline-block;">
+        <!-- <form method="GET" action="/login" style="display: inline-block;">
         <input type="submit" value="Log In" class="login-control">
       </form>
       <form method="GET" action="/register" style="display: inline-block;">
         <input type="submit" value="Register" class="login-control">
-      </form>
-      <% } %>
+      </form> -->
+        <% } %>
+      </div>
     </div>
     <script src="script/header.js"></script>
   </div>
