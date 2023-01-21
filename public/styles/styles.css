@@ -1,9 +1,14 @@
 :root {
+  /* palette */
   --dark: #07689F;
   --middle: #A2D5F2;
   --light: #CEE8F6;
   --offwhite: #FAFAFA;
   --accent: #FF7E67;
+
+  /* header padding/ margins */
+  --header-button-padding: 10px;
+  --header-button-border-radius: 0.5rem;
 }
 
 /****************************
@@ -50,13 +55,26 @@ body {
   text-decoration: none;
 }
 
-#header>div:not(:first-child) {
+.header-button {
   background-color: var(--offwhite);
   margin-left: 10px;
-  border-radius: 0.5rem;
+  border-radius: var(--header-button-border-radius);
   border: 2px solid var(--middle);
-  padding: 10px;
+  padding: var(--header-button-padding);
   transition: background-color 0.5s ease;
+}
+
+#hamburger-container {
+  margin-left: auto;
+  position: relative;
+}
+
+#hamburger {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-left: auto;
 }
 
 #header>div:not(:first-child):hover {
@@ -81,7 +99,7 @@ body {
   display: flex;
   flex-direction: row;
   flex-grow: 1;
-	width: 100vw;
+  width: 100vw;
 }
 
 #body>* {
@@ -110,11 +128,48 @@ nav {
 }
 
 /****************************
+  USER DETAILS PANE
+****************************/
+
+#user-details-container {
+  width: 350px;
+  position: absolute;
+  top: calc(var(--header-button-padding) * -1);
+  right: 2em;
+}
+
+#user-details {
+  border: 1px solid black;
+  display: grid;
+  grid-template: 1fr/ 20% 80%;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid var(--middle);
+  background-color: var(--offwhite);
+  padding: 10px;
+  border-radius: 0.2em;
+}
+
+#user-details-actions {
+  display: grid;
+  grid-template: 1fr / 1fr 0.2fr 1fr;
+}
+
+#user-details-avatar>img {
+  width: 64px;
+  height: 64px;
+}
+
+#user-details-info {
+  display: grid;
+}
+
+/****************************
   CONTROLS
 ****************************/
 
 .login-control {
-  border: 0px; 
+  border: 0px;
   background: none;
 }
 
@@ -186,7 +241,7 @@ nav {
 /****************************
   GENERAL FORM
 ****************************/
-.bigform  {
+.bigform {
   display: grid;
   justify-content: center;
   justify-items: center;
@@ -245,6 +300,7 @@ nav {
   justify-content: center;
   align-items: center;
 }
+
 #mood-entry-notes {
   max-width: 80%;
 }
@@ -258,6 +314,7 @@ nav {
   border-radius: 0.6rem;
   padding: 3px;
 }
+
 .activity-selection-container {
   display: flex;
   justify-content: center;
@@ -269,24 +326,28 @@ nav {
   border-radius: 5px;
   padding: 5px;
 }
+
 .activity-group {
   border: 1px solid black;
   border-radius: 5px;
   margin: 5px;
 }
-.activity-group-activities { 
+
+.activity-group-activities {
   display: grid;
   grid-template: 1fr / repeat(4, 1fr);
   grid-auto-flow: row;
   /* justify-content: space-evenly;
   margin: 5px; */
 }
+
 .activity-group-name>img,
 .activity>img {
   width: 32px;
   height: 32px;
   object-fit: contain;
 }
+
 .activity-group-name {
   display: flex;
   justify-content: flex-start;
@@ -299,6 +360,7 @@ nav {
   border-radius: 50%;
   margin-right: 10px;
 }
+
 .mood {
   margin: 0px 5px 0px 5px;
 }

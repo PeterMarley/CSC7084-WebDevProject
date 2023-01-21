@@ -6,7 +6,7 @@
 
 import express, { Request, Response, NextFunction } from 'express';
 import MoodApiDataAccessObject from './MoodApiDataAccessObject';
-import { EntryDataResponse, EntryFormDataResponse } from './moodApiResponses';
+import { EntryDataResponse, EntryFormDataResponse, SuccessResponse } from './moodApiResponses';
 
 const moodAPI = express.Router();
 
@@ -41,23 +41,24 @@ async function deleteSingleEntry(req: Request, res: Response) {
 	const entryId = Number(req.params.entryId);
 	const userId = Number(req.params.userId);
 	console.log(`moodApi entryId: ${entryId}, userId: ${userId}`);
-	
+
 	MoodApiDataAccessObject.deleteSingleEntry(userId, entryId);
 
-	res.json({status: 'no response to deleteSingleEntry implemented'});
+	res.json({ status: 'no response to deleteSingleEntry implemented' });
 }
+
+
 
 async function updateSingleEntry(req: Request, res: Response) {
 	const entryId = Number(req.params.entryId);
 	const userId = Number(req.params.userId);
 	const { activities: activityNamesCommaDelimStr, mood: moodName, notes: entryNotes } = req.body;
 	console.log('entryNotes in moodApi.updateSingleEntry: ' + entryNotes);
-	
-	MoodApiDataAccessObject.updateSingleEntry(
+
+	const success: boolean = await MoodApiDataAccessObject.updateSingleEntry(
 		userId, entryId, entryNotes, moodName, activityNamesCommaDelimStr
 	);
-
-	res.json({status: 'no response to updateSingleEntry implemented'});
+	res.json(new SuccessResponse(success));
 }
 
 async function getSingleEntry(req: Request, res: Response) {

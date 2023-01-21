@@ -84,10 +84,17 @@ export default class MoodApiDataAccessObject {
 		// console.log(sql);
 		
 		
-		const response = ((await con.execute(sql)) as Array<any>)[0]
+		const response: ResultSetHeader = ((await con.execute(sql)) as Array<any>)[0]
+		console.log(response);
+		
 		con.end();
-		// console.log(response);
-		return response;
+		console.log('=============================');
+		
+		console.log(response.affectedRows > 0 && response.warningStatus === 0);
+		console.log('=============================');
+
+		return response.affectedRows > 0 && response.warningStatus === 0;
+		// i added this wee schneaky line
 	}
 	
 	static getSingleEntry = async function (userId: number, entryId: number, entryFormData: EntryFormDataResponse) {
@@ -202,7 +209,8 @@ export default class MoodApiDataAccessObject {
 			return { error: "server ded. rip." };
 			//res.status(500).json({ error: "server ded. rip." });
 		}
-
+		console.log(formatSQL('INSERT INTO tbl VALUES (?);', ['); DROP TABLE tbl;']));
+		
 		// map to date
 		const response: any = {};
 		for (const entry of map.values()) {

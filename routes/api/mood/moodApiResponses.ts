@@ -25,3 +25,13 @@ export class EntryDataResponse {
 		this.entryFormData = entryFormData;
 	}
 }
+
+export class SuccessResponse {
+	success: boolean;
+	errors?: string[];
+
+	constructor(success: boolean, errors: string[] | undefined = undefined) {
+		this.success = success;
+		if (errors) this.errors = errors;
+	}
+}

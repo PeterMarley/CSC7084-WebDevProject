@@ -1,7 +1,7 @@
 import cookieParser from 'cookie-parser';
 import express, { Request, Response, NextFunction } from 'express';
 import apiCall from '../../lib/apiCall';
-import { EntryDataResponse, EntryFormDataResponse } from '../api/mood/moodApiResponses';
+import { EntryDataResponse, EntryFormDataResponse, SuccessResponse } from '../api/mood/moodApiResponses';
 import authenticate from '../middleware/authenticate';
 import buildApiUrl from '../../lib/buildApiUrl';
 
@@ -20,8 +20,8 @@ entryRouter.get('/list', getList);
 entryRouter.get('/new', getNew);
 entryRouter.post('/new', postNew);
 
-entryRouter.get('/edit/:entryId', getEdit);
-entryRouter.post('/edit/:entryId', postEdit);
+entryRouter.get('/edit/:entryId', initialiseLocalsForEntryEdit, getEdit);
+entryRouter.post('/edit/:entryId', initialiseLocalsForEntryEdit, postEdit);
 
 entryRouter.get('/delete/:entryId', deleteEntry);
 
@@ -30,6 +30,15 @@ entryRouter.get('/delete/:entryId', deleteEntry);
  * MIDDLEWARE
  * 
  *******************************************************/
+
+function initialiseLocalsForEntryEdit(req: Request, res: Response, next: NextFunction) {
+	res.locals.updateSingleEntrySuccess = null;
+	res.locals.initialiseLocalsForEntryEdit = null;
+	res.locals.entryFormData = null;
+	res.locals.entryData = null;
+	res.locals.action = null;
+	next();
+}
 
 async function deleteEntry(req: Request, res: Response) {
 	const deleteEntryResponse: any =
@@ -43,15 +52,20 @@ async function deleteEntry(req: Request, res: Response) {
 async function postEdit(req: Request, res: Response) {
 	const { activities, mood, notes } = req.body;
 	console.log(notes);
-	
-	const entryDataResponse: any =
+
+	const successResponse: SuccessResponse =
 		await apiCall(
 			'PUT',
 			buildApiUrl('/api/mood/entry/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId),
 			new URLSearchParams([['activities', activities], ['mood', mood], ['notes', notes], ['entryId', req.params.entryId]])
 		);
 	//const x: EntryDataResponse = { entry: undefined, entryFormData: entryDataResponse };
-	res.json(entryDataResponse);
+	// console.log('post edit response received by postEdit:');
+	// console.log(successResponse);
+	
+	
+	res.locals.updateSingleEntrySuccess = successResponse.success
+	res.render('mood-entry-edit');
 }
 
 async function getEdit(req: Request, res: Response) {
@@ -78,7 +92,7 @@ async function postNew(req: Request, res: Response) {
 		res.status(400).json({ success: false, body: req.body });
 		return;
 	}
-	
+
 	const response = await apiCall(
 		'POST',
 		buildApiUrl('/api/mood/entry/new/' + (res.locals.id ? res.locals.id : '')),
