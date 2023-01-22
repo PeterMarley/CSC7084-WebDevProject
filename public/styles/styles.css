@@ -8,9 +8,12 @@
 
   --header-height: 3.2rem;
   --header-border-width: 2px;
-  /* header padding/ margins */
+
   --nav-button-padding: 10px;
   --nav-button-border-radius: 0.5rem;
+  --nav-button-min-width: 75px;
+
+  --nav-margin: 10px;
 }
 
 .dark {
@@ -66,15 +69,13 @@ body {
   /* box-shadow: inset 0px -20px 25px -20px white; */
 }
 
-#header a {
+.nav-button>a {
   color: #000000;
   text-decoration: none;
 }
 
 .nav-button,
-#hamburger-container
- {
-  background-color: var(--offwhite);
+#hamburger-container {
   border-radius: var(--nav-button-border-radius);
   border: 2px solid var(--middle);
   transition: background-color 0.5s ease;
@@ -82,9 +83,18 @@ body {
 
 .nav-button {
   padding: var(--nav-button-padding);
+  background-color: var(--light);
+  min-width: var(--nav-button-min-width);
 }
 
+.nav-button:hover {
+  background-color: var(--accent);
+}
+
+
+
 #hamburger-container {
+  background-color: var(--offwhite);
   margin-left: auto;
   margin-right: 10px;
   padding: calc(var(--nav-button-padding) / 2);
@@ -99,9 +109,9 @@ body {
   margin-left: auto;
 }
 
-#header>div:not(:first-child):hover {
+/* #header>div:not(:first-child):hover {
   background-color: var(--accent);
-}
+} */
 
 #header>div:last-child {
   margin-left: auto;
@@ -111,12 +121,15 @@ body {
   display: flex;
   align-items: center;
 }
+
 .hidden {
   display: none;
   visibility: hidden;
   width: 0px;
   height: 0px;
 }
+
+
 
 /****************************
   BODY
@@ -126,10 +139,12 @@ body {
   background-color: var(--offwhite);
   display: flex;
   flex-direction: row;
-  flex-grow: 1;  
+  flex-grow: 1;
   position: relative;
   min-height: calc(100vh - var(--header-height));
 }
+
+
 
 /* #body>* {
   margin: 10px;
@@ -137,18 +152,25 @@ body {
 
 nav {
   width: 150px;
-  background-color: red;
   display: flex;
   position: sticky;
-  top: calc(var(--header-height) + var(--header-border-width));
+  top: calc(var(--header-height) + var(--header-border-width) + 10px);
   left: 0;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--nav-margin);
   align-self: flex-start;
+  margin: var(--nav-margin);
 }
 
+@media only screen and (max-width: 768px) {
+  nav {
+    visibility: hidden;
+    display: none;
+    width: 0px;
+  }
+} 
+
 #body>div {
-  background-color: bisque;
   flex-grow: 1;
 }
 
@@ -418,6 +440,8 @@ nav {
 
 .mood-selection {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   align-items: center;
 }
 
