@@ -19,6 +19,9 @@
 
   /* widths and heights */
   --nav-button-min-width: 75px;
+
+  /* backgrounds */
+  --main-bg-img: url('../image/beach-light.jpg');
 }
 
 
@@ -48,15 +51,6 @@ body {
   overflow: visible;
   position: relative;
   color: var(--text-color);
-}
-
-.dark {
-  --color-1: rgb(92, 92, 230);
-  --color-2: rgb(68, 68, 184);
-  --color-3: rgb(37, 37, 102);
-  --color-4: rgb(28, 28, 87);
-  --color-accent: black;
-  --text-color: white;
 }
 
 .theme {
@@ -174,7 +168,7 @@ a.nav-button {
   flex-grow: 1;
   position: relative;
   min-height: calc(100vh - var(--header-height));
-  background-image: url('../image/serene-beach.jpg');
+  background-image: var(--main-bg-img);
   background-repeat: no-repeat;
   background-position: center;
   background-attachment: fixed;
@@ -582,6 +576,7 @@ nav {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
+  background-color: var(--color-4);
 }
 
 .mood-selection-container {
@@ -592,4 +587,19 @@ nav {
 .mood-name {
   display: flex;
   justify-content: center;
+}
+
+/****************************
+  THEMES
+****************************/
+
+.dark {
+  --color-1: rgb(92, 92, 92);
+  --color-2: rgb(68, 68, 68);
+  --color-3: rgb(37, 37, 37);
+  --color-4: rgb(28, 28, 28);
+  --color-accent: black;
+  --text-color: white;
+
+  --main-bg-img: url('../image/beach-dark.jpg');
 }

@@ -42,7 +42,7 @@ if (authed) { // if authenticated
     for (const entry of entries[day]) {
       const { entryId, datetime, mood, notes, activities, images } = entry;
       const entryDate = new Date(datetime);
-  %>
+    %>
 
     <div class="entry">
       <div class="entry-mood">
@@ -61,7 +61,7 @@ if (authed) { // if authenticated
             <%- activity.activityName %>
           </div>
           <div class="entry-activity-image">
-            <img  src="<%- activity.image.url %>" alt="<%- activity.image.altText %>">
+            <img src="<%- activity.image.url %>" alt="<%- activity.image.altText %>">
           </div>
         </div>
         <% } %>

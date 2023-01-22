@@ -24,10 +24,10 @@
       <div id="hamburger" class="hamburger-source">
         <img src="/icons/hamburger24x24.png" class="hamburger-source">
         <% if (authed) { // if authenticated%>
-        <%- include('../components/user-details-container.ejs') %>
+        <%- include('../components/user-details-container') %>
         <% } else { // if not authenticated%>
         <!-- <div id="login-form-container" hidden> -->
-        <%- include('../forms/login_form.ejs'); %>
+        <%- include('../forms/login-form'); %>
         <!-- </div> -->
         <% } %>
       </div>
@@ -39,8 +39,8 @@
       <% if (authed) { %>
       <div class="nav-button"><a href="/entry/new">Add Entry</a></div>
       <div class="nav-button"><a href="/entry/list">Moods</a></div>
-      <div class="nav-button">Activites</div>
-      <div class="nav-button">Visualise</div>
+      <div class="nav-button"><a href="/entry/activity">Activites</a></div>
+      <div class="nav-button"><a href="/visualise">Visualise</a></div>
       <% } %>
     </nav>
     <div>

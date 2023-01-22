@@ -4,7 +4,7 @@ Authed:
 <%- authed %>
 
 <% if (authed === false) { %>
-<%- include('forms/login_form.ejs'); %>
+<%- include('forms/login-form.ejs'); %>
 <% } else { %>
 Welcome <%= username %>, you are successfully logged in :)
 <% } %>

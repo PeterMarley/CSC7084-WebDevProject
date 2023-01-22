@@ -25,6 +25,10 @@ entryRouter.post('/edit/:entryId', initialiseLocalsForEntryEdit, postEdit);
 
 entryRouter.get('/delete/:entryId', deleteEntry);
 
+entryRouter.get('/activity', (req: Request, res: Response, next: NextFunction) => {
+	res.send('not yet implemented');
+});
+
 /*******************************************************
  * 
  * MIDDLEWARE
