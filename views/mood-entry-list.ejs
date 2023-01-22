@@ -1,6 +1,6 @@
 <%- include('partials/top.ejs') %>
 <div class="mood-entry-list">
-<% 
+  <% 
 
 if (authed) { // if authenticated
 
@@ -16,12 +16,12 @@ if (authed) { // if authenticated
   
   if (dayKeys.length === 0) {
 %>
-<div class="mood-day">
-  <div>
-    No Mood entries. Add some!
+  <div class="mood-day">
+    <div>
+      No Mood entries. Add some!
+    </div>
   </div>
-</div>
-<%
+  <%
   }
   
   dayKeys.sort((a, b) => {
@@ -33,52 +33,55 @@ if (authed) { // if authenticated
     const date = new Date(day);
 %>
 
-<div class="mood-day">
-  <div>
-    <%- date.toLocaleString('en-GB', { weekday: 'long' }) // day of week %>, <%- date.toLocaleDateString('en-GB') // date string %>
-  </div>
-  
-  <%
+  <div class="mood-day">
+    <div>
+      <%- date.toLocaleString('en-GB', { weekday: 'long' }) // day of week %>, <%- date.toLocaleDateString('en-GB') // date string %>
+    </div>
+
+    <%
     for (const entry of entries[day]) {
       const { entryId, datetime, mood, notes, activities, images } = entry;
       const entryDate = new Date(datetime);
   %>
 
-  <div class="mood-day-entry">
-    <div class="mood-day-entry--mood">
-      <span><%- mood.name %> <img src="<%- mood.image.url %>" alt="<%- mood.image.altText %>" width="24px" height="24px"></span>
-      <span>( <%- entryDate.toTimeString().substring(0,8) %> )</span>
-      <span><a href="/entry/edit/<%- entryId %>">edit</a> <a href="/entry/delete/<%- entryId %>">delete</a></span>
+    <div class="mood-day-entry">
+      <div class="mood-day-entry--mood">
+        <span><%- mood.name %> <img src="<%- mood.image.url %>" alt="<%- mood.image.altText %>" width="24px" height="24px"></span>
+        <span>( <%- entryDate.toTimeString().substring(0,8) %> )</span>
+        <span><a href="/entry/edit/<%- entryId %>">edit</a> <a href="/entry/delete/<%- entryId %>">delete</a></span>
+      </div>
+      <div class="mood-day-entry--activities">
+        <% for (const activity of activities) { %>
+        <div>
+          <div><%- activity.activityName %></div>
+          <div><img src="<%- activity.image.url %>" alt="<%- activity.image.altText %>" height="24px" width="24px"></div>
+        </div>
+        <% } %>
+      </div>
+      <div class="mood-day-entry--notes">
+        <%- notes %>
+      </div>
+      <div class="mood-day-entry--images">
+        <% for (const image of images) { %>
+        <img src="<%- image.url %>" alt="<%- image.altText %>">
+        <% } %>
+      </div>
     </div>
-    <div class="mood-day-entry--activities">
-      <% for (const activity of activities) { %>
-      <%- activity.activityName %> <img src="<%- activity.image.url %>" alt="<%- activity.image.altText %>" height="24px" width="24px">
-      <% } %>
-    </div>
-    <div class="mood-day-entry--notes">
-      <%- notes %>
-    </div>
-    <div class="mood-day-entry--images">
-      <% for (const image of images) { %>
-      <img src="<%- image.url %>" alt="<%- image.altText %>">
-      <% } %>
-    </div>
-  </div>
 
 
-  <%   
+    <%   
     } 
    %>
-</div>
-<%
+  </div>
+  <%
   }  
 } else { // if not authenticated
 %>
-<div>nah mate</div>
-<% 
+  <div>nah mate</div>
+  <% 
 } 
 %>
 
-<script src="/script/mood-entry-list.js"></script>
+  <script src="/script/mood-entry-list.js"></script>
 </div>
 <%- include('partials/bottom.ejs') %>

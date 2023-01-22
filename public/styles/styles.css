@@ -142,6 +142,10 @@ body {
   flex-grow: 1;
   position: relative;
   min-height: calc(100vh - var(--header-height));
+  background-image: url('../image/serene-beach.jpg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
 }
 
 
@@ -249,6 +253,7 @@ nav {
   grid-template: 1fr/ 1fr;
   grid-auto-flow: row;
   justify-items: center;
+  margin: 10px;
 }
 
 .mood-day {
@@ -256,7 +261,7 @@ nav {
   margin: 10px;
   padding: 10px;
   border-radius: 5px;
-  width: 600px;
+  width: 90%;
   display: flex;
   flex-direction: column;
 }
@@ -274,6 +279,64 @@ nav {
   margin: 10px 0px;
 }
 
+.mood-day-entry--activities {
+  /* background-color: blue; */
+  display: flex;
+  flex-wrap: wrap;
+  /* flex-wrap: nowrap; */
+}
+
+.mood-day-entry--activities > div {
+  /* background-color: blue; */
+  display: flex;
+  flex-direction: row;
+  background-color: var(--offwhite);
+  border-radius: 1.5em;
+  margin: 5px;
+  padding: 5px 15px 5px 15px;
+  flex-basis: auto;
+  flex-shrink: 3;
+  align-items: center;
+  max-height: 2em;
+  /* overflow: hidden;
+  text-overflow: ellipsis; */
+  /* flex-wrap: nowrap; */
+}
+
+@media only screen and (max-width: 320px) {
+  .mood-day,
+  .mood-entry-list {
+    margin: 0px;
+  }
+
+  #user-details-container {
+    max-width: 260px;
+  }
+
+  #user-details-avatar > img {
+    width: 18px;
+    height: 18px;
+  }
+} 
+
+.mood-day-entry--activities div div {
+  display: flex;
+  /* overflow: hidden;
+  text-overflow: ellipsis; */
+  /* width: 100px; */
+  /* flex-shrink: 1;
+  min-width: 24px; */
+
+
+}
+
+.mood-day-entry--activities div div img {
+  border: 1px solid black;
+  border-radius: 50%;
+  padding: 5px;
+  align-items: center;
+  margin-left: 5px;
+}
 .mood-day-entry--mood {
   margin-top: 0px;
   display: flex;
@@ -387,6 +450,7 @@ nav {
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: var(--offwhite);
 }
 
 .activity-selection {

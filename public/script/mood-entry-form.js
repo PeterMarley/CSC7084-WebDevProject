@@ -55,8 +55,9 @@ function handleFormSubmission() {
 
     const moodDiv = document.querySelector('.mood.selected');
     const moodHiddenInput = document.querySelector('#mood-hidden-input');
-    moodHiddenInput.value = moodDiv.children[1].textContent;
-    moodSelected = moodDiv.children[1].textContent;
+
+    moodHiddenInput.value = moodDiv ? moodDiv.children[1].textContent : '';
+    moodSelected = moodDiv ? moodDiv.children[1].textContent : '';
 
     // console.log('activities selected');
     // console.log(activitiesSelected);
