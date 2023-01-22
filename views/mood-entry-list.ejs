@@ -44,24 +44,32 @@ if (authed) { // if authenticated
       const entryDate = new Date(datetime);
   %>
 
-    <div class="mood-day-entry">
-      <div class="mood-day-entry--mood">
-        <span><%- mood.name %> <img src="<%- mood.image.url %>" alt="<%- mood.image.altText %>" width="24px" height="24px"></span>
+    <div class="entry">
+      <div class="entry-mood">
+        <span class="entry-mood-name"><%- mood.name %> <img src="<%- mood.image.url %>" alt="<%- mood.image.altText %>" width="24px" height="24px"></span>
         <span>( <%- entryDate.toTimeString().substring(0,8) %> )</span>
-        <span><a href="/entry/edit/<%- entryId %>">edit</a> <a href="/entry/delete/<%- entryId %>">delete</a></span>
+        <span>
+          <a href="/entry/edit/<%- entryId %>" class="nav-button">edit</a>
+          <a href="/entry/delete/<%- entryId %>" class="nav-button">delete</a>
+        </span>
       </div>
-      <div class="mood-day-entry--activities">
+      <div class="entry-activities">
+
         <% for (const activity of activities) { %>
-        <div>
-          <div><%- activity.activityName %></div>
-          <div><img src="<%- activity.image.url %>" alt="<%- activity.image.altText %>" height="24px" width="24px"></div>
+        <div class="entry-activity">
+          <div class="entry-activity-name">
+            <%- activity.activityName %>
+          </div>
+          <div class="entry-activity-image">
+            <img  src="<%- activity.image.url %>" alt="<%- activity.image.altText %>">
+          </div>
         </div>
         <% } %>
       </div>
-      <div class="mood-day-entry--notes">
+      <div class="entry-notes">
         <%- notes %>
       </div>
-      <div class="mood-day-entry--images">
+      <div class="entry-images">
         <% for (const image of images) { %>
         <img src="<%- image.url %>" alt="<%- image.altText %>">
         <% } %>
