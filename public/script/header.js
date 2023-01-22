@@ -1,8 +1,10 @@
 const hamburger = document.querySelector('#hamburger-container');
-hamburger.addEventListener('click', (e) => {
-    if (!e.target.classList.contains('hamburger-source')) return;
-    const selector = document.querySelector('#loggedin').textContent === 'true'
-        ? '#user-details-container'
-        : '#login-form-container';
-    document.querySelector(selector).toggleAttribute('hidden');
-})
+hamburger.addEventListener('click', handleHamburgerClick);
+
+function handleHamburgerClick(event) {
+    if (!event.target.classList.contains('hamburger-source')) return;
+    const user = document.querySelector('#user-details-container');
+    const login  = document.querySelector('#login-form-container');
+    const element = user||login;
+    element.toggleAttribute('hidden');
+}
