@@ -40,7 +40,6 @@
 ****************************/
 
 * {
-  font-family: opensans;
 }
 
 body {
@@ -48,6 +47,7 @@ body {
   display: flex;
   flex-direction: column;
   /* font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; */
+  font-family: opensans;
   overflow: visible;
   position: relative;
   color: var(--text-color);
@@ -494,6 +494,20 @@ nav {
 /****************************
   ENTRY FORM
 ****************************/
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 80%;
+}
+
+.container > textarea {
+  /* flex: 1; */
+  width: inherit;
+  flex-basis: 0;
+}
+
 #mood-entry-form {
   display: flex;
   flex-direction: column;
@@ -502,8 +516,13 @@ nav {
 }
 
 #mood-entry-notes {
-  width: 80%;
+  width: inherit;
   min-height: 200px;
+  padding: 10px;
+  margin: 10px 5px;
+  border-width: 0px;
+  border-radius: var(--nav-button-border-radius);
+  resize: vertical;
 }
 
 .activity {
@@ -591,6 +610,7 @@ nav {
   border: 1px solid var(--color-4);
   box-sizing: border-box;
   border-radius: var(--nav-button-border-radius);
+  padding: 10px;
 }
 
 .mood-selection.validation-error {
@@ -600,6 +620,7 @@ nav {
 .mood-selection-container {
   display: flex;
   justify-content: center;
+  margin: 10px 5px 0px 5px;
 }
 
 .mood-name {

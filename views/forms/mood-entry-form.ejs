@@ -1,19 +1,20 @@
 <% 
 if (authed) { 
-  let notes, formAction, httpVerb, submitButtonText;
+  let notes, formAction, submitButtonText;
+  //let httpVerb;
   let selectedMood = '';
   let selectedActivities = [];
   switch (action) {
     case 'new':
       notes = '';
       formAction = '/entry/new';
-      httpVerb = 'POST';
+      //httpVerb = 'POST';
       submitButtonText = 'Add New Entry';
       break;
     case 'edit':
       notes = entryData.notes;
       formAction = '/entry/edit/' + entryData.entryId;
-      httpVerb ='dont know this either';
+      //httpVerb ='dont know this either';
       submitButtonText = 'Edit Entry';
       break;
   }
@@ -29,47 +30,47 @@ if (authed) {
     <div class="mood-selection">
       <% 
       for (const mood of entryFormData.moods) {
-        const selector = (action === 'edit' && entryData.mood.name == mood.name ? 'selected ' : '') + 'mood'; 
+        const moodSelector = (action === 'edit' && entryData.mood.name == mood.name ? 'selected ' : '') + 'mood'; 
       %>
 
-      <span class="<%- selector %>">
+      <span class="<%- moodSelector %>">
         <span><img src="<%- mood.image.url %>" class="mood-image"></span>
         <span class="mood-name"><%- mood.name %></span>
       </span>
-      <% 
-      } 
-      %>
+      <% } %>
     </div>
 
   </div>
-  <textarea name="notes" id="mood-entry-notes" placeholder="Leave some notes if you wish...">
-    <%- notes %>
-  </textarea>
-  <div class="activity-selection-container">
-    <div class="activity-selection">
-      Activity Groups
-      <% for (const actGroup of entryFormData.activityGroups) { %>
-      <div class="activity-group">
-        <div class="activity-group-name"><img src="<%- actGroup.image.url %>" alt="<%- actGroup.image.altText %>"><span><%- actGroup.activityGroupName %></span></div>
-        <div class="activity-group-activities">
-          <% 
-          for (const act of actGroup.activities) { 
-            // console.log('===act===');
-            // console.log(act);
-            let selector = 'activity';
-            const activityIndex = entryData ? entryData.activities.findIndex(e => e.activityId === act.activityId) : -1;
-            if (action === 'edit' && activityIndex !== -1) {
-              selector += ' selected';
-              selectedActivities.push(entryData.activities[activityIndex].activityName);
-            }
-          %>
-          <div class="<%- selector %>"><img src="<%- act.image.url %>" alt="<%- act.image.altText %>">
-            <div class="activity-name"><%- act.activityName %></div>
+  <div class="container">
+    <textarea name="notes" id="mood-entry-notes" placeholder="Leave some notes if you wish...">
+      <%- notes %>
+    </textarea>
+    <div class="activity-selection-container">
+      <div class="activity-selection">
+        Activity Groups
+        <% for (const actGroup of entryFormData.activityGroups) { %>
+        <div class="activity-group">
+          <div class="activity-group-name"><img src="<%- actGroup.image.url %>" alt="<%- actGroup.image.altText %>"><span><%- actGroup.activityGroupName %></span></div>
+          <div class="activity-group-activities">
+            <% 
+            for (const act of actGroup.activities) { 
+              // console.log('===act===');
+              // console.log(act);
+              let activitySelector = 'activity';
+              const activityIndex = entryData ? entryData.activities.findIndex(e => e.activityId === act.activityId) : -1;
+              if (action === 'edit' && activityIndex !== -1) {
+                activitySelector += ' selected';
+                selectedActivities.push(entryData.activities[activityIndex].activityName);
+              }
+            %>
+            <div class="<%- activitySelector %>"><img src="<%- act.image.url %>" alt="<%- act.image.altText %>">
+              <div class="activity-name"><%- act.activityName %></div>
+            </div>
+            <% } %>
           </div>
-          <% } %>
         </div>
+        <% } %>
       </div>
-      <% } %>
     </div>
   </div>
   <input hidden type="text" id="activities-hidden-input" name="activities" value="<%- selectedActivities.join(',') %>">
