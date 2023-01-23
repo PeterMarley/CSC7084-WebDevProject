@@ -19,6 +19,13 @@
       </a>
       <!-- <img  class="theme"> -->
       <div class="theme"></div>
+      <% if (authed) { %>
+        <div id="nav-menu-arrow">
+          <div id="nav-menu-dropdown">
+            <%- include('nav') %>
+          </div>
+        </div>
+      <% } %>
     </div>
     <div class="hamburger-source" id="hamburger-container">
       <div id="hamburger" class="hamburger-source">
@@ -35,12 +42,5 @@
     <script src="/script/header.js"></script>
   </div>
   <div id="body">
-    <nav <%- authed ? '' : 'class="hidden"' %>>
-      <% if (authed) { %>
-      <div class="nav-button"><a href="/entry/new">Add Entry</a></div>
-      <div class="nav-button"><a href="/entry/list">Moods</a></div>
-      <div class="nav-button"><a href="/entry/activity">Activites</a></div>
-      <div class="nav-button"><a href="/visualise">Visualise</a></div>
-      <% } %>
-    </nav>
+    <%- include('nav') %>
     <div>

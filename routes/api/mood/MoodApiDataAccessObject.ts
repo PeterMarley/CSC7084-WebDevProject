@@ -64,11 +64,11 @@ export default class MoodApiDataAccessObject {
 
 	constructor() { throw new Error('MoodApiDataAccessObject is a static class and may not be instantiated'); }
 
-	static deleteSingleEntry = async function(userId: number, entryId: number) {
+	static deleteSingleEntry = async function (userId: number, entryId: number) {
 		const con = await getConnection();
 		const deleteEntrySQL = formatSQL(MoodApiDataAccessObject.sql.deleteSingleEntry.deleteEntry, [userId, entryId]);
 		console.log(deleteEntrySQL);
-		
+
 		const response = (await con.execute(deleteEntrySQL) as Array<any>);
 		con.end();
 		console.log(response);
@@ -82,21 +82,21 @@ export default class MoodApiDataAccessObject {
 		);
 		// console.log('updateSingleEntry formatted sql: ');
 		// console.log(sql);
-		
-		
+
+
 		const response: ResultSetHeader = ((await con.execute(sql)) as Array<any>)[0]
 		console.log(response);
-		
+
 		con.end();
 		console.log('=============================');
-		
+
 		console.log(response.affectedRows > 0 && response.warningStatus === 0);
 		console.log('=============================');
 
 		return response.affectedRows > 0 && response.warningStatus === 0;
 		// i added this wee schneaky line
 	}
-	
+
 	static getSingleEntry = async function (userId: number, entryId: number, entryFormData: EntryFormDataResponse) {
 		// get data from database
 		const con = await getConnection();
@@ -166,10 +166,12 @@ export default class MoodApiDataAccessObject {
 		activities.forEach((a: IDbActivity) => activityMap.set(a.activityName, a.activityId));
 
 		// insert entry and activities
-		const insertionResult: ResultSetHeader = (await con.execute(buildInsertActivitySql(entryId, activitesDelimitedStrForm.split(','), activityMap)) as Array<any>)[0];
+		const activityNameArr = activitesDelimitedStrForm.split(',');
+		if (activityNameArr.length > 0) {
+			const insertionResult: ResultSetHeader = (await con.execute(buildInsertActivitySql(entryId, activityNameArr, activityMap)) as Array<any>)[0];
+		}
 
 		// return true if successful
-		if (insertionResult.affectedRows === 0) { return false; }
 		return true;
 	}
 
@@ -210,7 +212,7 @@ export default class MoodApiDataAccessObject {
 			//res.status(500).json({ error: "server ded. rip." });
 		}
 		// console.log(formatSQL('INSERT INTO tbl VALUES (?);', ['); DROP TABLE tbl;']));
-		
+
 		// map to date
 		const response: any = {};
 		for (const entry of map.values()) {

@@ -42,7 +42,9 @@ if (authed) {
     </div>
 
   </div>
-  <textarea name="notes" id="mood-entry-notes"><%- notes %></textarea>
+  <textarea name="notes" id="mood-entry-notes" placeholder="Leave some notes if you wish...">
+    <%- notes %>
+  </textarea>
   <div class="activity-selection-container">
     <div class="activity-selection">
       Activity Groups
@@ -62,7 +64,7 @@ if (authed) {
             }
           %>
           <div class="<%- selector %>"><img src="<%- act.image.url %>" alt="<%- act.image.altText %>">
-            <div><%- act.activityName %></div>
+            <div class="activity-name"><%- act.activityName %></div>
           </div>
           <% } %>
         </div>

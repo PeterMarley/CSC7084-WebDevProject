@@ -54,16 +54,19 @@ if (authed) { // if authenticated
         </span>
       </div>
       <div class="entry-activities">
-
-        <% for (const activity of activities) { %>
-        <div class="entry-activity">
-          <div class="entry-activity-name">
-            <%- activity.activityName %>
+        <% if (activities.length > 0)  {%>
+          <% for (const activity of activities) { %>
+          <div class="entry-activity">
+            <div class="entry-activity-name">
+              <%- activity.activityName %>
+            </div>
+            <div class="entry-activity-image">
+              <img src="<%- activity.image.url %>" alt="<%- activity.image.altText %>">
+            </div>
           </div>
-          <div class="entry-activity-image">
-            <img src="<%- activity.image.url %>" alt="<%- activity.image.altText %>">
-          </div>
-        </div>
+          <% } %>
+        <% } else { %>
+          <div class="no-activities-message">No activities selected</div>
         <% } %>
       </div>
       <div class="entry-notes">

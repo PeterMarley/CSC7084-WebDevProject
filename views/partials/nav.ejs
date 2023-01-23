@@ -1,0 +1,8 @@
+<nav <%- authed ? '' : 'class="hidden"' %>>
+  <% if (authed) { %>
+  <div class="nav-button"><a href="/entry/new">Add Entry</a></div>
+  <div class="nav-button"><a href="/entry/list">Moods</a></div>
+  <div class="nav-button"><a href="/entry/activity">Activites</a></div>
+  <div class="nav-button"><a href="/visualise">Visualise</a></div>
+  <% } %>
+</nav>

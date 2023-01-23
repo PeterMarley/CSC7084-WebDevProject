@@ -11,6 +11,13 @@
   const themeButton = document.querySelector(".theme");
   themeButton.addEventListener("click", handleThemeButtonClick);
 
+  const navMenuArrow = document.querySelector('#nav-menu-arrow')
+  navMenuArrow.addEventListener('click', () => {
+    const navMenuDropdown = document.querySelector('#nav-menu-dropdown');
+    navMenuDropdown.classList.toggle('selected');
+    //TODO sort nav menu drop down appearing when down arrow clicked
+  });
+
   // select theme
   const selectedTheme = localStorage.getItem("theme");
   let theme = "";

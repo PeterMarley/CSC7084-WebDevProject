@@ -53,10 +53,31 @@ body {
   color: var(--text-color);
 }
 
+#nav-menu-arrow {
+  position: relative;
+}
+
+#nav-menu-arrow,
 .theme {
-  background-image: url('../icons/moon.png');
   width: 24px;
   height: 24px;
+}
+
+#nav-menu-dropdown {
+  display: none;
+  visibility: hidden;
+  /* height: 0px;
+  width: 0px; */
+  position: absolute;
+}
+
+#nav-menu-dropdown.selected {
+  display: block;
+  visibility: visible;
+}
+
+.theme {
+  background-image: url('../icons/moon.png');
 }
 
 .dark .theme {
@@ -73,7 +94,7 @@ body {
   align-items: center;
 }
 
-.home-icon-link > a {
+.home-icon-link>a {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -192,13 +213,6 @@ nav {
   margin: var(--nav-margin);
 }
 
-@media only screen and (max-width: 768px) {
-  nav {
-    visibility: hidden;
-    display: none;
-    width: 0px;
-  }
-}
 
 #body>div {
   flex-grow: 1;
@@ -274,6 +288,7 @@ nav {
 /****************************
   ENTRY LIST
 ****************************/
+
 .mood-entry-list {
   display: grid;
   grid-template: 1fr/ 1fr;
@@ -356,22 +371,7 @@ nav {
   /* flex-wrap: nowrap; */
 }
 
-@media only screen and (max-width: 320px) {
 
-  .mood-day,
-  .mood-entry-list {
-    margin: 0px;
-  }
-
-  #user-details-container {
-    max-width: 260px;
-  }
-
-  #user-details-avatar>img {
-    width: 18px;
-    height: 18px;
-  }
-}
 
 .entry-activity-name {
   display: flex;
@@ -410,7 +410,7 @@ nav {
   font-weight: bold;
 }
 
-.entry-mood-name > img {
+.entry-mood-name>img {
   margin-left: 10px;
 }
 
@@ -502,7 +502,8 @@ nav {
 }
 
 #mood-entry-notes {
-  max-width: 80%;
+  width: 80%;
+  min-height: 200px;
 }
 
 .activity {
@@ -515,17 +516,23 @@ nav {
   padding: 3px;
 }
 
+.activity-name {
+  overflow: hidden;
+  /*text-overflow: ellipsis; */
+  white-space: nowrap;
+}
+
 .activity-selection-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: var(--color-4);
 }
 
 .activity-selection {
   border: 1px solid black;
-  border-radius: 5px;
+  border-radius: var(--nav-button-border-radius);
   padding: 5px;
+  background-color: var(--color-4);
 }
 
 .activity-group {
@@ -562,6 +569,10 @@ nav {
   margin-right: 10px;
 }
 
+.no-activities-message {
+  margin: 10px;
+}
+
 .mood {
   margin: 0px 5px 0px 5px;
 }
@@ -577,6 +588,13 @@ nav {
   justify-content: center;
   align-items: center;
   background-color: var(--color-4);
+  border: 1px solid var(--color-4);
+  box-sizing: border-box;
+  border-radius: var(--nav-button-border-radius);
+}
+
+.mood-selection.validation-error {
+  border: 1px solid red;
 }
 
 .mood-selection-container {
@@ -602,4 +620,54 @@ nav {
   --text-color: white;
 
   --main-bg-img: url('../image/beach-dark.jpg');
+}
+
+/****************************
+  BREAKPOINTS
+****************************/
+@media only screen and (max-width: 320px) {
+
+  .mood-day,
+  .mood-entry-list {
+    margin: 0px;
+  }
+
+  #user-details-container {
+    max-width: 260px;
+  }
+
+  #user-details-avatar>img {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media only screen and (max-width: 390px) {
+  .mood-selection {
+    margin-left: 8px;
+    margin-right: 8px;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  nav {
+    visibility: hidden;
+    display: none;
+    width: 0px;
+  }
+
+  #mood-entry-notes {
+    min-height: 3em;
+  }
+
+  #nav-menu-arrow {
+    background-image: url('../icons/down-arrow24x24.png');
+  }
+}
+
+@media only screen and (max-width: 1060px) {
+  .activity-selection-container {
+    margin-left: 8px;
+    margin-right: 8px;
+  }
 }
