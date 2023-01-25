@@ -1,0 +1,32 @@
+<% if (authed) {%>
+<form id="account-form" class="bigform account-form" action="/account" method="POST">
+  <div class="bigformcontainer">
+    <div class="row">
+      <label for="username">Username:</label>
+      <input type="text" name="username" value="<%- username %>">
+    </div>
+    <div class="row">
+      <label for="email">Email:</label>
+      <input type="email" name="email" value="<%- email %>">
+    </div>
+    <button id="show-change-password">Change your password</button>
+  </div>
+</form>
+<br>
+<form id="account-form-change-password" class="bigform account-form hidden" action="/account" method="POST">
+  <div class="bigformcontainer">
+    <div class="row" id="change-password-inputs">
+      <label>Change password</label>
+      <input type="password" name="password" placeholder="Enter old password..." autocomplete="off" id="oldpassword">
+      <input type="password" name="password" placeholder="Enter new password..." autocomplete="off" id="newpassword">
+      <input type="password" name="password-confirm" placeholder="Confirm new password..." autocomplete="off" id="newpasswordconfirm">
+    </div>
+    <div class="submitdiv">
+      <button value="Change Password" id="change-password-submit" disabled>Change Password</button>
+    </div>
+  </div>
+</form>
+<script src="/script/account-form.js"></script>
+<% } else { %>
+NOT AUTHED
+<% } %>

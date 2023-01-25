@@ -125,10 +125,10 @@ function validateSelectedMood() {
     const { mood } = entryFormComponents.selected;
     let validated = false;
     if (mood.length === 0) {
-        moodSelectionBox.classList.add('validation-error');
+        moodSelectionBox.classList.add('form-input-validation-error');
         // console.log(1);
     } else {
-        moodSelectionBox.classList.remove('validation-error');
+        moodSelectionBox.classList.remove('form-input-validation-error');
         // console.log(2);
         validated = true;
     }
@@ -145,10 +145,10 @@ function grabSelectedActivities() {
 //     const { activities } = entryFormComponents.selected;
 //     let validated = false;
 //     if (activities.length === 0) {
-//         moodSelectionBox.classList.add('validation-error');
+//         moodSelectionBox.classList.add('form-input-validation-error');
 //         // console.log(1);
 //     } else {
-//         moodSelectionBox.classList.remove('validation-error');
+//         moodSelectionBox.classList.remove('form-input-validation-error');
 //         // console.log(2);
 //         validated = true;
 //     }

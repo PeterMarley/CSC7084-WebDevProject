@@ -5,32 +5,40 @@ import authenticate from '../middleware/authenticate';
 const userRouter = express.Router();
 
 userRouter.use(authenticate);
-// log out
 
+// log out
 userRouter.get('/logout', logoutGet);
 
 // log in
-
 userRouter.get('/login', loginGet);
-
 userRouter.post('/login', loginPost);
+userRouter.get('/loginfailed', loginFailed);
 
-userRouter.get('/loginfailed', loginFailed)
 // register
-
 userRouter.get('/register', registerGet);
-
 userRouter.post('/register', registerPost, loginPost);
 
 // delete account
-
 userRouter.delete('/deleteuser', deleteUser);
+
+// account
+userRouter.get('/account', getAccount);
 
 /*******************************************************
  * 
  * MIDDLEWEAR
  * 
  *******************************************************/
+
+async function getAccount(req: Request, res: Response) {
+    const { username, email } = await apiCall("GET",
+        'http://localhost:3000/api/auth/userdetails/' + res.locals.id);
+    res.locals.username = username;
+    res.locals.email = email;
+    console.log(res.locals);
+    
+    res.render('account');
+}
 
 function loginFailed(req: Request, res: Response) {
     res.render('test');
@@ -65,7 +73,7 @@ async function deleteUser(req: Request, res: Response, next: NextFunction) {
 }
 
 async function registerPost(req: Request, res: Response, next: NextFunction) {
-    
+
     const errors: String[] = [];
 
     if (req.method.toUpperCase() != 'POST') errors.push('cannotget')

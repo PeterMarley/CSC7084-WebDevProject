@@ -491,6 +491,20 @@ nav {
   letter-spacing: 0.05em;
 }
 
+.account-form .bigformcontainer .row {
+  min-width: 400px;
+}
+
+input[type="text"].form-input-validation-error ,
+input[type="password"].form-input-validation-error  {
+  border: 1px solid red;
+}
+
+#change-password-inputs>input[type="password"],
+.submitdiv>input[type="submit"] {
+  margin-top: 5px;
+}
+
 /****************************
   ENTRY FORM
 ****************************/
@@ -611,10 +625,6 @@ nav {
   box-sizing: border-box;
   border-radius: var(--nav-button-border-radius);
   padding: 10px;
-}
-
-.mood-selection.validation-error {
-  border: 1px solid red;
 }
 
 .mood-selection-container {

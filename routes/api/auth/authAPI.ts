@@ -7,7 +7,7 @@ import getConnection from '../../../lib/dbConnection';
 import PasswordQueryResponse from '../../../models/PasswordQueryResponse';
 import { encrypt } from '../../../lib/crypt';
 import { JwtPayload } from 'jsonwebtoken';
-import authenticateRequestSource from '../../../lib/authenticateRequestSource';
+import { format } from 'mysql2';
 const authAPI = express.Router();
 
 /*
@@ -29,12 +29,21 @@ authAPI.use(express.urlencoded({ extended: false }));
 authAPI.post('/login', login);
 authAPI.post('/register', register);
 authAPI.delete('/deleteuser', deleteuser);
-
+authAPI.get('/userdetails/:userId', accountGet);
 /*******************************************************
  * 
  * MIDDLEWEAR
  * 
  *******************************************************/
+async function accountGet(req: Request, res: Response, next: NextFunction) {
+    const sql = "SELECT username, email FROM tbl_user WHERE user_id=?";
+    const {userId} = req.params;
+    const formattedSql = format(sql, [userId]);
+    const con = await getConnection();
+    const response = ((await con.execute(formattedSql))[0] as Array<any>)[0];
+    res.json(response);
+}
+
 
 async function deleteuser(req: Request, res: Response, next: NextFunction) {
     let success = false;
