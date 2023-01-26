@@ -1,15 +1,19 @@
-const pwdConfirm = document.querySelector('#newpasswordconfirm');
-console.log(pwdConfirm);
-pwdConfirm.addEventListener('keyup', confirmPasswordHandler);
 
+const accountFormElements = {
+    buttonShowChangePassword: document.querySelector('#show-change-password'),
+    buttonSubmitChangePassword: document.querySelector('#change-password-submit'),
+    inputNewPwdConfirm: document.querySelector('#newpasswordconfirm'),
+    inputNewPwd: document.querySelector('#newpassword'),
+};
 // Initialise Form
 
 (function initialiseAccountForm() {
-    const showChangePasswordButton = document.querySelector('#show-change-password');
-    const changePasswordSubmitBtn = document.querySelector('#change-password-submit');
+    const { buttonShowChangePassword, buttonSubmitChangePassword, inputNewPwdConfirm, inputNewPwd } = accountFormElements;
 
-    showChangePasswordButton.addEventListener('click', handleShowChangePassword);
-    changePasswordSubmitBtn.disabled = true;
+    buttonShowChangePassword.addEventListener('click', handleShowChangePassword);
+    inputNewPwdConfirm.addEventListener('keyup', handleConfirmPasswordValidation);
+    inputNewPwd.addEventListener('keyup', handleConfirmPasswordValidation);
+    buttonSubmitChangePassword.disabled = true;
 })();
 
 // Event Handlers
@@ -20,20 +24,19 @@ function handleShowChangePassword(event) {
     changePasswordform.classList.toggle('hidden');
 }
 
-function confirmPasswordHandler() {
-    const newPwd = document.querySelector('#newpassword');
-    const newPwdConfirm = document.querySelector('#newpasswordconfirm');
-    console.log('====');
-    console.log('new: ' + newPwd.value);
-    console.log('new confirm: ' + newPwdConfirm.value);
+function handleConfirmPasswordValidation() {
+    const { buttonSubmitChangePassword, inputNewPwdConfirm, inputNewPwd } = accountFormElements;
 
-    const submit = document.querySelector('#change-password-submit');
-    if (newPwd.value !== newPwdConfirm.value) {
-        newPwdConfirm.classList.add('form-input-validation-error');
-        submit.disabled = true;
+
+    if (inputNewPwd.value !== inputNewPwdConfirm.value) {
+        inputNewPwdConfirm.classList.add('form-input-validation-error');
+        inputNewPwdConfirm.classList.remove('valid');
+        inputNewPwd.classList.remove('valid');
+        buttonSubmitChangePassword.disabled = true;
     } else {
-        newPwdConfirm.classList.remove('form-input-validation-error');
-        submit.disabled = false;
+        inputNewPwdConfirm.classList.remove('form-input-validation-error');
+        inputNewPwdConfirm.classList.add('valid');
+        inputNewPwd.classList.add('valid');
+        buttonSubmitChangePassword.disabled = false;
     }
-    console.log('====');
 }

@@ -1,7 +1,7 @@
 import cookieParser from 'cookie-parser';
 import express, { Request, Response, NextFunction } from 'express';
 import apiCall from '../../lib/apiCall';
-import { EntryDataResponse, EntryFormDataResponse, SuccessResponse } from '../api/mood/moodApiResponses';
+import { EntryDataResponse, EntryFormDataResponse, SuccessResponse } from '../api/mood/moodApiModel';
 import authenticate from '../middleware/authenticate';
 import buildApiUrl from '../../lib/buildApiUrl';
 

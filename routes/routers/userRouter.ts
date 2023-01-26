@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import RegistrationResponse from '../../models/RegistrationResponse';
 import apiCall from '../../lib/apiCall';
 import authenticate from '../middleware/authenticate';
+import { AccountDetailsGetResponse, AccountDetailsUpdateResponse } from '../api/auth/authApiModel';
 const userRouter = express.Router();
 
 userRouter.use(authenticate);
@@ -22,7 +23,9 @@ userRouter.post('/register', registerPost, loginPost);
 userRouter.delete('/deleteuser', deleteUser);
 
 // account
-userRouter.get('/account', getAccount);
+userRouter.get('/account', initAccountDetailsLocals, getAccount);
+userRouter.post('/account', initAccountDetailsLocals, postAccount);
+//userRouter.post('/account/password', initAccountDetailsLocals, passwordChange);
 
 /*******************************************************
  * 
@@ -30,13 +33,68 @@ userRouter.get('/account', getAccount);
  * 
  *******************************************************/
 
+async function passwordChange() {
+    //TODO
+}
+
+function initAccountDetailsLocals(req: Request, res: Response, next: NextFunction) {
+    res.locals.username = null;
+    res.locals.email = null;
+    res.locals.messages = null;
+    next();
+}
+
 async function getAccount(req: Request, res: Response) {
-    const { username, email } = await apiCall("GET",
-        'http://localhost:3000/api/auth/userdetails/' + res.locals.id);
+    const { username, email }: { username: string, email: string } =
+        await apiCall(
+            "GET",
+            'http://localhost:3000/api/auth/userdetails/' + res.locals.id
+        );
     res.locals.username = username;
     res.locals.email = email;
     console.log(res.locals);
-    
+
+    res.render('account');
+}
+
+async function postAccount(req: Request, res: Response) {
+
+    const { username: newUsername, email: newEmail }: AccountDetailsGetResponse = req.body;
+    const { username: oldUsername, email: oldEmail }: AccountDetailsGetResponse = await apiCall(
+        "GET",
+        'http://localhost:3000/api/auth/userdetails/' + res.locals.id
+    );
+
+    const messages: Array<string> = [];
+    if (newUsername !== oldUsername || newEmail !== oldEmail) {
+        const accountDetailsUpdateResponse: AccountDetailsUpdateResponse = await apiCall(
+            'PUT',
+            'http://localhost:3000/api/auth/userdetails/' + res.locals.id,
+            new URLSearchParams([['username', newUsername], ['email', newEmail]])
+        );
+
+        const { success } = accountDetailsUpdateResponse;
+        if (success && newUsername !== oldUsername) {
+            messages.push('Username was updated.');
+        }
+        if (success && newEmail !== oldEmail) {
+            messages.push('Email was updated.');
+        }
+        if (!success) {
+            messages.push('I\'m sorry, but your account details change was unsuccessful. Try again later.');
+        }
+    } else {
+        messages.push('Your details remained unchanged as provided values were the same as current values.');
+    }
+
+
+
+    res.locals.username = newUsername;
+    res.locals.email = newEmail;
+    res.locals.messages = messages;
+
+    console.log(res.locals.messages);
+
     res.render('account');
 }
 

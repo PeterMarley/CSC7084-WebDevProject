@@ -6,7 +6,7 @@
 
 import express, { Request, Response, NextFunction } from 'express';
 import MoodApiDataAccessObject from './MoodApiDataAccessObject';
-import { EntryDataResponse, EntryFormDataResponse, SuccessResponse } from './moodApiResponses';
+import { EntryDataResponse, EntryFormDataResponse, SuccessResponse } from './moodApiModel';
 
 const moodAPI = express.Router();
 

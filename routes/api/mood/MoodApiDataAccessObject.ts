@@ -1,6 +1,13 @@
 import getConnection from '../../../lib/dbConnection';
-import { Image, Activity, Entry, Mood, ActivityGroup } from './moodApiClasses';
-import { EntryDataResponse, EntryFormDataResponse } from './moodApiResponses';
+import {
+	Image,
+	Activity,
+	Entry,
+	Mood,
+	ActivityGroup,
+	EntryDataResponse,
+	EntryFormDataResponse
+} from './moodApiModel';
 import { format as formatSQL } from 'mysql2';
 import { ResultSetHeader } from 'mysql2';
 

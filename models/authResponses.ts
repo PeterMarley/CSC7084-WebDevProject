@@ -1,18 +1,18 @@
-class LoginResponse {
+export class LoginResponse {
   err: string[];
   constructor(err: string[]) {
     this.err = err;
   }
 }
 
-class AuthResponse {
+export class AuthResponse {
   success: boolean;
   constructor(success: boolean) {
     this.success = success;
   }
 }
 
-class RegistrationResponse {
+export class RegistrationResponse {
   success: boolean;
   error: string;
   constructor(success: boolean, error: string) {
@@ -21,10 +21,11 @@ class RegistrationResponse {
   }
 }
 
-/**
- * token instead of pw
- * event listener for json response
- */
-
-//module.exports = { LoginResponse, AuthResponse, RegistrationResponse };
-export { LoginResponse, AuthResponse, RegistrationResponse };
+export class AccountDetailsUpdateResponse {
+    emailValid: boolean;
+    usernameValid: boolean;
+    constructor(usernameValid: boolean, emailValid: boolean) {
+        this.emailValid = emailValid;
+        this.usernameValid = usernameValid;
+    }
+}

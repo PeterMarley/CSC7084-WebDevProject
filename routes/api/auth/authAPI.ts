@@ -5,9 +5,12 @@ import LoginResponse from '../../../models/LoginResponse';
 import RegistrationResponse from '../../../models/RegistrationResponse';
 import getConnection from '../../../lib/dbConnection';
 import PasswordQueryResponse from '../../../models/PasswordQueryResponse';
+import { AccountDetailsUpdateResponse, AccountDetailsGetResponse } from './authApiModel';
 import { encrypt } from '../../../lib/crypt';
 import { JwtPayload } from 'jsonwebtoken';
 import { format } from 'mysql2';
+import { ResultSetHeader } from 'mysql2';
+import { RowDataPacket } from 'mysql2';
 const authAPI = express.Router();
 
 /*
@@ -28,21 +31,66 @@ authAPI.use(express.urlencoded({ extended: false }));
 
 authAPI.post('/login', login);
 authAPI.post('/register', register);
+
 authAPI.delete('/deleteuser', deleteuser);
+
 authAPI.get('/userdetails/:userId', accountGet);
+authAPI.put('/userdetails/:userId', accountPut);
+
 /*******************************************************
  * 
  * MIDDLEWEAR
  * 
  *******************************************************/
+
+function validateUsername(username: string): boolean {
+    if (!username) return false;
+    return /[a-zA-Z]{8,15}/.test(username);
+}
+
+function validateEmail(email: string): boolean {
+    if (!email) return false;
+    // extremely basic email regex, suitable for the purposes of this project
+    const emailRegex = /[a-zA-Z0-8]{1,}[@][a-zA-Z0-8]{1,}[\.][a-zA-Z0-8]{1,}/
+    return emailRegex.test(email);
+}
+
+async function accountPut(req: Request, res: Response, next: NextFunction) {
+    // const sql = "SELECT username, email FROM tbl_user WHERE user_id=?";
+    const userId = Number(req.params.userId);
+    const { username, email } = req.body;
+
+    let success = false;
+
+    try {
+        if (validateUsername(username) && validateEmail(email)) {
+            const updateAccountDetailsSql = format(`UPDATE tbl_user u SET u.username = ?, u.email=? WHERE u.user_id = ?`, [username, email, userId]);
+            const con = await getConnection();
+            success = ((await con.execute(updateAccountDetailsSql)).at(0) as ResultSetHeader).affectedRows === 1;
+            con.end();
+        }
+    } catch (err) {
+        console.log('updating account details failed:');
+        console.log(`userId: ${userId}, new username: ${username}, new email: ${email}`);
+    }
+
+    res.json(new AccountDetailsUpdateResponse(success, userId, username, email));
+}
+
+
 async function accountGet(req: Request, res: Response, next: NextFunction) {
-    const sql = "SELECT username, email FROM tbl_user WHERE user_id=?";
-    const {userId} = req.params;
-    const formattedSql = format(sql, [userId]);
+
+    const { userId } = req.params;
+    
+    const formattedSql = format("SELECT username, email FROM tbl_user WHERE user_id=?", [userId]);
+    
     const con = await getConnection();
-    const response = ((await con.execute(formattedSql))[0] as Array<any>)[0];
+    const response = ((await con.execute(formattedSql)).at(0) as RowDataPacket).at(0) as AccountDetailsGetResponse;
+    con.end();
+    
     res.json(response);
 }
+
 
 
 async function deleteuser(req: Request, res: Response, next: NextFunction) {
