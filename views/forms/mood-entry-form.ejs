@@ -27,7 +27,7 @@ if (authed) {
   <input hidden name="action" value="<%- action %>">
   <div class="mood-selection-container">
 
-    <div class="mood-selection">
+    <div class="mood-selection" data-action="<%- action %>">
       <% 
       for (const mood of entryFormData.moods) {
         const moodSelector = (action === 'edit' && entryData.mood.name == mood.name ? 'selected ' : '') + 'mood'; 
@@ -39,12 +39,13 @@ if (authed) {
       </span>
       <% } %>
     </div>
+    <% if (action === 'edit') { %>
+      <div>Please note, you cannot edit a previous entries mood.</div>
+    <% } %>
 
   </div>
   <div class="container">
-    <textarea name="notes" id="mood-entry-notes" placeholder="Leave some notes if you wish...">
-      <%- notes %>
-    </textarea>
+    <textarea name="notes" id="mood-entry-notes" placeholder="Leave some notes if you wish..."><%- notes %></textarea>
     <div class="activity-selection-container">
       <div class="activity-selection">
         Activity Groups

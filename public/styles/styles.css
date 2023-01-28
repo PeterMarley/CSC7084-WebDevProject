@@ -35,8 +35,7 @@
   BASIC AND NORMALIZE
 ****************************/
 
-* {
-}
+* {}
 
 body {
     margin: 0;
@@ -68,10 +67,10 @@ body {
     position: absolute;
 }
 
-    #nav-menu-dropdown.selected {
-        display: block;
-        visibility: visible;
-    }
+#nav-menu-dropdown.selected {
+    display: block;
+    visibility: visible;
+}
 
 .theme {
     background-image: url('../icons/moon.png');
@@ -91,12 +90,12 @@ body {
     align-items: center;
 }
 
-    .home-icon-link > a {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-right: 10px;
-    }
+.home-icon-link>a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 10px;
+}
 
 #header {
     background-color: var(--color-1);
@@ -112,37 +111,55 @@ body {
     /* box-shadow: inset 0px -20px 25px -20px white; */
 }
 
-.button-style-1 > a,
+.button-style-1, .button-style-2 {
+    transition: background-color 0.5s ease;
+}
+
+.button-style-1>a,
 a.button-style-1 {
     color: var(--text-color);
     text-decoration: none;
 }
 
-.button-style-1,
-#hamburger-container {
+.button-style-1 {
     border-radius: var(--button-style-1-border-radius);
     border: 2px solid var(--color-2);
-    transition: background-color 0.5s ease;
-}
-
-.button-style-1 {
     padding: var(--button-style-1-padding);
     background-color: var(--color-3);
     min-width: var(--button-style-1-min-width);
 }
 
-    .button-style-1:hover:not(:disabled) {
-        background-color: var(--color-accent);
-    }
+.button-style-1:hover:not(:disabled) {
+    background-color: var(--color-accent);
+}
+
+.button-style-2>a,
+a.button-style-2 {
+    color: var(--text-color);
+    text-decoration: none;
+}
 
 
+.button-style-2 {
+    border-radius: var(--button-style-1-border-radius);
+    background-color: var(--color-2);
+    border: 2px solid var(--color-accent);
+    padding: calc(var(--button-style-1-padding) / 2);
+    margin: 0px 2px;
+}
+
+.button-style-2:hover:not(:disabled) {
+    background-color: var(--color-4);
+}
 
 #hamburger-container {
     background-color: var(--color-4);
+    min-width: fit-content;
     margin-left: auto;
     margin-right: 10px;
     padding: calc(var(--button-style-1-padding) / 2);
     position: relative;
+    flex-shrink: 1;
 }
 
 #hamburger {
@@ -150,18 +167,19 @@ a.button-style-1 {
     justify-content: center;
     align-items: center;
     position: relative;
-    margin-left: auto;
+    flex-shrink: 1;
+    /* margin-left: auto; */
 }
 
 /* #header>div:not(:first-child):hover {
   background-color: var(--color-accent);
 } */
 
-#header > div:last-child {
+#header>div:last-child {
     margin-left: auto;
 }
 
-#header > div {
+#header>div {
     display: flex;
     align-items: center;
 }
@@ -211,7 +229,7 @@ nav {
 }
 
 
-#body > div {
+#body>div {
     flex-grow: 1;
 }
 
@@ -261,17 +279,17 @@ nav {
     gap: 5px;
 }
 
-#user-details-actions > a  {
+#user-details-actions>a {
     flex: 1;
     display: flex;
     text-decoration: none;
 }
 
-#user-details-actions > a > button  {
+#user-details-actions>a>button {
     flex: 1;
 }
 
-#user-details-avatar > img {
+#user-details-avatar>img {
     width: 64px;
     height: 64px;
 }
@@ -336,9 +354,9 @@ nav {
     border-radius: 0.5em;
 }
 
-    .entry > div {
-        margin: 10px 0px;
-    }
+.entry>div {
+    margin: 10px 0px;
+}
 
 .entry-activities {
     /* background-color: blue; */
@@ -356,9 +374,9 @@ nav {
     align-items: center;
 }
 
-    .entry-activity-image img {
-        background-color: var(--color-4);
-    }
+.entry-activity-image img {
+    background-color: var(--color-4);
+}
 
 .entry-activity {
     /* background-color: blue; */
@@ -406,29 +424,29 @@ nav {
     align-items: center;
 }
 
-    .entry-mood > * {
-        display: flex;
-        padding: 5px;
-    }
+.entry-mood>* {
+    display: flex;
+    padding: 5px;
+}
 
 .entry-mood-name {
     font-weight: bold;
 }
 
-    .entry-mood-name > img {
-        margin-left: 10px;
-    }
+.entry-mood-name>img {
+    margin-left: 10px;
+}
 
 
-.entry-mood > span:nth-last-child(2) {
+.entry-mood>span:nth-last-child(2) {
     font-size: 0.75em;
 }
 
-.entry-mood > span:last-child {
+.entry-mood>span:last-child {
     margin-left: auto;
 }
 
-.entry > div:last-child {
+.entry>div:last-child {
     margin-bottom: 0px;
 }
 
@@ -439,7 +457,7 @@ nav {
     gap: 10px;
 }
 
-.entry-images > img {
+.entry-images>img {
     max-width: 100%;
 }
 
@@ -457,7 +475,7 @@ nav {
     display: grid;
 }
 
-.form-style-1 > div {
+.form-style-1>div {
     display: grid;
     justify-content: center;
     gap: 7px;
@@ -482,10 +500,10 @@ nav {
     /* max-width: 200px; */
 }
 
-    .form-style-1 input[type="submit"]:hover {
-        background-color: var(--color-accent);
-        transition: background-color 0.5s ease;
-    }
+.form-style-1 input[type="submit"]:hover {
+    background-color: var(--color-accent);
+    transition: background-color 0.5s ease;
+}
 
 .form-style-1 .submitdiv {
     display: flex;
@@ -498,7 +516,7 @@ nav {
     letter-spacing: 0.05em;
 }
 
-.account-form  {
+.account-form {
     margin-top: 10px;
 }
 
@@ -523,8 +541,8 @@ input[type="password"].valid {
     background-color: #67d767
 }
 
-#change-password-inputs > input[type="password"],
-.submitdiv > input[type="submit"] {
+#change-password-inputs>input[type="password"],
+.submitdiv>input[type="submit"] {
     margin-top: 5px;
 }
 
@@ -539,11 +557,11 @@ input[type="password"].valid {
     width: 80%;
 }
 
-    .container > textarea {
-        /* flex: 1; */
-        width: inherit;
-        flex-basis: 0;
-    }
+.container>textarea {
+    /* flex: 1; */
+    width: inherit;
+    flex-basis: 0;
+}
 
 #mood-entry-form {
     display: flex;
@@ -605,8 +623,8 @@ input[type="password"].valid {
   margin: 5px; */
 }
 
-.activity-group-name > img,
-.activity > img {
+.activity-group-name>img,
+.activity>img {
     width: 32px;
     height: 32px;
     object-fit: contain;
@@ -619,11 +637,11 @@ input[type="password"].valid {
     margin: 5px;
 }
 
-    .activity-group-name > img {
-        border: 1px solid black;
-        border-radius: 50%;
-        margin-right: 10px;
-    }
+.activity-group-name>img {
+    border: 1px solid black;
+    border-radius: 50%;
+    margin-right: 10px;
+}
 
 .no-activities-message {
     margin: 10px;
@@ -631,20 +649,22 @@ input[type="password"].valid {
 
 .mood {
     margin: 0px 5px 0px 5px;
+    padding: 5px;
+    border-radius: var(--button-style-1-border-radius);
 }
 
-    .activity.selected,
-    .mood.selected {
-        background-color: red;
-    }
+.activity.selected,
+.mood.selected {
+    background-color: var(--color-accent);
+}
 
-.mood-selection {
+/* .mood-selection {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
     background-color: var(--color-4);
-    border: 1px solid var(--color-4);
+    border: 1px solid var(--color-1);
     box-sizing: border-box;
     border-radius: var(--button-style-1-border-radius);
     padding: 10px;
@@ -654,7 +674,32 @@ input[type="password"].valid {
     display: flex;
     justify-content: center;
     margin: 10px 5px 0px 5px;
+} */
+
+.mood-selection {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 10px;
 }
+
+.mood-selection-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 5px 0px 5px;
+    background-color: var(--color-4);
+    border: 1px solid var(--color-1);
+    border-radius: var(--button-style-1-border-radius);
+}
+.mood-selection-container>div:last-child {
+    font-size: 0.7em;
+    margin-bottom: 5px;
+}
+
 
 .mood-name {
     display: flex;
@@ -670,7 +715,7 @@ input[type="password"].valid {
     --color-2: rgb(68, 68, 68);
     --color-3: rgb(37, 37, 37);
     --color-4: rgb(28, 28, 28);
-    --color-accent: black;
+    --color-accent: rgb(60, 73, 192);
     --text-color: white;
     --main-bg-img: url('../image/beach-dark.jpg');
 }
@@ -689,7 +734,7 @@ input[type="password"].valid {
         max-width: 260px;
     }
 
-    #user-details-avatar > img {
+    #user-details-avatar>img {
         width: 18px;
         height: 18px;
     }

@@ -11,7 +11,8 @@ const entryFormComponents = {
     selectionButtons: {
         mood: document.querySelectorAll(".mood"),
         activity: document.querySelectorAll(".activity"),
-    }
+    },
+    action: document.querySelector('.mood-selection').dataset.action,
 }
 entryFormComponents.selected.mood;
 /**
@@ -81,6 +82,8 @@ function handleActivitySelection(event) {
  * @param {Element} moodElement 
  */
 function handleMoodSelection(moodElement) {
+    if (entryFormComponents.action === 'edit') return;
+    //console.log(document.querySelector('.mood-selection').dataset.action);
     entryFormComponents.selectionButtons.mood.forEach((el) => el.classList.remove("selected"));
     entryFormComponents.selected.mood = moodElement.querySelector(".mood-name").textContent;
     moodElement.classList.add("selected");

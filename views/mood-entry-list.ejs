@@ -1,17 +1,8 @@
 <%- include('partials/top.ejs') %>
 <div class="mood-entry-list">
   <% 
-
 if (authed) { // if authenticated
 
-  const days = new Map();
-  days.set(0,'Monday');
-  days.set(1,'Tuesday');
-  days.set(2,'Wednesday');
-  days.set(3,'Thursday');
-  days.set(4,'Friday');
-  days.set(5,'Saturday');
-  days.set(6,'Sunday');
   const dayKeys = Object.getOwnPropertyNames(entries);
   
   if (dayKeys.length === 0) {
@@ -49,24 +40,24 @@ if (authed) { // if authenticated
         <span class="entry-mood-name"><%- mood.name %> <img src="<%- mood.image.url %>" alt="<%- mood.image.altText %>" width="24px" height="24px"></span>
         <span>( <%- entryDate.toTimeString().substring(0,8) %> )</span>
         <span>
-          <a href="/entry/edit/<%- entryId %>" class="button-style-1">edit</a>
-          <a href="/entry/delete/<%- entryId %>" class="button-style-1">delete</a>
+          <a href="/entry/edit/<%- entryId %>" class="button-style-2">Edit</a>
+          <a href="/entry/delete/<%- entryId %>" class="button-style-2">Delete</a>
         </span>
       </div>
       <div class="entry-activities">
         <% if (activities.length > 0)  {%>
-          <% for (const activity of activities) { %>
-          <div class="entry-activity">
-            <div class="entry-activity-name">
-              <%- activity.activityName %>
-            </div>
-            <div class="entry-activity-image">
-              <img src="<%- activity.image.url %>" alt="<%- activity.image.altText %>">
-            </div>
+        <% for (const activity of activities) { %>
+        <div class="entry-activity">
+          <div class="entry-activity-name">
+            <%- activity.activityName %>
           </div>
-          <% } %>
+          <div class="entry-activity-image">
+            <img src="<%- activity.image.url %>" alt="<%- activity.image.altText %>">
+          </div>
+        </div>
+        <% } %>
         <% } else { %>
-          <div class="no-activities-message">No activities selected</div>
+        <div class="no-activities-message">No activities selected</div>
         <% } %>
       </div>
       <div class="entry-notes">

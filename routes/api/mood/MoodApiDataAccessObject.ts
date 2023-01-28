@@ -62,7 +62,7 @@ export default class MoodApiDataAccessObject {
 			WHERE ea.entry_id=?`
 		},
 		editSingleEntry: {
-			updateEntry: 'CALL usp_update_entry(?,?,?,?,?)'
+			updateEntry: 'CALL usp_update_entry(?,?,?,?)'
 		},
 		deleteSingleEntry: {
 			deleteEntry: 'CALL usp_delete_entry(?,?)'
@@ -81,11 +81,11 @@ export default class MoodApiDataAccessObject {
 		console.log(response);
 	}
 
-	static updateSingleEntry = async function (userId: number, entryId: number, entryNotes: string, moodName: string, activityCommaDelimStr: string) {
+	static updateSingleEntry = async function (userId: number, entryId: number, entryNotes: string, activityCommaDelimStr: string) {
 		const con = await getConnection();
 		const sql = formatSQL(
 			MoodApiDataAccessObject.sql.editSingleEntry.updateEntry,
-			[userId, entryId, entryNotes, moodName, activityCommaDelimStr]
+			[userId, entryId, entryNotes, activityCommaDelimStr]
 		);
 		// console.log('updateSingleEntry formatted sql: ');
 		// console.log(sql);

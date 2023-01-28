@@ -15,10 +15,10 @@ entryRouter.use(cookieParser())
  * 
  *******************************************************/
 
-entryRouter.get('/list', getList);
+entryRouter.get('/list', getEntryList);
 
-entryRouter.get('/new', getNew);
-entryRouter.post('/new', postNew);
+entryRouter.get('/new', getNewEntryForm);
+entryRouter.post('/new', createNewEntry);
 
 entryRouter.get('/edit/:entryId', initialiseLocalsForEntryEdit, getEdit);
 entryRouter.post('/edit/:entryId', initialiseLocalsForEntryEdit, postEdit);
@@ -48,20 +48,20 @@ async function deleteEntry(req: Request, res: Response) {
 	const deleteEntryResponse: any =
 		await apiCall(
 			'DELETE',
-			buildApiUrl('/api/mood/entry/delete/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId)
+			buildApiUrl('/api/mood/entry/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId)
 		);
 	res.json(deleteEntryResponse);
 }
 
 async function postEdit(req: Request, res: Response) {
-	const { activities, mood, notes } = req.body;
+	const { activities, notes } = req.body;
 	console.log(notes);
 
 	const successResponse: SuccessResponse =
 		await apiCall(
 			'PUT',
 			buildApiUrl('/api/mood/entry/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId),
-			new URLSearchParams([['activities', activities], ['mood', mood], ['notes', notes], ['entryId', req.params.entryId]])
+			new URLSearchParams([['activities', activities], ['notes', notes], ['entryId', req.params.entryId]])
 		);
 	//const x: EntryDataResponse = { entry: undefined, entryFormData: entryDataResponse };
 	// console.log('post edit response received by postEdit:');
@@ -83,13 +83,13 @@ async function getEdit(req: Request, res: Response) {
 	res.locals.entryData = entryDataResponse.entry;
 	res.locals.action = 'edit';
 	//res.locals.entryAdded = false;
-
+			
 	// console.log(res.locals.formData);
 
 	res.render('mood-entry-edit');
 }
 
-async function postNew(req: Request, res: Response) {
+async function createNewEntry(req: Request, res: Response) {
 	const { mood, activities, notes } = req.body;
 	if (mood === undefined || activities === undefined || notes === undefined) {
 		// TODO more gracefull bad request handling and validation of body
@@ -109,7 +109,7 @@ async function postNew(req: Request, res: Response) {
 	res.redirect('/entry/list');
 }
 
-async function getNew(req: Request, res: Response) {
+async function getNewEntryForm(req: Request, res: Response) {
 	const entryFormDataResponse: EntryFormDataResponse =
 		await apiCall(
 			'GET',
@@ -124,7 +124,7 @@ async function getNew(req: Request, res: Response) {
 	res.render('mood-entry-new');
 }
 
-async function getList(req: Request, res: Response) {
+async function getEntryList(req: Request, res: Response) {
 	const response = await apiCall('GET', process.env.API_BASE_URL + '/api/mood/entry/list/' + (res.locals.id ? res.locals.id : ''));
 
 	res.locals.entries = response || {};

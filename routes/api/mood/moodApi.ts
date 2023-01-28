@@ -26,10 +26,10 @@ moodAPI.post(ENTRY_ROUTE + '/new/:userId', createNewEntry);
 
 moodAPI.get(ENTRY_ROUTE + '/list/:userId', getEntryList);
 
-moodAPI.get(ENTRY_ROUTE + '/:userId/:entryId', getEntryFormData, getSingleEntry);
-moodAPI.put(ENTRY_ROUTE + '/:userId/:entryId', updateSingleEntry);
-
-moodAPI.delete(ENTRY_ROUTE + '/delete/:userId/:entryId', deleteSingleEntry);
+const entryOperationsRoute = ENTRY_ROUTE + '/:userId/:entryId';
+moodAPI.get(entryOperationsRoute, getEntryFormData, getSingleEntry);
+moodAPI.put(entryOperationsRoute, updateSingleEntry);
+moodAPI.delete(entryOperationsRoute, deleteSingleEntry);
 
 /*******************************************************
  * 
@@ -52,11 +52,11 @@ async function deleteSingleEntry(req: Request, res: Response) {
 async function updateSingleEntry(req: Request, res: Response) {
 	const entryId = Number(req.params.entryId);
 	const userId = Number(req.params.userId);
-	const { activities: activityNamesCommaDelimStr, mood: moodName, notes: entryNotes } = req.body;
-	console.log('entryNotes in moodApi.updateSingleEntry: ' + entryNotes);
+	const { activities: activityNamesCommaDelimStr, notes: entryNotes } = req.body;
+	// console.log('entryNotes in moodApi.updateSingleEntry: ' + entryNotes);
 
 	const success: boolean = await MoodApiDataAccessObject.updateSingleEntry(
-		userId, entryId, entryNotes, moodName, activityNamesCommaDelimStr
+		userId, entryId, entryNotes, activityNamesCommaDelimStr
 	);
 	res.json(new SuccessResponse(success));
 }

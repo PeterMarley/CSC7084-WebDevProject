@@ -1,3 +1,8 @@
+/*******************************************************
+ * 
+ * Response Objects
+ * 
+ *******************************************************/
 
 /**
  * This Response object holds the data requires to build an Entry form, either for adding a new entry, or editing an existing one.
@@ -34,6 +39,12 @@ export class SuccessResponse {
 		if (errors) this.errors = errors;
 	}
 }
+
+/*******************************************************
+ * 
+ * Classes
+ * 
+ *******************************************************/
 
 export class Activity {
 	activityName: string;
