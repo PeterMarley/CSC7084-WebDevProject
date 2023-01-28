@@ -11,7 +11,7 @@
     --button-style-1-padding: 10px;
     --nav-margin: 10px;
     /* borders */
-    --button-style-1-border-radius: 0.5rem;
+    --general-border-radius: 0.5rem;
     --header-border-width: 2px;
     /* widths and heights */
     --button-style-1-min-width: 75px;
@@ -29,6 +29,11 @@
 @font-face {
     font-family: opensans;
     src: url("/fonts/OpenSans-Regular.ttf");
+}
+
+@font-face {
+    font-family: robotomono;
+    src: url("/fonts/RobotoMono-Regular.ttf");
 }
 
 /****************************
@@ -113,6 +118,7 @@ body {
 
 .button-style-1, .button-style-2 {
     transition: background-color 0.5s ease;
+    font-family: robotomono;
 }
 
 .button-style-1>a,
@@ -122,7 +128,7 @@ a.button-style-1 {
 }
 
 .button-style-1 {
-    border-radius: var(--button-style-1-border-radius);
+    border-radius: var(--general-border-radius);
     border: 2px solid var(--color-2);
     padding: var(--button-style-1-padding);
     background-color: var(--color-3);
@@ -141,7 +147,8 @@ a.button-style-2 {
 
 
 .button-style-2 {
-    border-radius: var(--button-style-1-border-radius);
+    font-size: 0.7em;
+    border-radius: var(--general-border-radius);
     background-color: var(--color-2);
     border: 2px solid var(--color-accent);
     padding: calc(var(--button-style-1-padding) / 2);
@@ -576,7 +583,7 @@ input[type="password"].valid {
     padding: 10px;
     margin: 10px 5px;
     border-width: 0px;
-    border-radius: var(--button-style-1-border-radius);
+    border-radius: var(--general-border-radius);
     resize: vertical;
 }
 
@@ -604,7 +611,7 @@ input[type="password"].valid {
 
 .activity-selection {
     border: 1px solid black;
-    border-radius: var(--button-style-1-border-radius);
+    border-radius: var(--general-border-radius);
     padding: 5px;
     background-color: var(--color-4);
 }
@@ -650,31 +657,13 @@ input[type="password"].valid {
 .mood {
     margin: 0px 5px 0px 5px;
     padding: 5px;
-    border-radius: var(--button-style-1-border-radius);
+    border-radius: var(--general-border-radius);
 }
 
 .activity.selected,
 .mood.selected {
     background-color: var(--color-accent);
 }
-
-/* .mood-selection {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--color-4);
-    border: 1px solid var(--color-1);
-    box-sizing: border-box;
-    border-radius: var(--button-style-1-border-radius);
-    padding: 10px;
-}
-
-.mood-selection-container {
-    display: flex;
-    justify-content: center;
-    margin: 10px 5px 0px 5px;
-} */
 
 .mood-selection {
     display: flex;
@@ -693,7 +682,7 @@ input[type="password"].valid {
     margin: 10px 5px 0px 5px;
     background-color: var(--color-4);
     border: 1px solid var(--color-1);
-    border-radius: var(--button-style-1-border-radius);
+    border-radius: var(--general-border-radius);
 }
 .mood-selection-container>div:last-child {
     font-size: 0.7em;

@@ -23,7 +23,7 @@ entryRouter.post('/new', createNewEntry);
 entryRouter.get('/edit/:entryId', initialiseLocalsForEntryEdit, getEdit);
 entryRouter.post('/edit/:entryId', initialiseLocalsForEntryEdit, postEdit);
 
-entryRouter.get('/delete/:entryId', deleteEntry);
+entryRouter.get('/delete/:entryId', deleteEntry, getEntryList);
 
 entryRouter.get('/activity', (req: Request, res: Response, next: NextFunction) => {
 	res.send('not yet implemented');
@@ -44,13 +44,14 @@ function initialiseLocalsForEntryEdit(req: Request, res: Response, next: NextFun
 	next();
 }
 
-async function deleteEntry(req: Request, res: Response) {
+async function deleteEntry(req: Request, res: Response, next: NextFunction) {
 	const deleteEntryResponse: any =
 		await apiCall(
 			'DELETE',
 			buildApiUrl('/api/mood/entry/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId)
 		);
-	res.json(deleteEntryResponse);
+
+	next();
 }
 
 async function postEdit(req: Request, res: Response) {
@@ -66,8 +67,8 @@ async function postEdit(req: Request, res: Response) {
 	//const x: EntryDataResponse = { entry: undefined, entryFormData: entryDataResponse };
 	// console.log('post edit response received by postEdit:');
 	// console.log(successResponse);
-	
-	
+
+
 	res.locals.updateSingleEntrySuccess = successResponse.success
 	res.render('mood-entry-edit');
 }
@@ -83,7 +84,7 @@ async function getEdit(req: Request, res: Response) {
 	res.locals.entryData = entryDataResponse.entry;
 	res.locals.action = 'edit';
 	//res.locals.entryAdded = false;
-			
+
 	// console.log(res.locals.formData);
 
 	res.render('mood-entry-edit');
@@ -130,5 +131,6 @@ async function getEntryList(req: Request, res: Response) {
 	res.locals.entries = response || {};
 	res.render('mood-entry-list');
 }
+
 
 export default entryRouter;

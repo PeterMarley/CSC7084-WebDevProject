@@ -40,11 +40,17 @@ moodAPI.delete(entryOperationsRoute, deleteSingleEntry);
 async function deleteSingleEntry(req: Request, res: Response) {
 	const entryId = Number(req.params.entryId);
 	const userId = Number(req.params.userId);
-	console.log(`moodApi entryId: ${entryId}, userId: ${userId}`);
+	// console.log(`moodApi entryId: ${entryId}, userId: ${userId}`);
+	
+	let success = true;
+	try {
+		await MoodApiDataAccessObject.deleteSingleEntry(userId, entryId);
+	} catch {
+		success = false;
+	}
+	
 
-	MoodApiDataAccessObject.deleteSingleEntry(userId, entryId);
-
-	res.json({ status: 'no response to deleteSingleEntry implemented' });
+	res.json(new SuccessResponse(success));
 }
 
 

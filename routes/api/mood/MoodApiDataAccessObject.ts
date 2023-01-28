@@ -8,8 +8,7 @@ import {
 	EntryDataResponse,
 	EntryFormDataResponse
 } from './moodApiModel';
-import { format as formatSQL } from 'mysql2';
-import { ResultSetHeader } from 'mysql2';
+import { format as formatSQL, ResultSetHeader } from 'mysql2';
 
 /**
  * This is a static class in that it may not be instantiated. It's methods may be called to generate response objects after queries the database
@@ -95,10 +94,10 @@ export default class MoodApiDataAccessObject {
 		console.log(response);
 
 		con.end();
-		console.log('=============================');
+		// console.log('=============================');
 
-		console.log(response.affectedRows > 0 && response.warningStatus === 0);
-		console.log('=============================');
+		// console.log(response.affectedRows > 0 && response.warningStatus === 0);
+		// console.log('=============================');
 
 		return response.affectedRows > 0 && response.warningStatus === 0;
 		// i added this wee schneaky line
