@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { SuccessResponse } from "../routes/api/mood/moodApiModel";
 
 /**
  * Express Middleware: Allows only authorized calls to this API.
@@ -6,7 +7,7 @@ import { Request, Response, NextFunction } from "express";
 export default function authenticateRequestSource(req: Request, res: Response, next: NextFunction) {
     if (req.get('Authorization') !== 'Bearer ' + process.env.REQUESTOR) {
         res.statusCode = 401;
-        res.send({ error: 'You are not authorized.' })
+        res.send(new SuccessResponse(false, ['You are not authorized.']));
         return;
     }
     next();

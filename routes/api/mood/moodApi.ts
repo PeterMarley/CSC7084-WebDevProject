@@ -7,6 +7,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import MoodApiDataAccessObject from './MoodApiDataAccessObject';
 import { EntryDataResponse, EntryFormDataResponse, SuccessResponse } from './moodApiModel';
+import logErrors from '../../../lib/logError';
 
 const moodAPI = express.Router();
 
@@ -37,23 +38,43 @@ moodAPI.delete(entryOperationsRoute, deleteSingleEntry);
  * 
  *******************************************************/
 
+/**
+ * Express middleware that deletes a single mood entry entry from the database.
+ * 
+ * Response with a json `SuccessResponse`
+ */
 async function deleteSingleEntry(req: Request, res: Response) {
 	const entryId = Number(req.params.entryId);
 	const userId = Number(req.params.userId);
-	// console.log(`moodApi entryId: ${entryId}, userId: ${userId}`);
-	
-	let success = true;
-	try {
-		await MoodApiDataAccessObject.deleteSingleEntry(userId, entryId);
-	} catch {
-		success = false;
+
+	let success = false;
+	let errors: string[] = [];
+	let statusCode = 200;
+
+	if (!userId || !entryId) {
+		errors.push(`Some request parameters were not numbers: [userId: ${userId}] [entryId: ${entryId}]`);
+		statusCode = 400;
+	} else {
+		try {
+			const response = await MoodApiDataAccessObject.deleteSingleEntry(userId, entryId);
+			success = response.affectedRows > 0;
+			if (!success) {
+				statusCode = 404;
+				errors.push(
+					'the delete operation failed: ' +
+					`[${response.affectedRows} rows were deleted] ` +
+					`[${response.warningStatus} is the warningStatus of the database]`
+				);
+			}
+		} catch (err: any) {
+			errors.push(`deleteSingleEntry() middleware error: ${err}`);
+			logErrors(errors);
+			statusCode = 500;
+		}
 	}
-	
 
-	res.json(new SuccessResponse(success));
+	res.status(statusCode).json(new SuccessResponse(success, errors));
 }
-
-
 
 async function updateSingleEntry(req: Request, res: Response) {
 	const entryId = Number(req.params.entryId);
@@ -125,11 +146,12 @@ async function getEntryList(req: Request, res: Response) {
 	let statusCode = 200;
 	const userId = Number(req.params.userId);
 
-	if (userId === null || userId === undefined || Number.isNaN(userId)) {
-		res.status(400).json({ success: false });
+	if (!userId && userId !== 0) {
+		res.status(400).json(new SuccessResponse(false, [`userId was not accepted: ${userId}`]));
 		return;
 	}
 
+	// TODO build proper response interface/ class
 	const response = await MoodApiDataAccessObject.getEntryList(userId);
 	if (response.hasOwnProperty('success') && response.error) {
 		statusCode = 500;

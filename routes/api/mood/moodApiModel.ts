@@ -36,7 +36,7 @@ export class SuccessResponse {
 
 	constructor(success: boolean, errors: string[] | undefined = undefined) {
 		this.success = success;
-		if (errors) this.errors = errors;
+		if (errors && errors.length > 0) this.errors = errors;
 	}
 }
 

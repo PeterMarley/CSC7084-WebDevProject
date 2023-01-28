@@ -8,6 +8,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
+import fetch from 'node-fetch';
 
 // app imports
 import api from './routes/api/api';							// auth API
@@ -46,6 +47,25 @@ app.use('/api', api);
 app.use('/', mainRouter);
 app.use('/', userRouter);
 app.use('/entry', entryRouter);
+
+app.all('/weathertest', async (req: Request, res: Response) => {
+	
+	const options = {
+		method: 'GET',
+		headers: {
+			'X-RapidAPI-Key': '535c982d9cmshda84425959986f5p1d34c5jsnbe2f7c33ef4b',
+			'X-RapidAPI-Host': 'weatherapi-com.p.rapidapi.com'
+		}
+	};
+	// TODO add selection for location during registration then use it for visualisation
+	const result = await fetch('https://weatherapi-com.p.rapidapi.com/search.json?q=Belfast', options);
+	const json = await result.json();
+	// .then(response => response.json())
+	// .then(response => console.log(response))
+	// .catch(err => console.error(err));
+
+	res.json(json);
+});
 
 app.all('/bulmatest', (req: Request, res: Response) => {
 	res.render('bulmatest');

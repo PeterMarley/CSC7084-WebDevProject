@@ -62,22 +62,21 @@ export default class MoodApiDataAccessObject {
 		},
 		editSingleEntry: {
 			updateEntry: 'CALL usp_update_entry(?,?,?,?)'
-		},
-		deleteSingleEntry: {
-			deleteEntry: 'CALL usp_delete_entry(?,?)'
 		}
 	}
 
 	constructor() { throw new Error('MoodApiDataAccessObject is a static class and may not be instantiated'); }
 
-	static deleteSingleEntry = async function (userId: number, entryId: number) {
+	/**
+	 * Delete a single entry for a particular user
+	 * @param userId the user's unique id in the database
+	 * @param entryId the entry's unique id in the database
+	 */
+	static async deleteSingleEntry(userId: number, entryId: number) {
 		const con = await getConnection();
-		const deleteEntrySQL = formatSQL(MoodApiDataAccessObject.sql.deleteSingleEntry.deleteEntry, [userId, entryId]);
-		console.log(deleteEntrySQL);
-
-		const response = (await con.execute(deleteEntrySQL) as Array<any>);
+		const response = (await con.execute(formatSQL('CALL usp_delete_entry(?,?)', [userId, entryId]))).at(0) as ResultSetHeader;
 		con.end();
-		console.log(response);
+		return response;
 	}
 
 	static updateSingleEntry = async function (userId: number, entryId: number, entryNotes: string, activityCommaDelimStr: string) {
@@ -109,11 +108,11 @@ export default class MoodApiDataAccessObject {
 		const entry: IDbEntry = (await con.execute(formatSQL(MoodApiDataAccessObject.sql.getSingleEntry.entry, [userId, entryId])) as Array<any>)[0][0][0];
 		const entryImages: IDbEntriesImages[] = (await con.execute(formatSQL(MoodApiDataAccessObject.sql.getSingleEntry.entryImages, [entryId])) as Array<any>)[0];
 		const dbActs: IDbActivity[] = (await con.execute(formatSQL(MoodApiDataAccessObject.sql.getSingleEntry.entryActivities, [entryId])) as Array<any>)[0];
-
+		con.end();
 
 		const acts: Activity[] = dbActs.map(e => new Activity(e.activityName, e.activityId, new Image(e.iconUrl, e.iconAltText)));
 		// console.log(acts);
-		con.end();
+
 
 		// process entry and images
 		const images: Image[] = entryImages.map(e => new Image(e.url, e.altText))
@@ -242,6 +241,7 @@ export default class MoodApiDataAccessObject {
 		return response;
 	}
 }
+
 
 /*******************************************************
  * 
