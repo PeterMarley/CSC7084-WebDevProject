@@ -17,6 +17,7 @@
     --button-style-1-min-width: 75px;
     /* backgrounds */
     --main-bg-img: url('../image/beach-light.jpg');
+    /* font-size: 11pt; */
 }
 
 
@@ -254,9 +255,20 @@ nav {
     border-radius: 0.2em;
 }
 
+
 #user-details-actions {
-    display: grid;
-    grid-template: 1fr / 1fr 0.2fr 1fr;
+    display: flex;
+    gap: 5px;
+}
+
+#user-details-actions > a  {
+    flex: 1;
+    display: flex;
+    text-decoration: none;
+}
+
+#user-details-actions > a > button  {
+    flex: 1;
 }
 
 #user-details-avatar > img {
@@ -467,7 +479,7 @@ nav {
     border: 1px solid var(--color-2);
     background-color: var(--color-3);
     border-radius: 0.2em;
-    max-width: 200px;
+    /* max-width: 200px; */
 }
 
     .form-style-1 input[type="submit"]:hover {
@@ -493,6 +505,11 @@ nav {
 .account-form .form-style-1-container .row {
     min-width: 320px;
 }
+
+/* .account-form-message>span {
+    display: inline-block;
+    max-width: max-content;
+ } */
 
 input[type="text"].form-input-validation-error,
 input[type="password"].form-input-validation-error {

@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 
-export default async function apiCall(httpMethod: 'POST' | 'GET' | 'DELETE' | 'PUT', url: string, body: URLSearchParams | undefined = undefined, token: string | undefined = undefined) {
+export default async function apiCall(httpMethod: 'POST' | 'GET' | 'DELETE' | 'PUT' | 'PATCH', url: string, body: URLSearchParams | undefined = undefined, token: string | undefined = undefined) {
 	const fetchResponse = await fetch(url, {
 		method: httpMethod,
 		body,

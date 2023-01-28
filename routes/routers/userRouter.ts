@@ -2,30 +2,34 @@ import express, { Request, Response, NextFunction } from 'express';
 import RegistrationResponse from '../../models/RegistrationResponse';
 import apiCall from '../../lib/apiCall';
 import authenticate from '../middleware/authenticate';
-import { AccountDetailsGetResponse, AccountDetailsUpdateResponse } from '../api/auth/authApiModel';
+import {
+    AccountDetailsGetResponse,
+    AccountDetailsUpdateResponse,
+    AccountPasswordUpdateResponse,
+    LoginResponse
+} from '../api/auth/authApiModel';
 const userRouter = express.Router();
 
 userRouter.use(authenticate);
 
 // log out
-userRouter.get('/logout', logoutGet);
+userRouter.get('/logout', logout);
 
 // log in
-userRouter.get('/login', loginGet);
-userRouter.post('/login', loginPost);
+userRouter.post('/login', attemptLogin);
 userRouter.get('/loginfailed', loginFailed);
 
 // register
 userRouter.get('/register', registerGet);
-userRouter.post('/register', registerPost, loginPost);
+userRouter.post('/register', registerPost, attemptLogin);
 
 // delete account
 userRouter.delete('/deleteuser', deleteUser);
 
 // account
-userRouter.get('/account', initAccountDetailsLocals, getAccount);
-userRouter.post('/account', initAccountDetailsLocals, postAccount);
-//userRouter.post('/account/password', initAccountDetailsLocals, passwordChange);
+userRouter.get('/account', initAccountDetailsLocals, accountDetailsToLocals, renderAccountPage);
+userRouter.post('/account', initAccountDetailsLocals, accountDetailsToLocals, postAccount, renderAccountPage);
+userRouter.post('/account/password', initAccountDetailsLocals, passwordChange);
 
 /*******************************************************
  * 
@@ -33,45 +37,63 @@ userRouter.post('/account', initAccountDetailsLocals, postAccount);
  * 
  *******************************************************/
 
-async function passwordChange() {
-    //TODO
-}
 
-function initAccountDetailsLocals(req: Request, res: Response, next: NextFunction) {
-    res.locals.username = null;
-    res.locals.email = null;
-    res.locals.messages = null;
-    next();
-}
 
-async function getAccount(req: Request, res: Response) {
-    const { username, email }: { username: string, email: string } =
+async function passwordChange(req: Request, res: Response) {
+
+    const passwordNew = req.body['password-new'];
+    const passwordNewConfirm = req.body['password-new-confirm'];
+    const passwordOld = req.body['password-old'];
+    // TODO check old password is correct first
+    if (passwordNew !== passwordNewConfirm) {
+        res.locals.messages = ['Password confirmation failed, be sure that your new password is exactly the same in both fields.'];
+    } else {
+        const { success }: AccountPasswordUpdateResponse =
+            await apiCall(
+                "PATCH",
+                'http://localhost:3000/api/auth/userdetails/' + res.locals.id + '/password',
+                new URLSearchParams([['password', passwordNew]])
+            );
+        if (success) {
+            res.locals.messages = ['Password updated!']
+        } else {
+            res.locals.messages = ['Password update failed! Try again later.']
+        }
+    }
+    const { username, email }: AccountDetailsGetResponse =
         await apiCall(
             "GET",
             'http://localhost:3000/api/auth/userdetails/' + res.locals.id
         );
     res.locals.username = username;
     res.locals.email = email;
-    console.log(res.locals);
-
     res.render('account');
 }
 
-async function postAccount(req: Request, res: Response) {
+async function accountDetailsToLocals(req: Request, res: Response, next: NextFunction) {
 
+    const accountDetailsGetResponse =  await UserRouterApiCalls.getAccountDetails(res.locals.id)
+    
+    res.locals.username = accountDetailsGetResponse.username;
+    res.locals.email = accountDetailsGetResponse.email;
+
+    next();
+}
+
+function renderAccountPage(req: Request, res: Response) {
+    res.render('account');
+}
+
+async function postAccount(req: Request, res: Response, next: NextFunction) {
+
+    const userId = res.locals.id;
     const { username: newUsername, email: newEmail }: AccountDetailsGetResponse = req.body;
-    const { username: oldUsername, email: oldEmail }: AccountDetailsGetResponse = await apiCall(
-        "GET",
-        'http://localhost:3000/api/auth/userdetails/' + res.locals.id
-    );
+    const { username: oldUsername, email: oldEmail } = res.locals;
 
     const messages: Array<string> = [];
     if (newUsername !== oldUsername || newEmail !== oldEmail) {
-        const accountDetailsUpdateResponse: AccountDetailsUpdateResponse = await apiCall(
-            'PUT',
-            'http://localhost:3000/api/auth/userdetails/' + res.locals.id,
-            new URLSearchParams([['username', newUsername], ['email', newEmail]])
-        );
+
+        const accountDetailsUpdateResponse = await UserRouterApiCalls.changeAccountDetails(userId, newUsername, newEmail);
 
         const { success } = accountDetailsUpdateResponse;
         if (success && newUsername !== oldUsername) {
@@ -93,9 +115,7 @@ async function postAccount(req: Request, res: Response) {
     res.locals.email = newEmail;
     res.locals.messages = messages;
 
-    console.log(res.locals.messages);
-
-    res.render('account');
+    next();
 }
 
 function loginFailed(req: Request, res: Response) {
@@ -106,11 +126,8 @@ function registerGet(req: Request, res: Response) {
     res.render('register');
 }
 
-function loginGet(req: Request, res: Response) {
-    res.render('login');
-}
 
-function logoutGet(req: Request, res: Response) {
+function logout(req: Request, res: Response) {
     req.cookies.token = undefined;
     res.clearCookie('token');
     res.statusCode = 200;
@@ -132,13 +149,7 @@ async function deleteUser(req: Request, res: Response, next: NextFunction) {
 
 async function registerPost(req: Request, res: Response, next: NextFunction) {
 
-    const errors: String[] = [];
-
-    if (req.method.toUpperCase() != 'POST') errors.push('cannotget')
-    if (!req.body) errors.push('nobody');
-    if (!req.body.username) errors.push('nousername');
-    if (!req.body.email) errors.push('noemail');
-    if (!req.body.password) errors.push('nopassword');
+    const errors: String[] = UserRouterUtility.validateRegisterPostBody(req);
 
     if (errors.length > 0) {
         res.statusCode = 401;
@@ -146,49 +157,42 @@ async function registerPost(req: Request, res: Response, next: NextFunction) {
         res.redirect('/register?vals=' + errors.join('-'));
         return;
     }
+    const { username, email, password } = req.body;
+    const registrationResponse = await UserRouterApiCalls.registerUser(username, email, password);
 
-    const registrationResponse: RegistrationResponse = await apiCall(
-        'POST',
-        'http://localhost:3000/api/auth/register',
-        new URLSearchParams([['username', req.body.username], ['email', req.body.email], ['password', req.body.password]])
-    );
     if (registrationResponse.success) {
         next();
+        return;
     } else {
         res.send(registrationResponse.error); //TODO return an actual page
         next('route');
     }
 }
 
-async function loginPost(req: Request, res: Response, next: NextFunction) {
+async function attemptLogin(req: Request, res: Response, next: NextFunction) {
     // validate request
-    const errors: String[] = [];
-
-    if (req.method.toUpperCase() != 'POST') errors.push('cannotget')
-    if (!req.body) errors.push('nobody');
-    if (!req.body.username) errors.push('nousername');
-    if (!req.body.password) errors.push('nopassword');
+    const errors = UserRouterUtility.validateLoginPostBody(req);
 
     if (errors.length > 0) {
         res.statusCode = 401;
         res.locals.validations = errors;
         // TODO expand this       
-        res.render('loginfailed');//?vals=' + errors.join('-')
+        res.render('loginfailed');
         return;
     }
 
     // cal auth api to check username/ password combination
     const { username, password } = req.body;
-    const authResponse = await apiCall(
-        'POST',
-        'http://localhost:3000/api/auth/login',
-        new URLSearchParams([['username', username], ['password', password]])
-    );
+    const loginResponse = await UserRouterApiCalls.checkUsernamePassword(username, password);
 
+    console.log(loginResponse);
+    
     // build response & redirect as appropriate
-    if (authResponse.success && authResponse.token) {
-        res.cookie('token', authResponse.token);
-    } else if (!authResponse.success) {
+    if (loginResponse.success && loginResponse.token) {
+        res.locals.authed = true;
+        res.locals.username = username;
+        res.cookie('token', loginResponse.token);
+    } else if (!loginResponse.success) {
         //res.redirect('/login?vals=loginfail');
         res.locals.validations = ['login-unsuccessful'];
         res.render('loginfailed');
@@ -197,7 +201,87 @@ async function loginPost(req: Request, res: Response, next: NextFunction) {
         res.redirect('/500');
         return;
     }
-    res.redirect(req.body.redirect ? req.body.redirect : '/');
+
+    res.render('welcome');
 }
+
+function initAccountDetailsLocals(req: Request, res: Response, next: NextFunction) {
+    res.locals.username = null;
+    res.locals.email = null;
+    res.locals.messages = null;
+    next();
+}
+
+/*******************************************************
+ * 
+ * HELPERS AND UTILITY
+ * 
+ *******************************************************/
+
+class UserRouterApiCalls {
+    private static baseUrl: string = 'http://localhost:3000/api';
+
+    static checkUsernamePassword = async function (username: string, password: string): Promise<LoginResponse> {
+        const endpoint = '/auth/login';
+        return await apiCall(
+            'POST',
+            UserRouterApiCalls.baseUrl + endpoint,
+            new URLSearchParams([['username', username], ['password', password]])
+        );
+    };
+
+    static registerUser = async function (username: string, email: string, password: string): Promise<RegistrationResponse> {
+        const endpoint = '/auth/register';
+        return await apiCall(
+            'POST',
+            UserRouterApiCalls.baseUrl + endpoint,
+            new URLSearchParams([['username', username], ['email', email], ['password', password]])
+        );
+    }
+
+    static getAccountDetails = async function (userId: number): Promise<AccountDetailsGetResponse> {
+        const endpoint = '/auth/userdetails/' + userId;
+        return await apiCall(
+            "GET",
+            UserRouterApiCalls.baseUrl + endpoint
+        );
+    }
+
+    static changeAccountDetails = async function (userId: number, newUsername : string, newEmail: string): Promise<AccountDetailsUpdateResponse> {
+        const endpoint = '/auth/userdetails/' + userId;
+        return await apiCall(
+            'PUT',
+            UserRouterApiCalls.baseUrl + endpoint,
+            new URLSearchParams([['username', newUsername], ['email', newEmail]])
+        );
+    }
+}
+
+class UserRouterUtility {
+    static validateLoginPostBody = function (req: Request) {
+        const errors: String[] = [];
+
+        if (req.method.toUpperCase() != 'POST') errors.push('cannotget')
+        if (!req.body) errors.push('nobody');
+        if (!req.body.username) errors.push('nousername');
+        if (!req.body.password) errors.push('nopassword');
+
+        return errors;
+    }
+
+    static validateRegisterPostBody = function (req: Request) {
+        const errors: String[] = [];
+
+        if (req.method.toUpperCase() != 'POST') errors.push('cannotget')
+        if (!req.body) errors.push('nobody');
+        if (!req.body.username) errors.push('nousername');
+        if (!req.body.email) errors.push('noemail');
+        if (!req.body.password) errors.push('nopassword');
+
+        return errors;
+    }
+}
+
+
 
 export default userRouter;

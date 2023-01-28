@@ -5,7 +5,7 @@ import LoginResponse from '../../../models/LoginResponse';
 import RegistrationResponse from '../../../models/RegistrationResponse';
 import getConnection from '../../../lib/dbConnection';
 import PasswordQueryResponse from '../../../models/PasswordQueryResponse';
-import { AccountDetailsUpdateResponse, AccountDetailsGetResponse } from './authApiModel';
+import { AccountDetailsUpdateResponse, AccountDetailsGetResponse, AccountPasswordUpdateResponse } from './authApiModel';
 import { encrypt } from '../../../lib/crypt';
 import { JwtPayload } from 'jsonwebtoken';
 import { format } from 'mysql2';
@@ -36,12 +36,47 @@ authAPI.delete('/deleteuser', deleteuser);
 
 authAPI.get('/userdetails/:userId', accountGet);
 authAPI.put('/userdetails/:userId', accountPut);
-
+authAPI.patch('/userdetails/:userId/password', accountPasswordPatch);
 /*******************************************************
  * 
  * MIDDLEWEAR
  * 
  *******************************************************/
+
+async function accountPasswordPatch(req: Request, res: Response, next: NextFunction) {
+    // const sql = "SELECT username, email FROM tbl_user WHERE user_id=?";
+    const userId = Number(req.params.userId);
+    const { password } = req.body;
+    console.log(`new password: \"${password}\"`);
+
+    // const passwordNew = req.body['password-new'];
+    // const passwordNewConfirm = req.body['password-new-confirm'];
+    // const passwordOld = req.body['password-old'];
+    // console.log(`old password: \"${passwordOld}\"`);
+    // console.log(`new password: \"${passwordNew}\"`);
+    // console.log(`new password confirm: \"${passwordNewConfirm}\"`);
+    
+    let success = false;
+
+    try {
+        if (validatePassword(password)) {
+            const updateAccountDetailsSql = format(`CALL usp_update_password(?,?)`, [userId, encrypt(password)]);
+            const con = await getConnection();
+
+            success = ((await con.execute(updateAccountDetailsSql)).at(0) as ResultSetHeader).affectedRows === 1;
+
+            con.end();
+        }
+    } catch (err) {
+        console.log('updating account password failed.');
+    }
+
+    res.json(new AccountPasswordUpdateResponse(success));
+}
+
+function validatePassword(password: string) {
+    return true;
+}
 
 function validateUsername(username: string): boolean {
     if (!username) return false;
@@ -81,13 +116,13 @@ async function accountPut(req: Request, res: Response, next: NextFunction) {
 async function accountGet(req: Request, res: Response, next: NextFunction) {
 
     const { userId } = req.params;
-    
+
     const formattedSql = format("SELECT username, email FROM tbl_user WHERE user_id=?", [userId]);
-    
+
     const con = await getConnection();
     const response = ((await con.execute(formattedSql)).at(0) as RowDataPacket).at(0) as AccountDetailsGetResponse;
     con.end();
-    
+
     res.json(response);
 }
 
@@ -125,7 +160,7 @@ class DeleteAccountResponse {
 
 const SQL = {
     register: {
-        insertUser: 'INSERT INTO tbl_user (username, password, email) VALUES (?,?,?)',
+        insertUser: 'INSERT INTO tbl_user (username, password, email, user_icon_id) VALUES (?,?,?,1)',
         insertMoods:
             `INSERT INTO tbl_mood
             (
@@ -190,6 +225,7 @@ async function register(req: Request, res: Response, next: NextFunction) {
     const emailResponse = await con.execute(`SELECT COUNT(email) AS emailCount FROM tbl_user WHERE email=?`, [email]) as any;
     con.end();
 
+
     const usernameCount = usernameResponse.at(0).at(0).usernameCount;
     const emailCount = emailResponse.at(0).at(0).emailCount;
 
@@ -205,7 +241,12 @@ async function register(req: Request, res: Response, next: NextFunction) {
     con = await getConnection();
     try {
 
-        const insertUserResult = await con.execute(SQL.register.insertUser, [username, encrypt(password), email]) as any;
+        const sql = format(SQL.register.insertUser, [username, encrypt(password), email]);
+        console.log(sql);
+        
+        const insertUserResult = await con.execute(sql) as any;
+        console.log('\n\n\n\n\n\n\n\n\n\n\n\n');
+
         const userId: number = insertUserResult.at(0).insertId;
 
         const insertMoodsResult = await con.execute(SQL.register.insertMoods, Array(5).fill(userId)) as any;
@@ -217,13 +258,15 @@ async function register(req: Request, res: Response, next: NextFunction) {
 
 
         res.status(200).send(new RegistrationResponse(true));
+        return;
     } catch (err: any) {
+        console.log(err);
+        
         res.status(500).send(new RegistrationResponse(false, ['something went wrong registering you?! ' + err.message]));
+        return;
     } finally {
         con.end();
     }
-
-    next();
 }
 
 

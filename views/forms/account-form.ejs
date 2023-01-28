@@ -22,13 +22,13 @@
     %>
   </div>
 </form>
-<form id="account-form-change-password" class="form-style-1 account-form hidden" action="/account" method="POST">
+<form id="account-form-change-password" class="form-style-1 account-form hidden" action="/account/password" method="POST">
   <div class="form-style-1-container">
     <div class="row" id="change-password-inputs">
       <label>Change password</label>
-      <input type="password" name="password" placeholder="Enter old password..." autocomplete="off" id="oldpassword">
-      <input type="password" name="password" placeholder="Enter new password..." autocomplete="off" id="newpassword">
-      <input type="password" name="password-confirm" placeholder="Confirm new password..." autocomplete="off" id="newpasswordconfirm">
+      <input type="password" name="password-old" placeholder="Enter old password..." autocomplete="off" id="oldpassword">
+      <input type="password" name="password-new" placeholder="Enter new password..." autocomplete="off" id="newpassword">
+      <input type="password" name="password-new-confirm" placeholder="Confirm new password..." autocomplete="off" id="newpasswordconfirm">
     </div>
     <div class="submitdiv">
       <button value="Change Password" id="change-password-submit" class="button-style-1" disabled>Change Password</button>
