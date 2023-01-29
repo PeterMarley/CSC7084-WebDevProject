@@ -57,10 +57,11 @@ function handleThemeButtonClick() {
  */
 function handleHamburgerButtonClick(event) {
     if (!event.target.classList.contains("hamburger-source")) return;
-    const user = document.querySelector("#user-details-container");
-    const login = document.querySelector("#login-form-container");
-    const element = user || login;
-    element.toggleAttribute("hidden");
+    // const user = document.querySelector("#user-details-container");
+    // const login = document.querySelector("#login-form-container");
+    // const element = user || login;
+    // element.toggleAttribute("hidden");
+    document.querySelector('.modal-container').classList.remove('hidden');
 }
 
 /**

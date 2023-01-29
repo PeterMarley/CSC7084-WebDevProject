@@ -1,4 +1,4 @@
-<div id="user-details-container" hidden>
+<div id="user-details-container">
   <div id="user-details">
     <div id="user-details-avatar">
       <img src="/image/defaultavatar.png">
@@ -6,9 +6,13 @@
     <div id="user-details-info">
       <div>MarlDaeSu</div>
       <div id="user-details-actions">
-          <a href="/account"><button class="button-style-1">Account</button></a>
-          <a href="/logout"><button class="button-style-1">Log Out</button></a>
+        <a href="/account" class="button-style-1">Account</a>
+        <a href="/logout" class="button-style-1">Log Out</a>
       </div>
     </div>
+  </div>
+  <div id="embedded-nav">
+    <hr>
+    <%- include('../partials/nav'); %>
   </div>
 </div>

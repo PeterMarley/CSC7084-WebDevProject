@@ -18,6 +18,7 @@
     /* backgrounds */
     --main-bg-img: url('../image/beach-light.jpg');
     /* font-size: 11pt; */
+    --hamburger-img:  url('../icons/hamburger-black24x24.png');
 }
 
 
@@ -36,11 +37,18 @@
     src: url("/fonts/RobotoMono-Regular.ttf");
 }
 
+@font-face {
+    font-family: bebas;
+    src: url("/fonts/BebasNeue-Regular.ttf");
+}
+
 /****************************
   BASIC AND NORMALIZE
 ****************************/
 
-* {}
+* {
+    transition: background-color 0.5s ease;
+}
 
 body {
     margin: 0;
@@ -85,6 +93,17 @@ body {
     background-image: url('../icons/sun.png');
 }
 
+#title-text {
+    font-family: bebas;
+    font-size: 2rem;
+    margin-left: 10px;
+    letter-spacing: 0.3rem;
+}
+
+#title-text > span:last-child {
+    font-size: 1.5rem;
+}
+
 /****************************
  HEADER
 ****************************/
@@ -116,9 +135,12 @@ body {
     /* box-shadow: inset 0px -20px 25px -20px white; */
 }
 
-.button-style-1, .button-style-2 {
-    transition: background-color 0.5s ease;
+.button-style-1,
+.button-style-2 {
+    /* transition: background-color 0.5s ease; */
     font-family: robotomono;
+    font-size: 0.8rem;
+    color: var(--text-color);
 }
 
 .button-style-1>a,
@@ -176,6 +198,9 @@ a.button-style-2 {
     position: relative;
     flex-shrink: 1;
     /* margin-left: auto; */
+    background-image: var(--hamburger-img);
+    width: 24px;
+    height: 24px;
 }
 
 /* #header>div:not(:first-child):hover {
@@ -235,6 +260,23 @@ nav {
     margin: var(--nav-margin);
 }
 
+#embedded-nav {
+    display: flex;
+    flex-direction: column;
+}
+
+#embedded-nav > nav {
+    width: calc(100% - calc(var(--nav-margin)  * 2));
+}
+
+#embedded-nav > hr {
+    width: 95%;
+    border: 0px;
+    border-top: 2px solid var(--color-2);
+    border-radius: var(--general-border-radius);
+    /* box-sizing: content-box; */
+}
+
 
 #body>div {
     flex-grow: 1;
@@ -258,28 +300,20 @@ nav {
 
 #user-details-container {
     width: 350px;
+    border: 1px solid black;
+    border: 1px solid var(--color-2);
+    background-color: var(--color-4);
+    border-radius: var(--general-border-radius);
 }
 
-
-#user-details-container,
-#login-form-container {
-    position: absolute;
-    top: 0px;
-    right: calc(var(--button-style-1-padding) + 22px);
-}
-
-#login-form-container > .form-style-1 {
+#login-form-container>.form-style-1 {
     margin: 0px;
 }
 
 #user-details {
-    border: 1px solid black;
     display: grid;
     grid-template: 1fr/ 20% 80%;
     justify-content: center;
-    gap: 7px;
-    border: 1px solid var(--color-2);
-    background-color: var(--color-4);
     padding: 10px;
     border-radius: 0.2em;
 }
@@ -290,19 +324,31 @@ nav {
     gap: 5px;
 }
 
-#user-details-actions>a {
+#user-details-actions > a {
     flex: 1;
     display: flex;
     text-decoration: none;
+    align-items: center;
+    justify-content: center;
 }
 
-#user-details-actions>a>button {
+#user-details-actions > a > button {
     flex: 1;
 }
 
+#user-details-avatar {
+    border: 1px solid var(--color-1);
+    border-radius: var(--general-border-radius);
+    margin: 2px 5px 2px 2px;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 #user-details-avatar>img {
-    width: 64px;
-    height: 64px;
+    width: 100%;
+    height: 100%;
 }
 
 #user-details-info {
@@ -488,14 +534,13 @@ nav {
     display: grid;
 }
 
-.form-style-1 > div {
+.form-style-1>div {
     display: grid;
     justify-content: center;
     gap: 7px;
     border: 1px solid var(--color-2);
     background-color: var(--color-4);
     padding: 10px;
-    border-radius: 0.2em;
 }
 
 .form-style-1 input[type="text"],
@@ -533,6 +578,11 @@ nav {
 
 .account-form {
     margin-top: 10px;
+}
+
+#user-details,
+.form-style-1>div {
+    border-radius: var(--general-border-radius);
 }
 
 .account-form .form-style-1-container .row {
@@ -692,6 +742,7 @@ input[type="password"].valid {
     border: 1px solid var(--color-1);
     border-radius: var(--general-border-radius);
 }
+
 .mood-selection-container>div:last-child {
     font-size: 0.7em;
     margin-bottom: 5px;
@@ -708,9 +759,9 @@ input[type="password"].valid {
 ****************************/
 
 .modal-container {
-    background-color: rgba(94,94,94,0.5);
+    background-color: rgba(94, 94, 94, 0.5);
     display: flex;
-    position: absolute;
+    position: fixed;
     justify-content: center;
     align-items: center;
     top: 0px;
@@ -718,12 +769,12 @@ input[type="password"].valid {
     bottom: 0px;
     right: 0px;
     z-index: 1000;
+    border-radius: var(--general-border-radius);
 }
 
 .modal {
-    background-color: var(--color-4);
+    background-color: transparent;
     position: relative;
-    border-radius: var(--general-border-radius);
     padding: 1em;
 }
 
@@ -739,12 +790,13 @@ input[type="password"].valid {
     --color-accent: rgb(60, 73, 192);
     --text-color: white;
     --main-bg-img: url('../image/beach-dark.jpg');
+    --hamburger-img: url('../icons/hamburger-white24x24.png')
 }
 
 /****************************
   BREAKPOINTS
 ****************************/
-@media only screen and (max-width: 320px) {
+@media only screen and (max-width: 350px) {
 
     .mood-day,
     .mood-entry-list {
@@ -752,12 +804,16 @@ input[type="password"].valid {
     }
 
     #user-details-container {
-        max-width: 260px;
+        width: 100%;
     }
 
     #user-details-avatar>img {
-        width: 18px;
-        height: 18px;
+        width: 24px;
+        height: 24px;
+    }
+
+    .button-style-1 {
+        min-width: fit-content;
     }
 }
 
@@ -769,11 +825,15 @@ input[type="password"].valid {
 }
 
 @media only screen and (max-width: 768px) {
-    nav {
+    nav:not(#embedded-nav > nav) {
         visibility: hidden;
         display: none;
         width: 0px;
     }
+
+    /* #embedded-nav>nav {
+        width: auto;
+    } */
 
     #mood-entry-notes {
         min-height: 3em;

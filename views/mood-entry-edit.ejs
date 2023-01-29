@@ -1,7 +1,7 @@
 <%- include('partials/top.ejs') %>
 
 <% if (updateSingleEntrySuccess === null) { %>
-<%- include('forms/mood-entry-form.ejs') %>
+<%- include('components/mood-entry-form.ejs') %>
 <script src="/script/mood-entry-form.js"></script>
 <% } else if (updateSingleEntrySuccess === true) { %>
     Your mood entry was updated!
