@@ -44,6 +44,7 @@ moodAPI.delete(entryOperationsRoute, deleteSingleEntry);
  * Response with a json `SuccessResponse`
  */
 async function deleteSingleEntry(req: Request, res: Response) {
+
 	const entryId = Number(req.params.entryId);
 	const userId = Number(req.params.userId);
 
@@ -109,53 +110,99 @@ async function getSingleEntry(req: Request, res: Response) {
 
 async function getEntryFormData(req: Request, res: Response, next: NextFunction) {
 	// get userid from url
+	let response: SuccessResponse | EntryFormDataResponse;
+	let statusCode = 200;
 	const userId = Number(req.params.userId);
 
-	// get data from database and process
-	const entryFormDataResponse: EntryFormDataResponse = await MoodApiDataAccessObject.getEntryFormData(userId);
+	if (!userId) {
+		statusCode = 400;
+		response = new SuccessResponse(false, [`userId was not numberic value: ${userId}`]);
+	} else {
+		try {
+			// get data from database and process
+			response = await MoodApiDataAccessObject.getEntryFormData(userId);
+		} catch (err: any) {
+			statusCode = 500;
+			response = new SuccessResponse(false, [typeof err == 'string' ? err : err.message]);
+		}
 
-	// if entry id and user id specified in parameter (therefore an edit entry action) then call next method, otherwise, return response object
-	if (req.params.entryId !== undefined && req.params.userId !== undefined) {
-		res.locals.entryFormData = entryFormDataResponse;
-		next();
-		return;
+		// if entry id and user id specified in parameter (therefore an edit entry action) then call next method, otherwise, return response object
+		if (req.params.entryId !== undefined && req.params.userId !== undefined) {
+			res.locals.entryFormData = response;
+			next();
+			return;
+		}
+
 	}
 
-	res.json(entryFormDataResponse);
+	res.status(statusCode).json(response);
 }
 
 async function createNewEntry(req: Request, res: Response) {
 
 	// get user id from route
 	const userId = Number(req.params.userId);
+	let success = false;
+	let statusCode = 201;
 
-	// destructure inputs from request body
-	const {
-		mood: moodNameFromForm,
-		activities: activitesDelimitedStrFromForm,
-		notes: notesFromForm
+	let {
+		mood,
+		activities: activityNameCommaDelimStr,
+		notes
 	} = req.body;
 
-	const success = await MoodApiDataAccessObject.createNewEntry(userId, moodNameFromForm, notesFromForm, activitesDelimitedStrFromForm);
+	console.log(notes);
+	
+	// normalise empty values from body
+	if (!activityNameCommaDelimStr) activityNameCommaDelimStr = '';
+	if (!notes) notes = '';
+	
+	const errors: string[] = [];
 
-	res.status(success ? 201 : 500).json({ success });
+	if (!userId || !mood) {
+		statusCode = 400;
+
+		if (!userId) errors.push(`userId was not a numeric value: ${userId}`);
+		else if (!mood) errors.push(`mood was not provided: ${mood}`);
+
+	} else {
+		try {
+			success = await MoodApiDataAccessObject.createNewEntry(userId, mood, notes, activityNameCommaDelimStr);
+		} catch (err: any) {
+			statusCode = 500;
+			errors.push(typeof err == 'string' ? err : err.message);
+		}
+	}
+
+
+	res.status(statusCode).json(new SuccessResponse(success, errors));
 }
 
+/**
+ * Get a list of mood entries from the database, using the user's id.
+ */
 async function getEntryList(req: Request, res: Response) {
 
+	let response: any;
 	let statusCode = 200;
 	const userId = Number(req.params.userId);
 
-	if (!userId && userId !== 0) {
+	if (Number.isNaN(userId)) {
 		res.status(400).json(new SuccessResponse(false, [`userId was not accepted: ${userId}`]));
 		return;
 	}
 
-	// TODO build proper response interface/ class
-	const response = await MoodApiDataAccessObject.getEntryList(userId);
-	if (response.hasOwnProperty('success') && response.error) {
+	try {
+		// TODO build proper response interface/ class
+		response = await MoodApiDataAccessObject.getEntryList(userId);
+		if (response.hasOwnProperty('success') && response.error) {
+			statusCode = 500;
+		}
+	} catch (err: any) {
+		response = new SuccessResponse(false, [typeof err == 'string' ? err : err.message]);
 		statusCode = 500;
 	}
+
 	res.status(statusCode).json(response);
 }
 

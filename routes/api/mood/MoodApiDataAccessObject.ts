@@ -8,7 +8,8 @@ import {
 	EntryDataResponse,
 	EntryFormDataResponse
 } from './moodApiModel';
-import { format as formatSQL, ResultSetHeader } from 'mysql2';
+import { format as formatSQL, ResultSetHeader, RowDataPacket } from 'mysql2';
+import logErrors from '../../../lib/logError';
 
 /**
  * This is a static class in that it may not be instantiated. It's methods may be called to generate response objects after queries the database
@@ -149,35 +150,61 @@ export default class MoodApiDataAccessObject {
 		return entryFormData;
 	}
 
-	static createNewEntry = async function (userId: number, moodNameForm: String, notesForm: string, activitesDelimitedStrForm: string) {
+	static createNewEntry = async function (userId: number, moodName: String, notes: string, activityNameCommaDelimStr: string) {
+
 		const con = await getConnection();
+		let success = true;
 		// TODO limit number of entries than can be added to a single day maybe?
 
-		// get mood id
 
 		const { getMoodId, insertEntry, getActivities, buildInsertActivitySql } = MoodApiDataAccessObject.sql.newEntry.addEntry;
+		try {
+			// get id of provided mood
+			const moodId: any = (
+				(((await con.execute(formatSQL(getMoodId, [moodName, userId])))
+					.at(0) as Array<RowDataPacket | ResultSetHeader>)
+					.at(0) as RowDataPacket[])
+					.at(0) as { moodId: number }).moodId;
 
-		const moodId: number = (await con.execute(formatSQL(getMoodId, [moodNameForm, userId])) as Array<any>)[0][0][0].moodId;
+			// insert entry and get id
+			console.log(formatSQL(insertEntry, [notes, userId, moodId]));
 
-		// add entry & get id
-		const entryId: number = (await con.execute(formatSQL(insertEntry, [notesForm, userId, moodId])) as any)[0][0][0].entryId;
+			const entryId: any = (
+				(((await con.execute(formatSQL(insertEntry, [notes, userId, moodId])))
+					.at(0) as Array<RowDataPacket | ResultSetHeader>)
+					.at(0) as RowDataPacket[])
+					.at(0) as { entryId: number }).entryId;
 
+			// process activities
+			if (activityNameCommaDelimStr) {
+				const activities: IDbActivity[] = (await con.execute(formatSQL(getActivities, [userId, activityNameCommaDelimStr])) as Array<any>)[0][0];
 
-		// process activities
-		const activitiesSelectSql = formatSQL(getActivities, [userId, activitesDelimitedStrForm]);
-		const activities: IDbActivity[] = (await con.execute(activitiesSelectSql) as Array<any>)[0][0];
+				if (activities.length !== 0 && activityNameCommaDelimStr.split(',').length === activities.length) {
+					const activityMap = new Map<string, number>();
+					activities.forEach((a: IDbActivity) => activityMap.set(a.activityName, a.activityId));
 
-		const activityMap = new Map<string, number>();
-		activities.forEach((a: IDbActivity) => activityMap.set(a.activityName, a.activityId));
+					// insert entry and activities
+					const activityNameArr = activityNameCommaDelimStr.split(',');
+					if (activityNameArr.length > 0) {
+						const insertionResult: ResultSetHeader = (await con.execute(buildInsertActivitySql(entryId, activityNameArr, activityMap)) as Array<any>)[0];
+					}
+				} else {
+					logErrors([`at least one of activities selected was not one of the user's activities: ${activityNameCommaDelimStr}.` +
+						`This means someone edited details in browser dev tools. No entry, nor entry activites  were added to this entry in response.`]);
+					await con.execute(formatSQL(`DELETE FROM tbl_entry_activity WHERE entry_id=?`, [entryId]));
+					await con.execute(formatSQL(`DELETE FROM tbl_entry WHERE entry_id=?`, [entryId]));
+				}
 
-		// insert entry and activities
-		const activityNameArr = activitesDelimitedStrForm.split(',');
-		if (activityNameArr.length > 0) {
-			const insertionResult: ResultSetHeader = (await con.execute(buildInsertActivitySql(entryId, activityNameArr, activityMap)) as Array<any>)[0];
+			}
+		} catch (err: any) {
+			success = false;
+			logErrors([typeof err == 'string' ? err : err.message]);
+			// roll back all additions
+		} finally {
+			con.end();
 		}
-
 		// return true if successful
-		return true;
+		return success;
 	}
 
 	static getEntryList = async function (userId: number): Promise<any> {
