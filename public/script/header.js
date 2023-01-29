@@ -11,12 +11,16 @@
     const themeButton = document.querySelector(".theme");
     themeButton.addEventListener("click", handleThemeButtonClick);
 
-    const navMenuArrow = document.querySelector('#nav-menu-arrow')
-    navMenuArrow.addEventListener('click', () => {
-        const navMenuDropdown = document.querySelector('#nav-menu-dropdown');
-        navMenuDropdown.classList.toggle('selected');
-        //TODO sort nav menu drop down appearing when down arrow clicked
-    });
+    // const navMenuArrow = document.querySelector('#nav-menu-arrow')
+    // navMenuArrow.addEventListener('click', () => {
+    //     const navMenuDropdown = document.querySelector('#nav-menu-dropdown');
+    //     navMenuDropdown.classList.toggle('selected');
+    //     //TODO sort nav menu drop down appearing when down arrow clicked
+    // });
+
+    const modalContainer = document.querySelector('.modal-container');
+    modalContainer.addEventListener('click', handleModalClick);
+    console.log(modalContainer);
 
     // select theme
     const selectedTheme = localStorage.getItem("theme");
@@ -32,6 +36,13 @@
     }
     setTheme(theme);
 })();
+
+function handleModalClick(event) {
+    const clickedOnContainer = !event.target.closest('.modal');
+    if (clickedOnContainer) {
+        document.querySelector('.modal-container').classList.toggle('hidden');
+    }
+}
 
 /**
  * Event handler for clicking the sun/ moon icon to change theme
