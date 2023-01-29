@@ -27,17 +27,6 @@ export default class MoodApiDataAccessObject {
 				activities: 'CALL usp_select_activities_by_user_id(?)',
 				activityGroups: 'CALL usp_select_activity_groups_by_user_id(?)'
 			},
-			addEntry: {
-				getMoodId: ' CALL usp_select_mood_by_user_id_and_mood_name(?, ?)',
-				getActivities: 'CALL usp_select_activities_by_user_id_and_activity_names(?,?)',
-				insertEntry: 'CALL usp_insert_entry(?, ?, ?)',
-				buildInsertActivitySql: function (entryId: number, activities: string[], activityMap: Map<string, number>) {
-					let sql = `INSERT INTO tbl_entry_activity (entry_id, activity_id) VALUES `;
-					activities.forEach(e => sql += formatSQL(`(?, ?)`, [entryId, activityMap.get(e)]) + ',');
-					return sql.substring(0, sql.length - 1);
-				}
-
-			}
 		},
 		getSingleEntry: {
 			entry: 'CALL usp_select_entry_by_user_id_and_entry_id(?, ?)',
@@ -150,60 +139,26 @@ export default class MoodApiDataAccessObject {
 		return entryFormData;
 	}
 
-	static createNewEntry = async function (userId: number, moodName: String, notes: string, activityNameCommaDelimStr: string) {
+	static async createNewEntry(userId: number, moodName: String, notes: string, activityNameCommaDelimStr: string) {
 
-		const con = await getConnection();
 		let success = true;
-		// TODO limit number of entries than can be added to a single day maybe?
+		const con = await getConnection();
 
-
-		const { getMoodId, insertEntry, getActivities, buildInsertActivitySql } = MoodApiDataAccessObject.sql.newEntry.addEntry;
 		try {
-			// get id of provided mood
-			const moodId: any = (
-				(((await con.execute(formatSQL(getMoodId, [moodName, userId])))
-					.at(0) as Array<RowDataPacket | ResultSetHeader>)
-					.at(0) as RowDataPacket[])
-					.at(0) as { moodId: number }).moodId;
-
-			// insert entry and get id
-			console.log(formatSQL(insertEntry, [notes, userId, moodId]));
-
-			const entryId: any = (
-				(((await con.execute(formatSQL(insertEntry, [notes, userId, moodId])))
-					.at(0) as Array<RowDataPacket | ResultSetHeader>)
-					.at(0) as RowDataPacket[])
-					.at(0) as { entryId: number }).entryId;
-
-			// process activities
-			if (activityNameCommaDelimStr) {
-				const activities: IDbActivity[] = (await con.execute(formatSQL(getActivities, [userId, activityNameCommaDelimStr])) as Array<any>)[0][0];
-
-				if (activities.length !== 0 && activityNameCommaDelimStr.split(',').length === activities.length) {
-					const activityMap = new Map<string, number>();
-					activities.forEach((a: IDbActivity) => activityMap.set(a.activityName, a.activityId));
-
-					// insert entry and activities
-					const activityNameArr = activityNameCommaDelimStr.split(',');
-					if (activityNameArr.length > 0) {
-						const insertionResult: ResultSetHeader = (await con.execute(buildInsertActivitySql(entryId, activityNameArr, activityMap)) as Array<any>)[0];
-					}
-				} else {
-					logErrors([`at least one of activities selected was not one of the user's activities: ${activityNameCommaDelimStr}.` +
-						`This means someone edited details in browser dev tools. No entry, nor entry activites  were added to this entry in response.`]);
-					await con.execute(formatSQL(`DELETE FROM tbl_entry_activity WHERE entry_id=?`, [entryId]));
-					await con.execute(formatSQL(`DELETE FROM tbl_entry WHERE entry_id=?`, [entryId]));
-				}
-
-			}
+			const storedProcedureResponse = (
+				await con.execute(
+					formatSQL('CALL usp_insert_entry(?,?,?,?)', [userId, moodName, notes, activityNameCommaDelimStr])
+				) as ResultSetHeader[])
+				.at(0) as ResultSetHeader;
+			const { affectedRows, warningStatus } = storedProcedureResponse;
+			success = affectedRows > 0 && warningStatus === 0;
 		} catch (err: any) {
-			success = false;
 			logErrors([typeof err == 'string' ? err : err.message]);
-			// roll back all additions
+			success = false;
 		} finally {
 			con.end();
 		}
-		// return true if successful
+
 		return success;
 	}
 
