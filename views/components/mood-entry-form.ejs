@@ -23,37 +23,38 @@ if (authed) {
   // console.log('===entryData===');
   // console.log(entryData);
 %>
-<form method="POST" action="<%- formAction %>" id="mood-entry-form">
-  <input hidden name="action" value="<%- action %>">
-  <div class="mood-selection-container">
+<div id="mood-entry-form-container">
+  <form method="POST" action="<%- formAction %>" id="mood-entry-form">
+    <input hidden name="action" value="<%- action %>">
+    <div class="mood-selection-container">
 
-    <div class="mood-selection" data-action="<%- action %>">
-      <% 
+      <div class="mood-selection" data-action="<%- action %>">
+        <% 
       for (const mood of entryFormData.moods) {
         const moodSelector = (action === 'edit' && entryData.mood.name == mood.name ? 'selected ' : '') + 'mood'; 
       %>
 
-      <span class="<%- moodSelector %>">
-        <span><img src="<%- mood.image.url %>" class="mood-image"></span>
-        <span class="mood-name"><%- mood.name %></span>
-      </span>
-      <% } %>
-    </div>
-    <% if (action === 'edit') { %>
+        <span class="<%- moodSelector %>">
+          <span><img src="<%- mood.image.url %>" class="mood-image"></span>
+          <span class="mood-name"><%- mood.name %></span>
+        </span>
+        <% } %>
+      </div>
+      <% if (action === 'edit') { %>
       <div>Please note, you cannot edit a previous entries mood.</div>
-    <% } %>
+      <% } %>
 
-  </div>
-  <div class="container">
-    <textarea name="notes" id="mood-entry-notes" placeholder="Leave some notes if you wish..."><%- notes %></textarea>
-    <div class="activity-selection-container">
-      <div class="activity-selection">
-        Activity Groups
-        <% for (const actGroup of entryFormData.activityGroups) { %>
-        <div class="activity-group">
-          <div class="activity-group-name"><img src="<%- actGroup.image.url %>" alt="<%- actGroup.image.altText %>"><span><%- actGroup.activityGroupName %></span></div>
-          <div class="activity-group-activities">
-            <% 
+    </div>
+    <!-- <div class="container"> -->
+      <textarea name="notes" id="mood-entry-notes" placeholder="Leave some notes if you wish..."><%- notes %></textarea>
+      <div class="activity-selection-container">
+        <div class="activity-selection">
+          Activity Groups
+          <% for (const actGroup of entryFormData.activityGroups) { %>
+          <div class="activity-group">
+            <div class="activity-group-name"><img src="<%- actGroup.image.url %>" alt="<%- actGroup.image.altText %>"><span><%- actGroup.activityGroupName %></span></div>
+            <div class="activity-group-activities">
+              <% 
             for (const act of actGroup.activities) { 
               // console.log('===act===');
               // console.log(act);
@@ -64,20 +65,21 @@ if (authed) {
                 selectedActivities.push(entryData.activities[activityIndex].activityName);
               }
             %>
-            <div class="<%- activitySelector %>"><img src="<%- act.image.url %>" alt="<%- act.image.altText %>">
-              <div class="activity-name"><%- act.activityName %></div>
+              <div class="<%- activitySelector %>"><img src="<%- act.image.url %>" alt="<%- act.image.altText %>">
+                <div class="activity-name"><%- act.activityName %></div>
+              </div>
+              <% } %>
             </div>
-            <% } %>
           </div>
+          <% } %>
         </div>
-        <% } %>
       </div>
-    </div>
-  </div>
-  <input hidden type="text" id="activities-hidden-input" name="activities" value="<%- selectedActivities.join(',') %>">
-  <input hidden type="text" id="mood-hidden-input" name="mood" value="<%- entryData ? entryData.mood.name : '' %>">
-  <input type="button" value="<%- submitButtonText %>" id="mood-entry-form-submit">
-</form>
+    <!-- </div> -->
+    <input hidden type="text" id="activities-hidden-input" name="activities" value="<%- selectedActivities.join(',') %>">
+    <input hidden type="text" id="mood-hidden-input" name="mood" value="<%- entryData ? entryData.mood.name : '' %>">
+    <input type="button" value="<%- submitButtonText %>" id="mood-entry-form-submit">
+  </form>
+</div>
 <% } else { %>
 Not authorized
 <% } %>

@@ -5,6 +5,8 @@
     --color-3: #CEE8F6;
     --color-4: #FAFAFA;
     --color-accent: #FF7E67;
+    --color-bg-1: #f0f0f0;
+    --color-bg-2: #dbdbdb;
     --text-color: black;
     /* Margins and padding */
     --header-height: 3.2rem;
@@ -237,6 +239,7 @@ a.button-style-2 {
     position: relative;
     min-height: calc(100vh - var(--header-height));
     background-image: var(--main-bg-img);
+    background-color: var(--color-4);
     background-repeat: no-repeat;
     background-position: center;
     background-attachment: fixed;
@@ -280,6 +283,12 @@ nav {
 
 #body>div {
     flex-grow: 1;
+}
+
+
+#mood-entry-form-container {
+    display: flex;
+    justify-content: center;
 }
 
 /****************************
@@ -382,7 +391,6 @@ nav {
 }
 
 .mood-day {
-    background-color: goldenrod;
     margin: 10px;
     /* padding: 10px; */
     /* border-radius: 5px; */
@@ -393,8 +401,8 @@ nav {
     /* display: grid; */
     /* justify-content: center; */
     /* gap: 7px; */
-    border: 1px solid var(--color-2);
-    background-color: var(--color-4);
+    border: 1px solid var(--color-bg-2);
+    background-color: var(--color-bg-1);
     padding: 10px;
     border-radius: 0.5em;
 }
@@ -633,14 +641,20 @@ input[type="password"].valid {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    margin-top: 15px;
+    background-color: var(--color-bg-1);
+    border-radius: var(--general-border-radius);
+    border: 2px solid var(--color-2);
+    padding: 15px;
 }
 
 #mood-entry-notes {
-    width: inherit;
+    box-sizing: border-box;
+    width: 100%;
     min-height: 200px;
     padding: 10px;
     margin: 10px 5px;
-    border-width: 0px;
+    border: 1px solid var(--color-bg-2);
     border-radius: var(--general-border-radius);
     resize: vertical;
 }
@@ -739,7 +753,7 @@ input[type="password"].valid {
     align-items: center;
     margin: 10px 5px 0px 5px;
     background-color: var(--color-4);
-    border: 1px solid var(--color-1);
+    border: 1px solid var(--color-bg-2);
     border-radius: var(--general-border-radius);
 }
 
@@ -788,6 +802,8 @@ input[type="password"].valid {
     --color-3: rgb(37, 37, 37);
     --color-4: rgb(28, 28, 28);
     --color-accent: rgb(60, 73, 192);
+    --color-bg-1: #1f1f1f;
+    --color-bg-2: #414141;
     --text-color: white;
     --main-bg-img: url('../image/beach-dark.jpg');
     --hamburger-img: url('../icons/hamburger-white24x24.png')
@@ -842,11 +858,16 @@ input[type="password"].valid {
     #nav-menu-arrow {
         background-image: url('../icons/down-arrow24x24.png');
     }
+
+    #mood-entry-form {
+        margin-left: 10px;
+        margin-right: 10px;
+    }
 }
 
 @media only screen and (max-width: 1060px) {
     .activity-selection-container {
-        margin-left: 8px;
-        margin-right: 8px;
+        /* margin-left: 8px;
+        margin-right: 8px; */
     }
 }

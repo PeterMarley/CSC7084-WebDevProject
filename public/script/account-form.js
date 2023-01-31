@@ -18,6 +18,11 @@ const accountFormElements = {
 
 // Event Handlers
 
+function handleShowAccountDelete(event) {
+    event.preventDefault();
+    const showButton = document.querySelector('#delete-account-button');
+}
+
 function handleShowChangePassword(event) {
     event.preventDefault();
     const changePasswordform = document.querySelector('#account-form-change-password');
