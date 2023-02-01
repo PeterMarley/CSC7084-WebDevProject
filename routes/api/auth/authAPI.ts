@@ -5,7 +5,12 @@ import LoginResponse from '../../../models/LoginResponse';
 import RegistrationResponse from '../../../models/RegistrationResponse';
 import getConnection from '../../../lib/dbConnection';
 import PasswordQueryResponse from '../../../models/PasswordQueryResponse';
-import { AccountDetailsUpdateResponse, AccountDetailsGetResponse, AccountPasswordUpdateResponse } from './authApiModel';
+import { 
+    AccountDetailsUpdateResponse, 
+    AccountDetailsGetResponse, 
+    AccountPasswordUpdateResponse,
+    DeleteAccountResponse
+} from './authApiModel';
 import { encrypt } from '../../../lib/crypt';
 import { JwtPayload } from 'jsonwebtoken';
 import { format } from 'mysql2';
@@ -32,16 +37,56 @@ authAPI.use(express.urlencoded({ extended: false }));
 authAPI.post('/login', login);
 authAPI.post('/register', register);
 
-authAPI.delete('/deleteuser', deleteuser);
+authAPI.delete('/deleteuser', deleteUserAccount);
 
-authAPI.get('/userdetails/:userId', accountGet);
-authAPI.put('/userdetails/:userId', accountPut);
+authAPI.get('/userdetails/:userId', getAccountDetails);
+authAPI.put('/userdetails/:userId', updateAccountDetails);
 authAPI.patch('/userdetails/:userId/password', accountPasswordPatch);
 /*******************************************************
  * 
  * MIDDLEWEAR
  * 
  *******************************************************/
+
+const SQL = {
+    register: {
+        insertUser: 'INSERT INTO tbl_user (username, password, email, user_icon_id) VALUES (?,?,?,1)',
+        // insertMoods:
+        //     `INSERT INTO tbl_mood
+        //     (
+        //         tbl_mood.name, 
+        //         tbl_mood.order, 
+        //         tbl_mood.icon_image_id, 
+        //         tbl_mood.user_id
+        //     )
+        //     VALUES 
+        //     ('Awful', 1, 1, ?),
+        //     ('Bad', 2, 2, ?),
+        //     ('Ok', 3, 3, ?),
+        //     ('Good', 4, 4, ?),
+        //     ('Great', 5, 5, ?)`,
+        insertActivityGroups:
+            `INSERT INTO tbl_activity_group
+            (
+                tbl_activity_group.name,
+                tbl_activity_group.icon_image_id,
+                tbl_activity_group.user_id
+            )
+            VALUES
+            ('Default', 1, ?)`,
+        insertDefaultActivities:
+            `INSERT INTO tbl_activity
+            (
+                tbl_activity.name,
+                tbl_activity.icon_image_id,
+                tbl_activity.activity_group_id,
+                tbl_activity.user_id
+            )
+            VALUES
+            ('Work',1,?,?),
+            ('Exersize',2,?,?)`
+    }
+}
 
 async function accountPasswordPatch(req: Request, res: Response, next: NextFunction) {
     // const sql = "SELECT username, email FROM tbl_user WHERE user_id=?";
@@ -74,23 +119,9 @@ async function accountPasswordPatch(req: Request, res: Response, next: NextFunct
     res.json(new AccountPasswordUpdateResponse(success));
 }
 
-function validatePassword(password: string) {
-    return true;
-}
 
-function validateUsername(username: string): boolean {
-    if (!username) return false;
-    return /[a-zA-Z]{8,15}/.test(username);
-}
 
-function validateEmail(email: string): boolean {
-    if (!email) return false;
-    // extremely basic email regex, suitable for the purposes of this project
-    const emailRegex = /[a-zA-Z0-8]{1,}[@][a-zA-Z0-8]{1,}[\.][a-zA-Z0-8]{1,}/
-    return emailRegex.test(email);
-}
-
-async function accountPut(req: Request, res: Response, next: NextFunction) {
+async function updateAccountDetails(req: Request, res: Response, next: NextFunction) {
     // const sql = "SELECT username, email FROM tbl_user WHERE user_id=?";
     const userId = Number(req.params.userId);
     const { username, email } = req.body;
@@ -112,8 +143,7 @@ async function accountPut(req: Request, res: Response, next: NextFunction) {
     res.json(new AccountDetailsUpdateResponse(success, userId, username, email));
 }
 
-
-async function accountGet(req: Request, res: Response, next: NextFunction) {
+async function getAccountDetails(req: Request, res: Response, next: NextFunction) {
 
     const { userId } = req.params;
 
@@ -126,9 +156,7 @@ async function accountGet(req: Request, res: Response, next: NextFunction) {
     res.json(response);
 }
 
-
-
-async function deleteuser(req: Request, res: Response, next: NextFunction) {
+async function deleteUserAccount(req: Request, res: Response, next: NextFunction) {
     let success = false;
     let error: string | undefined;
     if (req.body && req.body.confirmation && res.locals.authed) {
@@ -149,54 +177,6 @@ async function deleteuser(req: Request, res: Response, next: NextFunction) {
     res.send(new DeleteAccountResponse(success, error));
 }
 
-class DeleteAccountResponse {
-    success: boolean;
-    error: string | undefined;
-    constructor(success: boolean, error: string | undefined = undefined) {
-        this.success = success;
-        if (error) this.error = error;
-    }
-}
-
-const SQL = {
-    register: {
-        insertUser: 'INSERT INTO tbl_user (username, password, email, user_icon_id) VALUES (?,?,?,1)',
-        insertMoods:
-            `INSERT INTO tbl_mood
-            (
-                tbl_mood.name, 
-                tbl_mood.order, 
-                tbl_mood.icon_image_id, 
-                tbl_mood.user_id
-            )
-            VALUES 
-            ('Awful', 1, 1, ?),
-            ('Bad', 2, 2, ?),
-            ('Ok', 3, 3, ?),
-            ('Good', 4, 4, ?),
-            ('Great', 5, 5, ?)`,
-        insertActivityGroups:
-            `INSERT INTO tbl_activity_group
-            (
-                tbl_activity_group.name,
-                tbl_activity_group.icon_image_id,
-                tbl_activity_group.user_id
-            )
-            VALUES
-            ('Default', 1, ?)`,
-        insertDefaultActivities:
-            `INSERT INTO tbl_activity
-            (
-                tbl_activity.name,
-                tbl_activity.icon_image_id,
-                tbl_activity.activity_group_id,
-                tbl_activity.user_id
-            )
-            VALUES
-            ('Work',1,?,?),
-            ('Exersize',2,?,?)`
-    }
-}
 
 async function register(req: Request, res: Response, next: NextFunction) {
     // check request authorization
@@ -242,14 +222,13 @@ async function register(req: Request, res: Response, next: NextFunction) {
     try {
 
         const sql = format(SQL.register.insertUser, [username, encrypt(password), email]);
-        console.log(sql);
+        // console.log(sql);
         
         const insertUserResult = await con.execute(sql) as any;
-        console.log('\n\n\n\n\n\n\n\n\n\n\n\n');
 
         const userId: number = insertUserResult.at(0).insertId;
 
-        const insertMoodsResult = await con.execute(SQL.register.insertMoods, Array(5).fill(userId)) as any;
+        // const insertMoodsResult = await con.execute(SQL.register.insertMoods, Array(5).fill(userId)) as any;
 
         const insertActivityGroupsResult = await con.execute(SQL.register.insertActivityGroups, [userId]) as any;
         const activityGroupId: number = insertActivityGroupsResult.at(0).insertId;
@@ -261,15 +240,12 @@ async function register(req: Request, res: Response, next: NextFunction) {
         return;
     } catch (err: any) {
         console.log(err);
-        
         res.status(500).send(new RegistrationResponse(false, ['something went wrong registering you?! ' + err.message]));
         return;
     } finally {
         con.end();
     }
 }
-
-
 
 /**
  * Express Middleware: Checks a username and password provided in post body against DB and if correct, sets a JWT token into a cookie on users
@@ -321,4 +297,26 @@ async function login(req: Request, res: Response, next: NextFunction) {
     res.status((error.length === 0) ? 200 : 401).json(new LoginResponse(success, token, error));
 }
 
+/*******************************************************
+ * 
+ * UTILITY AND VALIDATION
+ * 
+ *******************************************************/
+
+function validatePassword(password: string) {
+    //TODO actual password validation
+    return true;
+}
+
+function validateUsername(username: string): boolean {
+    if (!username) return false;
+    return /[a-zA-Z0-9]{8,15}/.test(username);
+}
+
+function validateEmail(email: string): boolean {
+    if (!email) return false;
+    // extremely basic email regex, suitable for the purposes of this project
+    const emailRegex = /[a-zA-Z0-8]{1,}[@][a-zA-Z0-8]{1,}[\.][a-zA-Z0-8]{1,}/
+    return emailRegex.test(email);
+}
 export default authAPI;

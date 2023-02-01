@@ -40,3 +40,12 @@ export class LoginResponse {
         this.token = token;
     }
 }
+
+export class DeleteAccountResponse {
+    success: boolean;
+    error: string | undefined;
+    constructor(success: boolean, error: string | undefined = undefined) {
+        this.success = success;
+        if (error) this.error = error;
+    }
+}

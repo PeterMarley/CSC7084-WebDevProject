@@ -23,7 +23,7 @@ export default class MoodApiDataAccessObject {
 		},
 		newEntry: {
 			entryComponents: {
-				moods: 'CALL usp_select_moods_by_user_id(?)',
+				moods: 'CALL usp_select_moods',
 				activities: 'CALL usp_select_activities_by_user_id(?)',
 				activityGroups: 'CALL usp_select_activity_groups_by_user_id(?)'
 			},
@@ -106,7 +106,22 @@ export default class MoodApiDataAccessObject {
 
 		// process entry and images
 		const images: Image[] = entryImages.map(e => new Image(e.url, e.altText))
-		const responseEntry = new Entry(entryId, entry.timestamp, entry.moodId, entry.mood, new Image(entry.moodIconUrl, entry.moodIconAltText), entry.entryNotes);
+		const responseEntry = new Entry(
+			entryId,
+			entry.timestamp,
+			entry.entryNotes,
+			new Mood(
+				entry.moodId,
+				entry.mood,
+				new Image(
+					entry.moodIconUrl,
+					entry.moodIconAltText
+				),
+				entry.moodValence,
+				entry.moodArousal
+			)
+
+		);
 		responseEntry.activities = acts;
 		// build response and send as json
 		return new EntryDataResponse(responseEntry, entryFormData, images);
@@ -114,7 +129,9 @@ export default class MoodApiDataAccessObject {
 
 	static getEntryFormData = async function (userId: number) {
 		const con = await getConnection();
-		const moods: IDbMood[] = (await con.execute(formatSQL(MoodApiDataAccessObject.sql.newEntry.entryComponents.moods, [userId])) as Array<any>).at(0).at(0);
+		const moods: IDbMood[] = (await con.execute(MoodApiDataAccessObject.sql.newEntry.entryComponents.moods) as Array<any>).at(0).at(0);
+		console.log(moods);
+
 		const activities: IDbActivity[] = (await con.execute(formatSQL(MoodApiDataAccessObject.sql.newEntry.entryComponents.activities, [userId])) as Array<any>).at(0).at(0);
 		const activityGroups: IDbActivityGroup[] = (await con.execute(formatSQL(MoodApiDataAccessObject.sql.newEntry.entryComponents.activityGroups, [userId])) as Array<any>).at(0).at(0);
 		con.end();
@@ -133,9 +150,11 @@ export default class MoodApiDataAccessObject {
 
 		// build response
 		const entryFormData = new EntryFormDataResponse(
-			moods.map((mood: IDbMood): Mood => new Mood(mood.moodId, mood.moodName, new Image(mood.iconUrl, mood.iconAltText))),
+			moods.map((mood: IDbMood): Mood => new Mood(mood.moodId, mood.moodName, new Image(mood.iconUrl, mood.iconAltText), mood.moodValence, mood.moodArousal)),
 			Array.from(activityMap.values())
 		);
+		console.log(entryFormData);
+
 		return entryFormData;
 	}
 
@@ -183,8 +202,13 @@ export default class MoodApiDataAccessObject {
 		// process data
 		try {
 			entries.forEach((dbEntry: IDbEntry) => {
-				const { entryId, timestamp, moodId, mood, moodIconUrl, moodIconAltText, entryNotes } = dbEntry;
-				map.set(entryId, new Entry(entryId, timestamp, moodId, mood, new Image(moodIconUrl, moodIconAltText), entryNotes))
+				const mood = new Mood(
+					dbEntry.moodId, 
+					dbEntry.mood, 
+					new Image(dbEntry.moodIconUrl, dbEntry.moodIconAltText), 
+					dbEntry.moodValence,
+					dbEntry.moodArousal);
+				map.set(dbEntry.entryId, new Entry(dbEntry.entryId, dbEntry.timestamp, dbEntry.entryNotes, mood))
 			});
 			activities.forEach((dbActivity: IDbEntryActivities) => {
 				const { entryId, activityName, activityId, activityIconUrl, activityIconAltText } = dbActivity;
@@ -248,12 +272,21 @@ interface IDbActivity {
 	iconAltText: string,
 }
 
+// interface IDbMood {
+// 	moodId: number,
+// 	moodName: string,
+// 	moodOrder: string,
+// 	iconUrl: string,
+// 	iconAltText: string,
+// }
+
 interface IDbMood {
 	moodId: number,
 	moodName: string,
-	moodOrder: string,
+	moodValence: string,
+	moodArousal: string,
 	iconUrl: string,
-	iconAltText: string,
+	iconAltText: string
 }
 
 interface IDbEntry {
@@ -262,6 +295,8 @@ interface IDbEntry {
 	entryNotes: string,
 	mood: string,
 	moodId: number,
+	moodValence: string,
+	moodArousal: string,
 	moodIconUrl: string,
 	moodIconAltText: string,
 }

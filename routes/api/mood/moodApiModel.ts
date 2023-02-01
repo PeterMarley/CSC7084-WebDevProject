@@ -76,10 +76,10 @@ export class Entry {
 	images: Image[];
 	activities: Activity[];
 
-	constructor(id: number, timestamp: string, moodId: number, moodName: string, moodImage: Image, notes: string) {
+	constructor(id: number, timestamp: string, notes: string, mood: Mood) {
 		this.entryId = id;
 		this.datetime = new Date(timestamp);
-		this.mood = new Mood(moodId, moodName, moodImage);
+		this.mood = mood;
 		this.notes = notes;
 		this.images = [];
 		this.activities = [];
@@ -90,11 +90,15 @@ export class Mood {
 	moodId: number;
 	name: string;
 	image: Image;
+	valence: string;
+	arousal: string;
 
-	constructor(id: number, moodName: string, image: Image) {
+	constructor(id: number, moodName: string, image: Image, valence: string, arousal: string) {
 		this.moodId = id
 		this.name = moodName;
 		this.image = image;
+		this.valence = valence;
+		this.arousal = arousal;
 	}
 
 }
