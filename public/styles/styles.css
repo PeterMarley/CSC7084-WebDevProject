@@ -751,10 +751,14 @@ input[type="password"].valid {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin: 10px 5px 0px 5px;
+    /* margin: 10px 5px 0px 5px; */
     background-color: var(--color-4);
     border: 1px solid var(--color-bg-2);
     border-radius: var(--general-border-radius);
+}
+
+.mood-selection-container:not(.hidden) {
+    margin: 10px 5px 0px 5px;
 }
 
 .mood-selection-container>div:last-child {
@@ -767,6 +771,25 @@ input[type="password"].valid {
     display: flex;
     justify-content: center;
 }
+
+
+.mood-valence-button {
+    background-color: var(--color-bg-2);
+    /* color: var(--color-4); */
+    padding: 2px 10px;
+    border-radius: var(--general-border-radius);
+    width: 20em;
+}
+
+.mood-valence-button#valence-positive.selected {
+    background-color: #00D1B2;
+}
+
+.mood-valence-button#valence-negative.selected {
+    background-color: #f14668;
+    color: white;
+}
+
 
 /****************************
   MODAL

@@ -151,35 +151,27 @@ async function createNewEntry(req: Request, res: Response) {
 		notes
 	} = req.body;
 
-	// console.log(mood);
-	// console.log(activityNameCommaDelimStr);
-	// console.log(notes);
-
 	// normalise empty values from body
 	if (!activityNameCommaDelimStr) activityNameCommaDelimStr = '';
 	if (!notes) notes = '';
 
 	const errors: string[] = [];
-	try {
-		if (!userId || !mood) {
-			statusCode = 400;
 
-			if (!userId) errors.push(`userId was not a numeric value: ${userId}`);
-			else if (!mood) errors.push(`mood was not provided: ${mood}`);
+	if (!userId || !mood) {
+		statusCode = 400;
 
-		} else {
-			try {
-				success = await MoodApiDataAccessObject.createNewEntry(userId, mood, notes, activityNameCommaDelimStr);			
-			} catch (err: any) {
-				statusCode = 500;
-				errors.push(typeof err == 'string' ? err : err.message);
-			}
+		if (!userId) errors.push(`userId was not a numeric value: ${userId}`);
+		else if (!mood) errors.push(`mood was not provided: ${mood}`);
+
+	} else {
+		try {
+			success = await MoodApiDataAccessObject.createNewEntry(userId, mood, notes, activityNameCommaDelimStr);
+		} catch (err: any) {
+			statusCode = 500;
+			errors.push(typeof err == 'string' ? err : err.message);
 		}
-
-	} catch (err) {
-		console.log(err);
-
 	}
+
 	res.status(statusCode).json(new SuccessResponse(success, errors));
 }
 
