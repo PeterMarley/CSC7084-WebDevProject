@@ -6,6 +6,10 @@ if (authed) {
   let selectedActivities = [];
   let positiveMoods = entryFormData.moods.filter(m => m.valence === 'Positive');
   let negativeMoods = entryFormData.moods.filter(m => m.valence === 'Negative');
+  let posMoodsButtonSelector;
+  let negMoodsButtonSelector;
+  let valenceButtonsDisabled;
+  let posValenceButtonSelected, negValenceButtonSelected;
 
   switch (action) {
     case 'new':
@@ -13,27 +17,45 @@ if (authed) {
       formAction = '/entry/new';
       //httpVerb = 'POST';
       submitButtonText = 'Add New Entry';
+      posMoodsButtonSelector = ' hidden';
+      negMoodsButtonSelector = ' hidden';
+      valenceButtonsDisabled = false;
+      posValenceButtonSelected = ''
+      negValenceButtonSelected = '';
       break;
     case 'edit':
       notes = entryData.notes;
       formAction = '/entry/edit/' + entryData.entryId;
       //httpVerb ='dont know this either';
       submitButtonText = 'Edit Entry';
+      posMoodsButtonSelector = positiveMoods.reduce((prev, cur) => {
+        if (cur.moodId === entryData.mood.moodId) return '';
+        return prev;
+      }, ' hidden');
+      negMoodsButtonSelector = negativeMoods.reduce((prev, cur) => {
+        if (cur.moodId === entryData.mood.moodId) return '';
+        return prev;
+      }, ' hidden');
+      valenceButtonsDisabled = true;
+      posValenceButtonSelected = posMoodsButtonSelector ? '': ' selected';
+      negValenceButtonSelected = negMoodsButtonSelector ? '': ' selected';
       break;
   }
   // console.log('===entryFormData===');
   // console.log(entryFormData);
   // console.log('===entryData===');
   // console.log(entryData);
+  // console.log('pos selector: ' + posMoodsButtonSelector);
+  // console.log('neg selector: ' + negMoodsButtonSelector);
 %>
 <div id="mood-entry-form-container">
   <form method="POST" action="<%- formAction %>" id="mood-entry-form">
     <input hidden name="action" value="<%- action %>">
-    <div id="mood-valence-button-container">
-      <span id="valence-positive" class="mood-valence-button">Positive Mood</span>
-      <span id="valence-negative" class="mood-valence-button">Negative Mood</span>
+    <div id="mood-valence-button-container" disabled="<%- valenceButtonsDisabled %>">
+      <span id="valence-positive" class="mood-valence-button<%- posValenceButtonSelected %>">Positive Mood</span>
+      <span id="valence-negative" class="mood-valence-button<%- negValenceButtonSelected %>">Negative Mood</span>
     </div>
-    <div id="positive-moods" class="mood-selection-container hidden">
+    <div id="positive-moods" class="mood-selection-container<%- posMoodsButtonSelector %>">
 
       <div id="valence-positive" class="mood-selection" data-action="<%- action %>">
         <% 
@@ -51,7 +73,7 @@ if (authed) {
       <div>Please note, you cannot edit a previous entries mood.</div>
       <% } %>
     </div>
-    <div id="negative-moods" class="mood-selection-container hidden">
+    <div id="negative-moods" class="mood-selection-container<%- negMoodsButtonSelector %>">
 
       <div id="valence-negative" class="mood-selection" data-action="<%- action %>">
         <% 

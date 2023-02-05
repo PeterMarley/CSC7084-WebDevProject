@@ -18,8 +18,10 @@ const entryFormComponents = {
             container: document.querySelector('.mood-selection-container#negative-moods'),
             valenceButton: document.querySelector('.mood-valence-button#valence-negative'),
         },
+        buttons: document.querySelectorAll('.mood'),
+        active: document.querySelector('#mood-valence-button-container').getAttribute('disabled') == 'false',
     }
-    
+
     // action: document.querySelector('.mood-selection').dataset.action,
 }
 entryFormComponents.selected.mood;
@@ -27,7 +29,6 @@ entryFormComponents.selected.mood;
  * Initialise elements, and add event listeners
  */
 (function intialiseMoodEntryForm() {
-
     // configure elements
 
     const activitiesDivs = document.querySelectorAll(".activity.selected");
@@ -48,9 +49,9 @@ entryFormComponents.selected.mood;
 
     // add event listeners
 
-    // entryFormComponents.selectionButtons.mood.forEach((moodElement) =>
-    //     moodElement.addEventListener("click", () => handleMoodSelection(moodElement))
-    // );
+    entryFormComponents.moodSelection.buttons.forEach((moodSelectionButton) =>
+        moodSelectionButton.addEventListener("click", () => handleMoodSelection(moodSelectionButton))
+    );
 
     entryFormComponents.activitySelection.forEach((activityElement) =>
         activityElement.addEventListener("click", handleActivitySelection)
@@ -60,10 +61,6 @@ entryFormComponents.selected.mood;
         .querySelector("#mood-entry-form-submit")
         .addEventListener("click", handleFormSubmission);
 
-    // console.log('activities selected');
-    // console.log(entryFormComponents.selected.activities);
-    // console.log('mood selected');
-    // console.log(entryFormComponents.selected.mood);
 })();
 
 /**
@@ -92,16 +89,16 @@ function handleActivitySelection(event) {
  * Event handler for user selecting a mood
  * @param {Element} moodElement 
  */
-// function handleMoodSelection(moodElement) {
-//     if (entryFormComponents.action === 'edit') return;
-//     //console.log(document.querySelector('.mood-selection').dataset.action);
-//     entryFormComponents.selectionButtons.mood.forEach((el) => el.classList.remove("selected"));
-//     entryFormComponents.selected.mood = moodElement.querySelector(".mood-name").textContent;
-//     moodElement.classList.add("selected");
-//     entryFormComponents.selected.mood = moodElement.children[1].textContent;
-//     console.log("mood selected: " + entryFormComponents.selected.mood);
-//     validateSelectedMood();
-// }
+function handleMoodSelection(moodElement) {
+    if (!entryFormComponents.moodSelection.active) return;
+    //console.log(document.querySelector('.mood-selection').dataset.action);
+    entryFormComponents.moodSelection.buttons.forEach((el) => el.classList.remove("selected"));
+    entryFormComponents.selected.mood = moodElement.querySelector(".mood-name").textContent;
+    moodElement.classList.add("selected");
+    entryFormComponents.selected.mood = moodElement.children[1].textContent;
+    console.log("mood selected: " + entryFormComponents.selected.mood);
+    validateSelectedMood();
+}
 
 /**
  * Event handler for a user submiting form
@@ -155,8 +152,13 @@ function grabSelectedActivities() {
 }
 
 function handleMoodValenceButtonClicks(event) {
+    console.log("disabled? " + document.querySelector('#mood-valence-button-container').getAttribute('disabled'));
+
+    if (!entryFormComponents.moodSelection.active) return;
+
+
     //FIXME redo the selection and mood/activity passthrough javascript
-    const {positive, negative} = entryFormComponents.moodSelection;
+    const { positive, negative } = entryFormComponents.moodSelection;
     const buttonPressedId = event.target.id;
     console.log(buttonPressedId);
 
