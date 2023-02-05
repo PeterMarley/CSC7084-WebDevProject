@@ -60,9 +60,11 @@ if (authed) { // if authenticated
         <div class="no-activities-message">No activities selected</div>
         <% } %>
       </div>
-      <div class="entry-notes">
-        <%- notes %>
-      </div>
+
+        <div class="entry-notes entry-activities">
+          <%- notes %>
+        </div>
+
       <div class="entry-images">
         <% for (const image of images) { %>
         <img src="<%- image.url %>" alt="<%- image.altText %>">

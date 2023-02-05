@@ -152,7 +152,7 @@ function grabSelectedActivities() {
 }
 
 function handleMoodValenceButtonClicks(event) {
-    console.log("disabled? " + document.querySelector('#mood-valence-button-container').getAttribute('disabled'));
+    //console.log("disabled? " + document.querySelector('#mood-valence-button-container').getAttribute('disabled'));
 
     if (!entryFormComponents.moodSelection.active) return;
 
@@ -160,7 +160,7 @@ function handleMoodValenceButtonClicks(event) {
     //FIXME redo the selection and mood/activity passthrough javascript
     const { positive, negative } = entryFormComponents.moodSelection;
     const buttonPressedId = event.target.id;
-    console.log(buttonPressedId);
+    //console.log(buttonPressedId);
 
     if (buttonPressedId === 'valence-negative') {
         negative.valenceButton.classList.add('selected');

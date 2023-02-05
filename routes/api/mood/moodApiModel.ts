@@ -116,3 +116,16 @@ export class ActivityGroup {
 		this.activities = activities;
 	}
 }
+
+/*******************************************************
+ * 
+ * Interfaces
+ * 
+ *******************************************************/
+
+export interface VisualInterface1 {
+	frequency: number,
+	moodName: string,
+	moodValence: string,
+	moodArousal: string,
+}

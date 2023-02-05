@@ -6,15 +6,97 @@ import {
 	Mood,
 	ActivityGroup,
 	EntryDataResponse,
-	EntryFormDataResponse
+	EntryFormDataResponse,
+	VisualInterface1
 } from './moodApiModel';
-import { format as formatSQL, ResultSetHeader, RowDataPacket } from 'mysql2';
+import { FieldPacket, format as formatSQL, ResultSetHeader, RowDataPacket } from 'mysql2';
 import logErrors from '../../../lib/logError';
 
 /**
  * This is a static class in that it may not be instantiated. It's methods may be called to generate response objects after queries the database
  */
 export default class MoodApiDataAccessObject {
+	static async getVisual(userId: number, cutoff: Date | undefined = undefined) {
+		const con = await getConnection();
+
+		// mood frequencies
+
+		const moodFrequencyData = (await con.query(
+			formatSQL(
+				`SELECT 
+					m.name as name,
+					COUNT(m.mood_id) as frequency
+				FROM tbl_entry e
+				INNER JOIN tbl_mood m ON m.mood_id = e.mood_id
+				WHERE e.user_id = ?` +
+				(cutoff ? `AND e.timestamp > '${cutoff}' ` : ' ') +
+				`GROUP BY m.name`
+				, [userId]
+			)
+		)).at(0) as any;
+
+		const valenceFrequencyData = (await con.query(
+			formatSQL(
+				`SELECT 
+					mv.mood_valence_name as name,
+					COUNT(mv.mood_valence_name) as frequency
+				FROM tbl_entry e
+				INNER JOIN tbl_mood m ON m.mood_id = e.mood_id
+				INNER JOIN tbl_mood_valence mv ON mv.mood_valence_id = m.mood_valence_id
+				WHERE e.user_id = ?` +
+				(cutoff ? `AND e.timestamp > '${cutoff}' ` : ' ') +
+				`GROUP BY mv.mood_valence_id`
+				, [userId]
+			)
+		)).at(0) as any;
+
+		const arousalFrequencyData = (await con.query(
+			formatSQL(
+				`SELECT 
+					ma.mood_arousal_name as name,
+					COUNT(ma.mood_arousal_name) as frequency
+				FROM tbl_entry e
+				INNER JOIN tbl_mood m ON m.mood_id = e.mood_id
+				INNER JOIN tbl_mood_arousal ma ON ma.mood_arousal_id = m.mood_arousal_id
+				WHERE e.user_id = ?` +
+				(cutoff ? `AND e.timestamp > '${cutoff}' ` : ' ') +
+				`GROUP BY ma.mood_arousal_id`
+				, [userId]
+			)
+		)).at(0) as any;
+
+		const moodModeData = (await con.query(
+			formatSQL(
+				`SELECT 
+					m.name as name,
+					COUNT(m.mood_id) as frequency
+				FROM tbl_entry e
+				INNER JOIN tbl_mood m ON m.mood_id = e.mood_id
+				WHERE e.user_id = ? 
+				GROUP BY m.name
+				ORDER BY frequency DESC
+				LIMIT 1`
+				, [userId]
+			)
+		)).at(0) as any;
+
+		// console.log(valenceFrequencyData);
+		//SELECT CURRENT_TIMESTAMP,e.timestamp,DATEDIFF(e.timestamp,CURRENT_TIMESTAMP), e.notes, e.entry_id FROM tbl_entry e
+		//WHERE DATEDIFF(e.timestamp,CURRENT_TIMESTAMP) >= -7;
+		con.end();
+
+		return {
+			frequencies: {
+				mood: moodFrequencyData,
+				valence: valenceFrequencyData,
+				arousal: arousalFrequencyData
+			},
+			mode: {
+				mood: moodModeData
+			}
+		};
+	}
+
 	private static sql: any = {
 		getEntries: {
 			entries: 'CALL usp_select_entries_by_user_id(?)',
@@ -80,7 +162,7 @@ export default class MoodApiDataAccessObject {
 
 
 		const response: ResultSetHeader = ((await con.execute(sql)) as Array<any>)[0]
-		console.log(response);
+		//console.log(response);
 
 		con.end();
 		// console.log('=============================');
@@ -130,7 +212,7 @@ export default class MoodApiDataAccessObject {
 	static getEntryFormData = async function (userId: number) {
 		const con = await getConnection();
 		const moods: IDbMood[] = (await con.execute(MoodApiDataAccessObject.sql.newEntry.entryComponents.moods) as Array<any>).at(0).at(0);
-		console.log(moods);
+		//console.log(moods);
 
 		const activities: IDbActivity[] = (await con.execute(formatSQL(MoodApiDataAccessObject.sql.newEntry.entryComponents.activities, [userId])) as Array<any>).at(0).at(0);
 		const activityGroups: IDbActivityGroup[] = (await con.execute(formatSQL(MoodApiDataAccessObject.sql.newEntry.entryComponents.activityGroups, [userId])) as Array<any>).at(0).at(0);
@@ -153,7 +235,7 @@ export default class MoodApiDataAccessObject {
 			moods.map((mood: IDbMood): Mood => new Mood(mood.moodId, mood.moodName, new Image(mood.iconUrl, mood.iconAltText), mood.moodValence, mood.moodArousal)),
 			Array.from(activityMap.values())
 		);
-		console.log(entryFormData);
+		//console.log(entryFormData);
 
 		return entryFormData;
 	}
@@ -203,9 +285,9 @@ export default class MoodApiDataAccessObject {
 		try {
 			entries.forEach((dbEntry: IDbEntry) => {
 				const mood = new Mood(
-					dbEntry.moodId, 
-					dbEntry.mood, 
-					new Image(dbEntry.moodIconUrl, dbEntry.moodIconAltText), 
+					dbEntry.moodId,
+					dbEntry.mood,
+					new Image(dbEntry.moodIconUrl, dbEntry.moodIconAltText),
 					dbEntry.moodValence,
 					dbEntry.moodArousal);
 				map.set(dbEntry.entryId, new Entry(dbEntry.entryId, dbEntry.timestamp, dbEntry.entryNotes, mood))

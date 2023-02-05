@@ -414,8 +414,8 @@ nav {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    border: 1px solid var(--color-2);
-    background-color: var(--color-3);
+    border: 1px solid var(--color-bg-2);
+    background-color: var(--color-4);
     padding: 10px;
     border-radius: 0.5em;
 }
@@ -428,10 +428,14 @@ nav {
     /* background-color: blue; */
     display: flex;
     flex-wrap: wrap;
-    border: 1px solid var(--color-1);
+    border: 1px solid var(--color-bg-2);
     border-radius: 1em;
-    background-color: var(--color-2);
+    background-color: var(--color-bg-1);
     /* flex-wrap: nowrap; */
+}
+
+.entry-notes {
+    padding: 10px;
 }
 
 .entry-activity-image {
@@ -448,7 +452,7 @@ nav {
     /* background-color: blue; */
     display: flex;
     flex-direction: row;
-    border: 1px solid var(--color-1);
+    border: 1px solid var(--color-2);
     background-color: var(--color-3);
     border-radius: 1.5em;
     margin: 5px;
@@ -466,6 +470,8 @@ nav {
 
 .entry-activity-name {
     display: flex;
+    font-family: robotomono;
+    font-size: 0.8em;
     /* overflow: hidden;
   text-overflow: ellipsis; */
     /* width: 100px; */
@@ -637,11 +643,13 @@ input[type="password"].valid {
 }
 
 #mood-entry-form {
+    /* width: 90%;
+    max-width: 800px; */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-top: 15px;
+    margin: 15px;
     background-color: var(--color-bg-1);
     border-radius: var(--general-border-radius);
     border: 2px solid var(--color-2);
@@ -660,43 +668,60 @@ input[type="password"].valid {
 }
 
 .activity {
+    overflow: hidden;
+    text-overflow: ellipsis;
     margin: 5px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: 1px solid black;
+    border: 1px solid var(--color-bg-2);
     border-radius: 0.6rem;
     padding: 3px;
+    background-color: var(--color-4);
+}
+
+.activity:hover {
+    background-color: var(--color-2);
 }
 
 .activity-name {
     overflow: hidden;
     /*text-overflow: ellipsis; */
+    display: flex;
+    justify-content: flex-start;
     white-space: nowrap;
+    font-weight: 100;
+    font-family: robotomono;
+    font-size: 0.7em;
 }
 
 .activity-selection-container {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
 }
 
 .activity-selection {
-    border: 1px solid black;
+    border: 1px solid var(--color-bg-2);
     border-radius: var(--general-border-radius);
     padding: 5px;
     background-color: var(--color-4);
+    display: grid;
+    grid-template: 1fr / repeat(2, 1fr);
+    /* flex-direction: row; */
 }
 
 .activity-group {
-    border: 1px solid black;
+    border: 1px solid var(--color-3);
+    background-color: var(--color-bg-1);
     border-radius: 5px;
     margin: 5px;
 }
 
 .activity-group-activities {
     display: grid;
-    grid-template: 1fr / repeat(4, 1fr);
+    grid-template: 1fr / repeat(3, 33%);
     grid-auto-flow: row;
     /* justify-content: space-evenly;
   margin: 5px; */
@@ -714,6 +739,8 @@ input[type="password"].valid {
     justify-content: flex-start;
     align-items: center;
     margin: 5px;
+    font-family: robotomono;
+    font-size: 0.8em;
 }
 
 .activity-group-name>img {
@@ -727,11 +754,18 @@ input[type="password"].valid {
 }
 
 .mood {
-    margin: 0px 5px 0px 5px;
+    /* margin: 0px 5px 0px 5px; */
     padding: 5px;
     border-radius: var(--general-border-radius);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 6em;
 }
-
+.mood-image {
+    width: 32px;
+    height: 32px;
+}
 .activity.selected,
 .mood.selected {
     background-color: var(--color-accent);
@@ -740,10 +774,10 @@ input[type="password"].valid {
 .mood-selection {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: space-evenly;
     align-items: center;
     box-sizing: border-box;
-    padding: 10px;
+    /* padding: 10px; */
 }
 
 .mood-selection-container {
@@ -813,6 +847,23 @@ input[type="password"].valid {
     background-color: transparent;
     position: relative;
     padding: 1em;
+}
+
+/****************************
+  CHARTS
+****************************/
+.chart-container {
+    width: 50%;
+}
+
+.chart-canvas {
+    /* width: 20%;
+    height: 20%; */
+    background-color: var(--color-bg-1);
+    border: 1px solid var(--color-bg-2);
+    border-radius: var(--general-border-radius);
+    margin: 10px;
+    /* color: red; */
 }
 
 /****************************

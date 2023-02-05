@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/PeterMarley/CSC7084-WebDevProject#readme",
   "dependencies": {
+    "chart.js": "^4.2.0",
     "cookie-parser": "^1.4.6",
     "crypto-js": "^4.1.1",
     "ejs": "^3.1.8",

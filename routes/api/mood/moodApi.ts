@@ -6,7 +6,7 @@
 
 import express, { Request, Response, NextFunction } from 'express';
 import MoodApiDataAccessObject from './MoodApiDataAccessObject';
-import { EntryDataResponse, EntryFormDataResponse, SuccessResponse } from './moodApiModel';
+import { EntryDataResponse, EntryFormDataResponse, Mood, SuccessResponse } from './moodApiModel';
 import logErrors from '../../../lib/logError';
 
 const moodAPI = express.Router();
@@ -31,6 +31,19 @@ const entryOperationsRoute = ENTRY_ROUTE + '/:userId/:entryId';
 moodAPI.get(entryOperationsRoute, getEntryFormData, getSingleEntry);
 moodAPI.put(entryOperationsRoute, updateSingleEntry);
 moodAPI.delete(entryOperationsRoute, deleteSingleEntry);
+
+moodAPI.get('/visual/:userId', async (req: Request, res: Response) => {
+	const userId = Number(req.params.userId);
+
+	if (!userId) {
+		res.status(400).json(new SuccessResponse(false, ['userId parameter was not a number']));
+		return;
+	}
+
+	const result = await MoodApiDataAccessObject.getVisual(userId);
+	// console.log(result);
+	res.json(result);
+});
 
 /*******************************************************
  * 
