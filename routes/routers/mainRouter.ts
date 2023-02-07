@@ -25,7 +25,7 @@ mainRouter.get('/visual', async (req: Request, res: Response) => {
     res.locals.data = result;
     console.log(result);
     
-    res.render('visual')
+    res.render('visual');
 });
 
 export default mainRouter;

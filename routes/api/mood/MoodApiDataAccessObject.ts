@@ -79,7 +79,65 @@ export default class MoodApiDataAccessObject {
 				, [userId]
 			)
 		)).at(0) as any;
+		
+		
+		const activityMoodRelationships = (await con.query(
+			formatSQL(
+				`SELECT 
+					COUNT(a.activity_id) AS frequency,
+					a.name AS activity,
+					m.name AS mood,
+					mv.mood_valence_name AS valence,
+					ma.mood_arousal_name AS arousal,
+					e.timestamp AS \`timestamp\` 
+				FROM tbl_activity a
+				INNER JOIN tbl_entry_activity ea ON ea.activity_id = a.activity_id
+				INNER JOIN tbl_entry e ON e.entry_id = ea.entry_id
+				INNER JOIN tbl_mood m ON m.mood_id = e.mood_id
+				INNER JOIN tbl_mood_arousal ma ON ma.mood_arousal_id = m.mood_arousal_id
+				INNER JOIN tbl_mood_valence mv ON mv.mood_valence_id = m.mood_valence_id
+				WHERE a.user_id = 94
+				GROUP BY m.mood_id, a.activity_id
+				ORDER BY e.timestamp DESC`,
+				[userId]
+			)
+		)).at(0) as any;
 
+		const activityMoodCombinations = (await con.query(
+			formatSQL(
+				`SELECT 
+					a.name AS activity,
+					m.name AS mood,
+					COUNT(*) AS frequency
+				FROM tbl_activity a
+				RIGHT JOIN tbl_entry_activity ea ON ea.activity_id = a.activity_id
+				INNER JOIN tbl_entry e ON e.entry_id = ea.entry_id
+				INNER JOIN tbl_mood m ON m.mood_id = e.mood_id
+				WHERE e.user_id = ?
+				GROUP BY m.mood_id, a.activity_id
+				ORDER BY a.name;`,
+				[userId]
+			)
+		)).at(0) as any;
+		// chart the various relationships between entries and context
+		//		context is activities
+		//		entry is ... entry
+
+		// base data is therefore activities, so i want to arragen data by activity
+		// what i want to know is for each activity:
+		//		what are the counts of each mood
+		//		what are the counts of each valence
+		//		what are the counts of each arousal
+
+
+
+
+		// console.log(activityMoodRelationships);
+		
+		// get the most common mood for each activity
+		//	get all entries and their activities and mood
+		//  compute what is the most common activity for each mood
+		
 		// console.log(valenceFrequencyData);
 		//SELECT CURRENT_TIMESTAMP,e.timestamp,DATEDIFF(e.timestamp,CURRENT_TIMESTAMP), e.notes, e.entry_id FROM tbl_entry e
 		//WHERE DATEDIFF(e.timestamp,CURRENT_TIMESTAMP) >= -7;
@@ -93,6 +151,10 @@ export default class MoodApiDataAccessObject {
 			},
 			mode: {
 				mood: moodModeData
+			},
+			relationships: {
+				activityMoodRelationships,
+				activityMoodCombinations
 			}
 		};
 	}

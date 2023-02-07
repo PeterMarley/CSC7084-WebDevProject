@@ -853,7 +853,7 @@ input[type="password"].valid {
   CHARTS
 ****************************/
 .chart-container {
-    width: 50%;
+    /* width: 50%; */
 }
 
 .chart-canvas {
