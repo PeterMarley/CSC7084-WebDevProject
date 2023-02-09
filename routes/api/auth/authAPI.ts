@@ -1,9 +1,9 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { createToken, verifyToken } from '../../../lib/jwtHelpers';
-import checkPasswordCorrect from '../../../lib/crypt';
+import { createToken, verifyToken } from '../../../common/jwtHelpers';
+import checkPasswordCorrect from '../../../common/crypt';
 import LoginResponse from '../../../models/LoginResponse';
 import RegistrationResponse from '../../../models/RegistrationResponse';
-import getConnection from '../../../lib/dbConnection';
+import getConnection from '../../../common/dbConnection';
 import PasswordQueryResponse from '../../../models/PasswordQueryResponse';
 import { 
     AccountDetailsUpdateResponse, 
@@ -11,7 +11,7 @@ import {
     AccountPasswordUpdateResponse,
     DeleteAccountResponse
 } from './authApiModel';
-import { encrypt } from '../../../lib/crypt';
+import { encrypt } from '../../../common/crypt';
 import { JwtPayload } from 'jsonwebtoken';
 import { format } from 'mysql2';
 import { ResultSetHeader } from 'mysql2';

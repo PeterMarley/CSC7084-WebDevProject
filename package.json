@@ -4,7 +4,7 @@
   "description": "moodr - own your moods",
   "main": "app.js",
   "scripts": {
-    "devStart": "nodemon -e ts,js,json server.ts",
+    "devStart": "nodemon -e ts,js,json app.ts",
     "test:all": "npx jest --watchAll",
     "test:unit": "jest --watchAll --testPathPattern=test/unit",
     "test:functional": "jest --watchAll --testPathPattern=test/functional"

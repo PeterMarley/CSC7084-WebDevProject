@@ -1,11 +1,11 @@
-import { format } from "mysql2";
-import getConnection from "../../../lib/dbConnection";
+import { format, ResultSetHeader } from "mysql2";
+import getConnection from "../../../common/dbConnection";
 
 
 /**
  * This is a static class in that it may not be instantiated. It's methods may be called to generate response objects after queries the database
  */
-export default class MoodApiDataAccessObject {
+class AuthApiDataAccessObject {
     private static sql: any = {
         getEntries: {
             entries: 'CALL usp_select_entries_by_user_id(?)',
@@ -24,7 +24,7 @@ export default class MoodApiDataAccessObject {
                 insertEntry: 'CALL usp_insert_entry(?, ?, ?)',
                 buildInsertActivitySql: function (entryId: number, activities: string[], activityMap: Map<string, number>) {
                     let sql = `INSERT INTO tbl_entry_activity (entry_id, activity_id) VALUES `;
-                    activities.forEach(e => sql += formatSQL(`(?, ?)`, [entryId, activityMap.get(e)]) + ',');
+                    activities.forEach(e => sql += format(`(?, ?)`, [entryId, activityMap.get(e)]) + ',');
                     return sql.substring(0, sql.length - 1);
                 }
 
@@ -60,8 +60,6 @@ export default class MoodApiDataAccessObject {
         }
     }
 
-    constructor() { throw new Error('MoodApiDataAccessObject is a static class and may not be instantiated'); }
-
     static async updateAccountDetails(userId: number, encryptedPassword: string) {
             const updateAccountDetailsSql = format(`CALL usp_update_password(?,?)`, [userId, encryptedPassword]);
             const con = await getConnection();
@@ -71,3 +69,5 @@ export default class MoodApiDataAccessObject {
             con.end();
     }
 }
+
+export default new AuthApiDataAccessObject();

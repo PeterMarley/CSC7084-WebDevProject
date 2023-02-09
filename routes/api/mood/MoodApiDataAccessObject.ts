@@ -1,4 +1,4 @@
-import getConnection from '../../../lib/dbConnection';
+import getConnection from '../../../common/dbConnection';
 import {
 	Image,
 	Activity,
@@ -10,7 +10,7 @@ import {
 	VisualInterface1
 } from './moodApiModel';
 import { FieldPacket, format as formatSQL, ResultSetHeader, RowDataPacket } from 'mysql2';
-import logErrors from '../../../lib/logError';
+import logErrors from '../../../common/logError';
 
 /**
  * This is a static class in that it may not be instantiated. It's methods may be called to generate response objects after queries the database

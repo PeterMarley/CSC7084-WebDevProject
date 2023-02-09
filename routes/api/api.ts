@@ -6,7 +6,7 @@
 
 // express imports
 import express, { Request, Response } from 'express';
-import authenticateRequestSource from '../../lib/authenticateRequestSource';
+import authenticateRequestSource from '../../common/authenticateRequestSource';
 
 // app imports
 import authAPI from './auth/authApi';

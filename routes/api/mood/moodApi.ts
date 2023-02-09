@@ -7,7 +7,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import MoodApiDataAccessObject from './MoodApiDataAccessObject';
 import { EntryDataResponse, EntryFormDataResponse, Mood, SuccessResponse } from './moodApiModel';
-import logErrors from '../../../lib/logError';
+import logErrors from '../../../common/logError';
 
 const moodAPI = express.Router();
 

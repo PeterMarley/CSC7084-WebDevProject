@@ -1,7 +1,8 @@
-import express, { Request, Response, NextFunction } from 'express';
-import apiCall from '../../lib/apiCall';
+import { Router } from 'express';
 import authenticate from '../middleware/authenticate';
-const mainRouter = express.Router();
+import controller from '../../controller/mainController';
+
+const mainRouter = Router();
 
 mainRouter.use(authenticate);
 
@@ -11,21 +12,8 @@ mainRouter.use(authenticate);
  * 
  *******************************************************/
 
-mainRouter.all('/', (req: Request, res: Response) => {
-    res.render('welcome');
-});
-
-mainRouter.get('/test', (req: Request, res: Response) => {
-    res.render('test');
-});
-
-mainRouter.get('/visual', async (req: Request, res: Response) => {
-    console.log('http://localhost:3000/api/mood/visual/' + res.locals.id);
-    const result = await apiCall('GET','http://localhost:3000/api/mood/visual/' + res.locals.id);
-    res.locals.data = result;
-    console.log(result);
-    
-    res.render('visual');
-});
+mainRouter.all('/', controller.getWelcome);
+mainRouter.get('/test', controller.getTest);
+mainRouter.get('/visual', controller.getVisual);
 
 export default mainRouter;

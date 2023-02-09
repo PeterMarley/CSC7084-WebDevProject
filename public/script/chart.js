@@ -250,6 +250,7 @@ function valenceChart() {
 }
 
 function basicChart() {
+
     return new Chart(document.getElementById('basic-chart'), {
         type: 'bar',
         data: {
@@ -257,7 +258,7 @@ function basicChart() {
             datasets: [{
                 label: 'Frequency of mood',
                 data: dataClient.frequencies.mood.map(d => Number(d.frequency)),
-                backgroundColor: ['azure'],
+                backgroundColor: ['red', 'green', 'blue','red', 'green', 'blue','red', 'green', 'blue','red', 'green', 'blue','red', 'green', 'blue'],
                 borderColor: ['black'],
                 borderWidth: 1,
             }]

@@ -1,4 +1,4 @@
-import { createToken, verifyToken } from '../../lib/jwtHelpers';
+import { createToken, verifyToken } from '../../common/jwtHelpers';
 import { Request, Response, NextFunction } from 'express';
 
 function authenticate(req: Request, res: Response, next: NextFunction) {
