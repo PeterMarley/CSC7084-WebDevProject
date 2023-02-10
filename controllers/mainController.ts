@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import apiCall from '../common/apiCall';
+import apiCall from '../utils/apiCall';
 
 
 function getWelcome(req: Request, res: Response) {

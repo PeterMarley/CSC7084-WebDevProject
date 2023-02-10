@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import apiCall from "../common/apiCall";
-import buildApiUrl from "../common/buildApiUrl";
+import apiCall from "../utils/apiCall";
+import buildApiUrl from "../utils/buildApiUrl";
 import EntryDataResponse from '../api/models/responses/mood/EntryDataResponse';
 import EntryFormDataResponse from '../api/models/responses/mood/EntryFormDataResponse';
 import SuccessResponse from '../api/models/responses/SuccessResponse';

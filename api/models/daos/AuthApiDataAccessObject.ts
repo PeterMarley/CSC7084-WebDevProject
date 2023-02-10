@@ -1,7 +1,7 @@
 import { format, ResultSetHeader, RowDataPacket } from "mysql2";
-import checkPasswordCorrect, { encrypt } from "../../../common/crypt";
-import getConnection from "../../../common/dbConnection";
-import { createToken } from "../../../common/jwtHelpers";
+import checkPasswordCorrect, { encrypt } from "../../utils/crypt";
+import getConnection from "../../utils/dbConnection";
+import { createToken } from "../../../utils/jwtHelpers"
 import AccountDetailsGetResponse from "../responses/auth/AccountDetailsGetResponse";
 import DeleteAccountResponse from "../responses/auth/DeleteAccountResponse";
 import LoginResponse from "../responses/auth/LoginResponse";

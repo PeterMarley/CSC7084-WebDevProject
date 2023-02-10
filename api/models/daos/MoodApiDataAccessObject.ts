@@ -1,6 +1,6 @@
-import getConnection from '../../../common/dbConnection';
+import getConnection from '../../utils/dbConnection';
 import { FieldPacket, format as formatSQL, ResultSetHeader, RowDataPacket } from 'mysql2';
-import logErrors from '../../../common/logError';
+import logErrors from '../../../utils/logError';
 import Activity from '../obj/mood/Activity';
 import Entry from '../obj/mood/Entry';
 import Mood from '../obj/mood/Mood';

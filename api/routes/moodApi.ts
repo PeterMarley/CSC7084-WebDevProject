@@ -9,7 +9,7 @@ import dao from '../models/daos/MoodApiDataAccessObject'
 import EntryDataResponse from '../models/responses/mood/EntryDataResponse';
 import EntryFormDataResponse from '../models/responses/mood/EntryFormDataResponse';
 import SuccessResponse from '../models/responses/SuccessResponse'
-import logErrors from '../../common/logError';
+import logErrors from '../../utils/logError';
 
 const moodAPI = express.Router();
 
@@ -52,7 +52,7 @@ moodAPI.get('/visual/:userId', async (req: Request, res: Response) => {
  * MIDDLEWEAR
  * 
  *******************************************************/
-
+// TODO move these methods into moodController
 /**
  * Express middleware that deletes a single mood entry entry from the database.
  * 

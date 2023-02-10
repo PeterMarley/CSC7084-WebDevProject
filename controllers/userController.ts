@@ -4,7 +4,7 @@ import AccountDetailsUpdateResponse from '../api/models/responses/auth/AccountDe
 import AccountPasswordUpdateResponse from '../api/models/responses/auth/AccountPasswordUpdateResponse';
 import LoginResponse from '../api/models/responses/auth/LoginResponse';
 import RegistrationResponse from '../api/models/responses/auth/RegistrationResponse';
-import apiCall from "../common/apiCall";
+import apiCall from "../utils/apiCall";
 
 async function passwordChange(req: Request, res: Response) {
 

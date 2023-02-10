@@ -6,12 +6,10 @@ import AccountPasswordUpdateResponse from '../models/responses/auth/AccountPassw
 import DeleteAccountResponse from '../models/responses/auth/DeleteAccountResponse';
 import RegistrationResponse from '../models/responses/auth/RegistrationResponse';
 import LoginResponse from '../models/responses/auth/LoginResponse';
-import checkPasswordCorrect, { encrypt } from "../../common/crypt";
 
 import dao from "../models/daos/AuthApiDataAccessObject";
 
-import { verifyToken, createToken } from '../../common/jwtHelpers';
-import { JwtPayload } from "jsonwebtoken";
+
 
 const SQL = {
     register: {
