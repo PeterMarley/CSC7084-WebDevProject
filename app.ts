@@ -4,15 +4,15 @@ import path from 'path';
 import cookieParser from 'cookie-parser';
 
 // app imports
-import authenticate from './routes/middleware/authenticate';
+import authenticate from './middleware/authenticate';
 import dotenv from 'dotenv';
 
 // Router imports
-import api from './routes/api/api';							// auth API
-import mainRouter from './routes/routers/mainRouter';							// normal routing
-import userRouter from './routes/routers/userRouter';
-import entryRouter from './routes/routers/entryRouter';
-import fallbackRouter from './routes/routers/fallbackRouter';
+import api from './api/api';							// auth API
+import mainRouter from './routes/mainRouter';							// normal routing
+import userRouter from './routes/userRouter';
+import entryRouter from './routes/entryRouter';
+import fallbackRouter from './routes/fallbackRouter';
 
 /******************************
  * 
