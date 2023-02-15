@@ -7,7 +7,7 @@ import DeleteAccountResponse from '../models/responses/auth/DeleteAccountRespons
 import RegistrationResponse from '../models/responses/auth/RegistrationResponse';
 import LoginResponse from '../models/responses/auth/LoginResponse';
 
-import dao from "../models/daos/AuthApiDataAccessObject";
+import dao from "../models/daos/auth-dao";
 
 
 
@@ -52,7 +52,6 @@ const SQL = {
 }
 
 async function accountPasswordPatch(req: Request, res: Response, next: NextFunction) {
-    // const sql = "SELECT username, email FROM tbl_user WHERE user_id=?";
     const userId = Number(req.params.userId);
     const { password } = req.body;
     let success = await dao.changePassword(password, userId);
@@ -72,7 +71,7 @@ async function updateAccountDetails(req: Request, res: Response, next: NextFunct
 async function getAccountDetails(req: Request, res: Response, next: NextFunction) {
 
     const userId = Number(req.params.userId);
-    const response = dao.getAccountDetails(userId);
+    const response = await dao.getAccountDetails(userId);
     res.json(response);
 }
 

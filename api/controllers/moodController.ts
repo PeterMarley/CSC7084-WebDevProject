@@ -1,58 +1,10 @@
-/*******************************************************
- * 
- * CONFIGURATION
- * 
- *******************************************************/
+import { Request, Response, NextFunction } from "express";
+import dao from '../models/daos/mood-dao';
+import SuccessResponse from "../models/responses/SuccessResponse";
+import logErrors from "../../utils/logError";
+import EntryDataResponse from "../models/responses/mood/EntryDataResponse";
+import EntryFormDataResponse from "../models/responses/mood/EntryFormDataResponse";
 
-import express, { Request, Response, NextFunction } from 'express';
-import dao from '../models/daos/MoodApiDataAccessObject'
-import EntryDataResponse from '../models/responses/mood/EntryDataResponse';
-import EntryFormDataResponse from '../models/responses/mood/EntryFormDataResponse';
-import SuccessResponse from '../models/responses/SuccessResponse'
-import logErrors from '../../utils/logError';
-
-const moodAPI = express.Router();
-
-moodAPI.use(express.urlencoded({ extended: false }));
-
-
-/*******************************************************
- * 
- * ROUTES
- * 
- *******************************************************/
-
-const ENTRY_ROUTE = '/entry';
-
-moodAPI.get(ENTRY_ROUTE + '/new/:userId', getEntryFormData)
-moodAPI.post(ENTRY_ROUTE + '/new/:userId', createNewEntry);
-
-moodAPI.get(ENTRY_ROUTE + '/list/:userId', getEntryList);
-
-const entryOperationsRoute = ENTRY_ROUTE + '/:userId/:entryId';
-moodAPI.get(entryOperationsRoute, getEntryFormData, getSingleEntry);
-moodAPI.put(entryOperationsRoute, updateSingleEntry);
-moodAPI.delete(entryOperationsRoute, deleteSingleEntry);
-
-moodAPI.get('/visual/:userId', async (req: Request, res: Response) => {
-	const userId = Number(req.params.userId);
-
-	if (!userId) {
-		res.status(400).json(new SuccessResponse(false, ['userId parameter was not a number']));
-		return;
-	}
-
-	const result = await dao.getVisual(userId);
-	// console.log(result);
-	res.json(result);
-});
-
-/*******************************************************
- * 
- * MIDDLEWEAR
- * 
- *******************************************************/
-// TODO move these methods into moodController
 /**
  * Express middleware that deletes a single mood entry entry from the database.
  * 
@@ -218,6 +170,27 @@ async function getEntryList(req: Request, res: Response) {
 	res.status(statusCode).json(response);
 }
 
+async function getVisual(req: Request, res: Response) {
+	const userId = Number(req.params.userId);
 
+	if (!userId) {
+		res.status(400).json(new SuccessResponse(false, ['userId parameter was not a number']));
+		return;
+	}
 
-export default moodAPI;
+	const result = await dao.getVisual(userId);
+	// console.log(result);
+	res.json(result);
+}
+
+const controller = {
+    deleteSingleEntry,
+    updateSingleEntry,
+    getSingleEntry,
+    getEntryFormData,
+    createNewEntry,
+    getEntryList,
+    getVisual
+};
+
+export default controller;

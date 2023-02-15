@@ -11,27 +11,20 @@ async function passwordChange(req: Request, res: Response) {
     const passwordNew = req.body['password-new'];
     const passwordNewConfirm = req.body['password-new-confirm'];
     const passwordOld = req.body['password-old'];
+
     // TODO check old password is correct first
     if (passwordNew !== passwordNewConfirm) {
         res.locals.messages = ['Password confirmation failed, be sure that your new password is exactly the same in both fields.'];
     } else {
         const { success }: AccountPasswordUpdateResponse =
-            await apiCall(
-                "PATCH",
-                'http://localhost:3000/api/auth/userdetails/' + res.locals.id + '/password',
-                new URLSearchParams([['password', passwordNew]])
-            );
+            await apiCall("PATCH", 'api/auth/userdetails/' + res.locals.id + '/password', new URLSearchParams([['password', passwordNew]]));
         if (success) {
             res.locals.messages = ['Password updated!']
         } else {
             res.locals.messages = ['Password update failed! Try again later.']
         }
     }
-    const { username, email }: AccountDetailsGetResponse =
-        await apiCall(
-            "GET",
-            'http://localhost:3000/api/auth/userdetails/' + res.locals.id
-        );
+    const { username, email }: AccountDetailsGetResponse = await apiCall("GET", 'api/auth/userdetails/' + res.locals.id);
     res.locals.username = username;
     res.locals.email = email;
     res.render('account');
@@ -39,8 +32,8 @@ async function passwordChange(req: Request, res: Response) {
 
 async function accountDetailsToLocals(req: Request, res: Response, next: NextFunction) {
 
-    const accountDetailsGetResponse =  await UserRouterApiCalls.getAccountDetails(res.locals.id)
-    
+    const accountDetailsGetResponse = await UserRouterApiCalls.getAccountDetails(res.locals.id)
+
     res.locals.username = accountDetailsGetResponse.username;
     res.locals.email = accountDetailsGetResponse.email;
 
@@ -92,7 +85,6 @@ function loginFailed(req: Request, res: Response) {
 function registerGet(req: Request, res: Response) {
     res.render('register');
 }
-
 
 function logout(req: Request, res: Response) {
     req.cookies.token = undefined;
@@ -153,7 +145,7 @@ async function attemptLogin(req: Request, res: Response, next: NextFunction) {
     const loginResponse = await UserRouterApiCalls.checkUsernamePassword(username, password);
 
     console.log(loginResponse);
-    
+
     // build response & redirect as appropriate
     if (loginResponse.success && loginResponse.token) {
         res.locals.authed = true;
@@ -183,19 +175,19 @@ class UserRouterApiCalls {
     private static baseUrl: string = 'http://localhost:3000/api';
 
     static checkUsernamePassword = async function (username: string, password: string): Promise<LoginResponse> {
-        const endpoint = '/auth/login';
+        const endpoint = 'api/auth/login';
         return await apiCall(
             'POST',
-            UserRouterApiCalls.baseUrl + endpoint,
+            endpoint,
             new URLSearchParams([['username', username], ['password', password]])
         );
     };
 
     static registerUser = async function (username: string, email: string, password: string): Promise<RegistrationResponse> {
-        const endpoint = '/auth/register';
+        const endpoint = 'api/auth/register';
         return await apiCall(
             'POST',
-            UserRouterApiCalls.baseUrl + endpoint,
+            endpoint,
             new URLSearchParams([['username', username], ['email', email], ['password', password]])
         );
     }
@@ -204,15 +196,15 @@ class UserRouterApiCalls {
         const endpoint = '/auth/userdetails/' + userId;
         return await apiCall(
             "GET",
-            UserRouterApiCalls.baseUrl + endpoint
+            endpoint
         );
     }
 
-    static changeAccountDetails = async function (userId: number, newUsername : string, newEmail: string): Promise<AccountDetailsUpdateResponse> {
-        const endpoint = '/auth/userdetails/' + userId;
+    static changeAccountDetails = async function (userId: number, newUsername: string, newEmail: string): Promise<AccountDetailsUpdateResponse> {
+        const endpoint = 'api/auth/userdetails/' + userId;
         return await apiCall(
             'PUT',
-            UserRouterApiCalls.baseUrl + endpoint,
+            endpoint,
             new URLSearchParams([['username', newUsername], ['email', newEmail]])
         );
     }

@@ -7,13 +7,12 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
  * @returns 
  */
 function createToken(id: number, username: string, email: string) {
-  return jwt.sign(
-    {
-      id,
-      username,
-      email,
-      expiry: Date.now() + (1000 * 60 * 60)
-    },
+  return jwt.sign({
+    id,
+    username,
+    email,
+    expiry: Date.now() + (1000 * 60 * 60)
+  },
     process.env.MOODR_TOKEN_SECRET!
   );
 }

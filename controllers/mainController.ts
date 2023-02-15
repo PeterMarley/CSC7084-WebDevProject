@@ -12,7 +12,7 @@ function getTest(req: Request, res: Response) {
 
 async function getVisual(req: Request, res: Response) {
     console.log('http://localhost:3000/api/mood/visual/' + res.locals.id);
-    const result = await apiCall('GET', 'http://localhost:3000/api/mood/visual/' + res.locals.id);
+    const result = await apiCall('GET', '/api/mood/visual/' + res.locals.id);
     res.locals.data = result;
     console.log(result);
 

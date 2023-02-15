@@ -38,7 +38,7 @@ app.use(authenticate);
  * Database API Router
  * 
  * Normally this would be part of a seperate application, but for the purposes of this
- * project it is mounted in this express app
+ * project it is mounted in this express app as an ExpressJS Router
  * 
  ******************************/
 

@@ -1,7 +1,7 @@
 import CryptoJS from 'crypto-js';
 
 export function encrypt(password: string, salt: string | undefined = undefined) {
-    const theSalt: string = salt ? salt : generateSalt(); //1
+    const theSalt: string = salt ?? generateSalt(); //1
     const saltedHash = CryptoJS.SHA256(theSalt + password); // 2
     return theSalt + saltedHash;  
 }

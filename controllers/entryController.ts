@@ -1,10 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import apiCall from "../utils/apiCall";
-import buildApiUrl from "../utils/buildApiUrl";
 import EntryDataResponse from '../api/models/responses/mood/EntryDataResponse';
 import EntryFormDataResponse from '../api/models/responses/mood/EntryFormDataResponse';
 import SuccessResponse from '../api/models/responses/SuccessResponse';
-
 
 function initialiseLocalsForEntryEdit(req: Request, res: Response, next: NextFunction) {
 	res.locals.updateSingleEntrySuccess = null;
@@ -16,12 +14,7 @@ function initialiseLocalsForEntryEdit(req: Request, res: Response, next: NextFun
 }
 
 async function deleteEntry(req: Request, res: Response, next: NextFunction) {
-	const deleteEntryResponse: any =
-		await apiCall(
-			'DELETE',
-			buildApiUrl('/api/mood/entry/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId)
-		);
-
+	const deleteEntryResponse: any = await apiCall('DELETE', '/api/mood/entry/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId);
 	next();
 }
 
@@ -32,7 +25,7 @@ async function postEdit(req: Request, res: Response) {
 	const successResponse: SuccessResponse =
 		await apiCall(
 			'PUT',
-			buildApiUrl('/api/mood/entry/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId),
+			'/api/mood/entry/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId,
 			new URLSearchParams([['activities', activities], ['notes', notes], ['entryId', req.params.entryId]])
 		);
 	//const x: EntryDataResponse = { entry: undefined, entryFormData: entryDataResponse };
@@ -46,10 +39,7 @@ async function postEdit(req: Request, res: Response) {
 
 async function getEdit(req: Request, res: Response) {
 	const entryDataResponse: EntryDataResponse =
-		await apiCall(
-			'GET',
-			buildApiUrl('/api/mood/entry/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId)
-		);
+		await apiCall('GET', '/api/mood/entry/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId);
 
 	res.locals.entryFormData = entryDataResponse.entryFormData;
 	res.locals.entryData = entryDataResponse.entry;
@@ -71,7 +61,7 @@ async function createNewEntry(req: Request, res: Response) {
 
 	const response = await apiCall(
 		'POST',
-		buildApiUrl('/api/mood/entry/new/' + (res.locals.id ? res.locals.id : '')),
+		'/api/mood/entry/new/' + (res.locals.id ? res.locals.id : ''),
 		new URLSearchParams([['mood', mood], ['activities', activities], ['notes', notes]])
 	);
 
@@ -83,10 +73,7 @@ async function createNewEntry(req: Request, res: Response) {
 
 async function getNewEntryForm(req: Request, res: Response) {
 	const entryFormDataResponse: EntryFormDataResponse =
-		await apiCall(
-			'GET',
-			buildApiUrl('/api/mood/entry/new/' + (res.locals.id ? res.locals.id : ''))
-		);
+		await apiCall('GET', '/api/mood/entry/new/' + (res.locals.id ? res.locals.id : ''));
 
 	res.locals.entryFormData = entryFormDataResponse;
 	res.locals.entryData = null;
@@ -94,13 +81,13 @@ async function getNewEntryForm(req: Request, res: Response) {
 	//res.locals.entryAdded = false;
 	console.log(res.locals);
 	console.log(res.locals.entryFormData.moods);
-	
-	
+
+
 	res.render('mood-entry-new');
 }
 
 async function getEntryList(req: Request, res: Response) {
-	const response = await apiCall('GET', process.env.API_BASE_URL + '/api/mood/entry/list/' + (res.locals.id ? res.locals.id : ''));
+	const response = await apiCall('GET', '/api/mood/entry/list/' + (res.locals.id ? res.locals.id : ''));
 
 	res.locals.entries = response || {};
 	res.render('mood-entry-list');
@@ -111,14 +98,14 @@ function getActivity(req: Request, res: Response, next: NextFunction) {
 }
 
 const controller = {
-    getEntryList,
-    getNewEntryForm,
-    createNewEntry,
-    getEdit,
-    postEdit,
-    deleteEntry,
-    initialiseLocalsForEntryEdit,
-    getActivity
+	getEntryList,
+	getNewEntryForm,
+	createNewEntry,
+	getEdit,
+	postEdit,
+	deleteEntry,
+	initialiseLocalsForEntryEdit,
+	getActivity
 };
 
 export default controller;
