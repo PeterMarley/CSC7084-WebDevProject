@@ -22,7 +22,8 @@ class MoodApiDataAccessObject {
 			formatSQL(
 				`SELECT 
 					m.name as name,
-					COUNT(m.mood_id) as frequency
+					COUNT(m.mood_id) as frequency,
+					m.mood_valence_id as valence
 				FROM tbl_entry e
 				INNER JOIN tbl_mood m ON m.mood_id = e.mood_id
 				WHERE e.user_id = ?` +

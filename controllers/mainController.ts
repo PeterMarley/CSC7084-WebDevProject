@@ -11,10 +11,11 @@ function getTest(req: Request, res: Response) {
 }
 
 async function getVisual(req: Request, res: Response) {
-    console.log('http://localhost:3000/api/mood/visual/' + res.locals.id);
+    if (!res.locals.authed) return;
+    
     const result = await apiCall('GET', '/api/mood/visual/' + res.locals.id);
     res.locals.data = result;
-    console.log(result);
+    // console.log(result.frequencies.mood);
 
     res.render('visual');
 }

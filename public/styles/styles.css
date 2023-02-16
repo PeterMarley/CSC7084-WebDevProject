@@ -163,6 +163,12 @@ a.button-style-1 {
     background-color: var(--color-accent);
 }
 
+#relationship-buttons-container>.button-style-1 {
+    min-width: 0px;
+    padding: 2px 5px;
+    margin: 2px;
+}
+
 .button-style-2>a,
 a.button-style-2 {
     color: var(--text-color);
@@ -853,8 +859,24 @@ input[type="password"].valid {
   CHARTS
 ****************************/
 .chart-container {
-    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
+
+.charts {
+    width: 60%;
+}
+
+#relationship-buttons-container {
+    background-color: var(--color-bg-1);
+    border: 1px solid var(--color-bg-2);
+    display: flex;
+    justify-content: center;
+    flex-flow: wrap;
+}
+
+
 
 .chart-canvas {
     /* width: 20%;

@@ -78,10 +78,6 @@ async function getNewEntryForm(req: Request, res: Response) {
 	res.locals.entryFormData = entryFormDataResponse;
 	res.locals.entryData = null;
 	res.locals.action = 'new';
-	//res.locals.entryAdded = false;
-	console.log(res.locals);
-	console.log(res.locals.entryFormData.moods);
-
 
 	res.render('mood-entry-new');
 }

@@ -1,11 +1,13 @@
 <%- include('partials/top.ejs') %>
 
 <div class="chart-container">
-  <canvas id="basic-chart" class="chart-canvas"></canvas>
-  <canvas id="valence-chart" class="chart-canvas"></canvas>
-  <canvas id="arousal-chart" class="chart-canvas"></canvas>
-  <div id="relationship-buttons"></div>
-  <canvas id="activity-relationship-chart" class="chart-canvas"></canvas>
+  <div class="charts">
+    <canvas id="basic-chart" class="chart-canvas"></canvas>
+    <canvas id="valence-chart" class="chart-canvas"></canvas>
+    <canvas id="arousal-chart" class="chart-canvas"></canvas>
+    <div id="relationship-buttons-container"></div>
+    <canvas id="activity-relationship-chart" class="chart-canvas"></canvas>
+  </div>
 </div>
 <script src=" https://cdn.jsdelivr.net/npm/chart.js@4.2.0/dist/chart.umd.min.js "></script>
 <script type="text/javascript">
