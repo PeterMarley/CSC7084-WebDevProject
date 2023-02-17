@@ -17,8 +17,8 @@ function initialiseCharts() {
 
     const charts = new Charts();
     const basic = charts.basic();
-    const valence = charts.valence();
-    const arousal = charts.arousal();
+    // const valence = charts.valence();
+    // const arousal = charts.arousal();
     
     const container = document.querySelector('#relationship-buttons-container');
     for (const record of activityToFreqMap) {

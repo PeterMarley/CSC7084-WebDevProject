@@ -1,6 +1,6 @@
 <%- include('partials/top.ejs') %>
-
-<div class="chart-container">
+<div id="chart-pane">
+  <div class="chart-container">
   <div class="charts">
     <canvas id="basic-chart" class="chart-canvas"></canvas>
     <canvas id="valence-chart" class="chart-canvas"></canvas>
@@ -9,6 +9,8 @@
     <canvas id="activity-relationship-chart" class="chart-canvas"></canvas>
   </div>
 </div>
+</div>
+
 <script src=" https://cdn.jsdelivr.net/npm/chart.js@4.2.0/dist/chart.umd.min.js "></script>
 <script type="text/javascript">
   const dataClient = <%- JSON.stringify(data) %>;
