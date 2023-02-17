@@ -28,7 +28,8 @@ class MoodApiDataAccessObject {
 				INNER JOIN tbl_mood m ON m.mood_id = e.mood_id
 				WHERE e.user_id = ?` +
 				(cutoff ? `AND e.timestamp > '${cutoff}' ` : ' ') +
-				`GROUP BY m.name`
+				`GROUP BY m.name
+				ORDER BY COUNT(m.mood_id) DESC`
 				, [userId]
 			)
 		)).at(0) as any;
@@ -101,22 +102,22 @@ class MoodApiDataAccessObject {
 			)
 		)).at(0) as any;
 
-		const activityMoodCombinations = (await con.query(
-			formatSQL(
-				`SELECT 
-					a.name AS activity,
-					m.name AS mood,
-					COUNT(*) AS frequency
-				FROM tbl_activity a
-				RIGHT JOIN tbl_entry_activity ea ON ea.activity_id = a.activity_id
-				INNER JOIN tbl_entry e ON e.entry_id = ea.entry_id
-				INNER JOIN tbl_mood m ON m.mood_id = e.mood_id
-				WHERE e.user_id = ?
-				GROUP BY m.mood_id, a.activity_id
-				ORDER BY a.name;`,
-				[userId]
-			)
-		)).at(0) as any;
+		// const activityMoodCombinations = (await con.query(
+		// 	formatSQL(
+		// 		`SELECT 
+		// 			a.name AS activity,
+		// 			m.name AS mood,
+		// 			COUNT(*) AS frequency
+		// 		FROM tbl_activity a
+		// 		RIGHT JOIN tbl_entry_activity ea ON ea.activity_id = a.activity_id
+		// 		INNER JOIN tbl_entry e ON e.entry_id = ea.entry_id
+		// 		INNER JOIN tbl_mood m ON m.mood_id = e.mood_id
+		// 		WHERE e.user_id = ?
+		// 		GROUP BY m.mood_id, a.activity_id
+		// 		ORDER BY a.name;`,
+		// 		[userId]
+		// 	)
+		// )).at(0) as any;
 		// chart the various relationships between entries and context
 		//		context is activities
 		//		entry is ... entry
@@ -152,7 +153,7 @@ class MoodApiDataAccessObject {
 			},
 			relationships: {
 				activityMoodRelationships,
-				activityMoodCombinations
+				// activityMoodCombinations
 			}
 		};
 	}

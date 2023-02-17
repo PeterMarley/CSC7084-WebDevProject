@@ -6,6 +6,7 @@
 
 import express from 'express';
 import controller from '../controllers/moodController';
+import authenticateRequestSource from '../middleware/authenticateRequestSource';
 
 const moodRouter = express.Router();
 
@@ -16,6 +17,8 @@ const moodRouter = express.Router();
  * ROUTES
  * 
  *******************************************************/
+
+moodRouter.use(authenticateRequestSource);
 
 const ENTRY_ROUTE = '/entry';
 
@@ -28,7 +31,5 @@ const entryOperationsRoute = ENTRY_ROUTE + '/:userId/:entryId';
 moodRouter.get(entryOperationsRoute, controller.getEntryFormData, controller.getSingleEntry);
 moodRouter.put(entryOperationsRoute, controller.updateSingleEntry);
 moodRouter.delete(entryOperationsRoute, controller.deleteSingleEntry);
-
-moodRouter.get('/visual/:userId', controller.getVisual);
 
 export default moodRouter;

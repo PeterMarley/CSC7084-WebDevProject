@@ -151,6 +151,7 @@ async function attemptLogin(req: Request, res: Response, next: NextFunction) {
         res.locals.authed = true;
         res.locals.username = username;
         res.cookie('token', loginResponse.token);
+        res.cookie('testcook', "a load of shite");
     } else if (!loginResponse.success) {
         //res.redirect('/login?vals=loginfail');
         res.locals.validations = ['login-unsuccessful'];

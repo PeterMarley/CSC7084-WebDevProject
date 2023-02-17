@@ -1,7 +1,68 @@
 
+async function initialiseCharts() {
+    document
+        .querySelectorAll('.chart-pane-button')
+        .forEach(e => e.addEventListener('click', handleChartControlClick));
 
+    const cookieName = 'token=';
+    const token = document.cookie
+        .split(';')
+        .find(cookie => cookie.trim().startsWith(cookieName))
+        .substring(cookieName.length + 1);
 
-function initialiseCharts() {
+    const response = await fetch(
+        '/api/visualize/moodFrequency',
+        {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token
+            }
+        });
+    const json = await response.json();
+
+    console.dir(json);
+    // controls.intro;
+    // controls.moodFreq.addEventListener('click', handleChartControlClick);
+    // controls.arousal.addEventListener('click', handleChartControlClick);
+    // controls.valence.addEventListener('click', handleChartControlClick);
+    // controls.relationships.addEventListener('click', handleChartControlClick);
+    // controls.summary.addEventListener('click', handleChartControlClick);
+}
+
+function handleChartControlClick(event) {
+    Charts.destruct();
+    const btnId = event.target.id;
+    configureChartPane(btnId);
+    switch (btnId) {
+        case 'chart-intro': break;
+        case 'chart-mood-freq': Charts.moodFrequency(); break;
+        case 'chart-arousal': Charts.arousal(); break;
+        case 'chart-valence': Charts.valence(); break;
+        case 'chart-relationships': Charts.relationship(); break;
+        case 'chart-summary': Charts.summary(); break;
+        default:
+    }
+}
+
+function configureChartPane(buttonId) {
+    if (buttonId === 'chart-intro') {
+        document.querySelector('#chart-intro-text').classList.remove('hidden');
+        document.querySelector('#current-chart').classList.add('hidden');
+    } else {
+        document.querySelector('#chart-intro-text').classList.add('hidden');
+        document.querySelector('#current-chart').classList.remove('hidden');
+    }
+
+    const buttons = document.querySelectorAll('.chart-pane-button');
+    for (const button of buttons) {
+        button.classList.remove('selected');
+    }
+
+    document.querySelector('#' + buttonId).classList.add('selected');
+}
+
+function initialiseChartsOld() {
     // const { activities, moods, map } = processData(dataClient);
     const activityToFreqMap = new Map();
     dataClient.relationships.activityMoodRelationships.forEach(element => {
@@ -19,7 +80,7 @@ function initialiseCharts() {
     const basic = charts.basic();
     // const valence = charts.valence();
     // const arousal = charts.arousal();
-    
+
     const container = document.querySelector('#relationship-buttons-container');
     for (const record of activityToFreqMap) {
         const [activity, frequency] = record;
@@ -31,12 +92,32 @@ function initialiseCharts() {
     }
 };
 
+{/* <div class="chart-container">
+  <div class="charts">
+    <canvas id="current-chart" class="chart-canvas"></canvas>
+    <canvas id="valence-chart" class="chart-canvas"></canvas>
+    <canvas id="arousal-chart" class="chart-canvas"></canvas>
+    <div id="relationship-buttons-container"></div>
+    <canvas id="activity-relationship-chart" class="chart-canvas"></canvas>
+  </div>
+</div> */}
+
 class Charts {
+    static selector = 'current-chart';
     static red = '#bf212f';
     static green = '#27b376';
-    arousal() {
-        return new Chart(document.getElementById('arousal-chart'), {
-            type: 'doughnut',
+    static destruct() {
+        for (const i in Chart.instances) {
+            const instance = Chart.instances[i];
+            if (instance.canvas.id === Charts.selector) {
+                instance.destroy();
+                break;
+            }
+        }
+    }
+    static arousal() {
+        return new Chart(document.getElementById(Charts.selector), {
+            type: 'pie',
             data: {
                 labels: dataClient.frequencies.arousal.map(d => d.name),
                 datasets: [{
@@ -54,9 +135,9 @@ class Charts {
             }
         });
     }
-    valence() {
-        return new Chart(document.getElementById('valence-chart'), {
-            type: 'doughnut',
+    static valence() {
+        return new Chart(document.getElementById(Charts.selector), {
+            type: 'pie',
             data: {
                 labels: dataClient.frequencies.valence.map(d => d.name),
                 datasets: [{
@@ -69,9 +150,9 @@ class Charts {
             }
         });
     }
-    basic() {
-
-        return new Chart(document.getElementById('basic-chart'), {
+    static moodFrequency() {
+        this.destruct();
+        return new Chart(document.getElementById(Charts.selector), {
             type: 'bar',
             data: {
                 labels: dataClient.frequencies.mood.map(d => d.name),
@@ -91,21 +172,14 @@ class Charts {
             }
         });
     }
-    relationship(activity, data) {
-        for (const i in Chart.instances) {
-            const instance = Chart.instances[i];
-            if (instance.canvas.id === 'activity-relationship-chart') {
-                instance.destroy();
-                break;
-            }
-        }
-    
+    static relationship(activity, data) {
+        this.destruct();
         const chartData = [];
         for (const i in data) {
             chartData.push(data[i]);
         }
-    
-        new Chart(document.getElementById('activity-relationship-chart'), {
+
+        new Chart(document.getElementById(Charts.selector), {
             type: 'pie',
             data: {
                 labels: Object.getOwnPropertyNames(data),
@@ -116,6 +190,9 @@ class Charts {
             }
         }
         );
+    }
+    static summary() {
+        throw new Error('summary chart not implemented');
     }
 }
 

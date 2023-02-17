@@ -170,19 +170,6 @@ async function getEntryList(req: Request, res: Response) {
 	res.status(statusCode).json(response);
 }
 
-async function getVisual(req: Request, res: Response) {
-	const userId = Number(req.params.userId);
-
-	if (!userId) {
-		res.status(400).json(new SuccessResponse(false, ['userId parameter was not a number']));
-		return;
-	}
-
-	const result = await dao.getVisual(userId);
-	// console.log(result);
-	res.json(result);
-}
-
 const controller = {
     deleteSingleEntry,
     updateSingleEntry,
@@ -190,7 +177,6 @@ const controller = {
     getEntryFormData,
     createNewEntry,
     getEntryList,
-    getVisual
 };
 
 export default controller;
