@@ -13,8 +13,8 @@ function getTest(req: Request, res: Response) {
 async function getVisual(req: Request, res: Response) {
     if (!res.locals.authed) return;
     
-    const result = await apiCall('GET', '/api/mood/visual/' + res.locals.id);
-    res.locals.data = result;
+    // const result = await apiCall('GET', '/api/mood/visual/' + res.locals.id);
+    //res.locals.data = result;
     // console.log(result.frequencies.mood);
 
     res.render('visual');

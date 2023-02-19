@@ -2,9 +2,19 @@ import { NextFunction, Request, Response } from "express";
 import dao from '../models/daos/mood-dao';
 
 async function moodFrequency(req: Request, res: Response, next: NextFunction) {
-    
-    console.log(await dao.getVisual(res.locals.userId));
-    res.json({"status": "not implemented"});
+    res.json(await dao.getVisualMoodFrequency(res.locals.userId));
+}
+
+async function arousal(req: Request, res: Response, next: NextFunction) {
+    res.json(await dao.getVisualMoodArousal(res.locals.userId));
+}
+
+async function valence(req: Request, res: Response, next: NextFunction) {
+    res.json(await dao.getVisualMoodValence(res.locals.userId));
+}
+
+async function relationship(req: Request, res: Response, next: NextFunction) {
+    res.json(await dao.getVisualRelationship(res.locals.userId));
 }
 
 // async function getVisual(req: Request, res: Response) {
@@ -20,6 +30,6 @@ async function moodFrequency(req: Request, res: Response, next: NextFunction) {
 // 	res.json(result);
 // }
 
-const controller = { moodFrequency };
+const controller = { moodFrequency, arousal, valence, relationship };
 
 export default controller;

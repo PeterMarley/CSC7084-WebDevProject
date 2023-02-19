@@ -13,6 +13,99 @@ import ActivityGroup from '../obj/mood/ActivityGroup';
  * This is a static class in that it may not be instantiated. It's methods may be called to generate response objects after queries the database
  */
 class MoodApiDataAccessObject {
+	async getVisualMoodFrequency(userId: number, cutoff: Date | undefined = undefined) {
+		const con = await getConnection();
+
+		// mood frequencies
+
+		const moodFrequencyData = (await con.query(
+			formatSQL(
+				`SELECT 
+					m.name as name,
+					COUNT(m.mood_id) as frequency,
+					m.mood_valence_id as valence
+				FROM tbl_entry e
+				INNER JOIN tbl_mood m ON m.mood_id = e.mood_id
+				WHERE e.user_id = ?` +
+				(cutoff ? `AND e.timestamp > '${cutoff}' ` : ' ') +
+				`GROUP BY m.name
+				ORDER BY COUNT(m.mood_id) DESC`
+				, [userId]
+			)
+		)).at(0) as any;
+
+		con.end();
+
+		return moodFrequencyData;
+	}
+
+	async getVisualMoodArousal(userId: number, cutoff: Date | undefined = undefined) {
+		const con = await getConnection();
+		const arousalFrequencyData = (await con.query(
+			formatSQL(
+				`SELECT 
+					ma.mood_arousal_name as name,
+					COUNT(ma.mood_arousal_name) as frequency
+				FROM tbl_entry e
+				INNER JOIN tbl_mood m ON m.mood_id = e.mood_id
+				INNER JOIN tbl_mood_arousal ma ON ma.mood_arousal_id = m.mood_arousal_id
+				WHERE e.user_id = ?` +
+				(cutoff ? `AND e.timestamp > '${cutoff}' ` : ' ') +
+				`GROUP BY ma.mood_arousal_id`
+				, [userId]
+			)
+		)).at(0) as any;
+		con.end();
+		return arousalFrequencyData;
+	}
+
+	async getVisualMoodValence(userId: number, cutoff: Date | undefined = undefined) {
+		const con = await getConnection();
+		const valenceFrequencyData = (await con.query(
+			formatSQL(
+				`SELECT 
+					mv.mood_valence_name as name,
+					COUNT(mv.mood_valence_name) as frequency
+				FROM tbl_entry e
+				INNER JOIN tbl_mood m ON m.mood_id = e.mood_id
+				INNER JOIN tbl_mood_valence mv ON mv.mood_valence_id = m.mood_valence_id
+				WHERE e.user_id = ?` +
+				(cutoff ? `AND e.timestamp > '${cutoff}' ` : ' ') +
+				`GROUP BY mv.mood_valence_id`
+				, [userId]
+			)
+		)).at(0) as any;
+		con.end();
+		return valenceFrequencyData;
+	}
+
+	async getVisualRelationship(userId: number, cutoff: Date | undefined = undefined) {
+		const con = await getConnection();
+		const activityMoodRelationships = (await con.query(
+			formatSQL(
+				`SELECT 
+					COUNT(a.activity_id) AS frequency,
+					a.name AS activity,
+					m.name AS mood,
+					mv.mood_valence_name AS valence,
+					ma.mood_arousal_name AS arousal,
+					e.timestamp AS \`timestamp\` 
+				FROM tbl_activity a
+				INNER JOIN tbl_entry_activity ea ON ea.activity_id = a.activity_id
+				INNER JOIN tbl_entry e ON e.entry_id = ea.entry_id
+				INNER JOIN tbl_mood m ON m.mood_id = e.mood_id
+				INNER JOIN tbl_mood_arousal ma ON ma.mood_arousal_id = m.mood_arousal_id
+				INNER JOIN tbl_mood_valence mv ON mv.mood_valence_id = m.mood_valence_id
+				WHERE a.user_id = 94
+				GROUP BY m.mood_id, a.activity_id
+				ORDER BY e.timestamp DESC`,
+				[userId]
+			)
+		)).at(0) as any;
+		con.end();
+		return activityMoodRelationships;
+	}
+	
 	async getVisual(userId: number, cutoff: Date | undefined = undefined) {
 		const con = await getConnection();
 

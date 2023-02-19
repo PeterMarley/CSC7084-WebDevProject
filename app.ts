@@ -53,6 +53,7 @@ app.use('/api', api);
 app.use('/', mainRouter);
 app.use('/', userRouter);
 app.use('/entry', entryRouter);
+
 app.use('/', fallbackRouter);
 
 app.listen(port, () => console.log('Moodr listening on port ' + port));

@@ -1,4 +1,6 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import dotenv from 'dotenv';
+dotenv.config();
 
 /**
  * Create a jwt token

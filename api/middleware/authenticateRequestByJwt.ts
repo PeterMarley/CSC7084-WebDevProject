@@ -1,14 +1,16 @@
 import { NextFunction, Request, Response } from "express";
+import { JwtPayload } from "jsonwebtoken";
 import { verifyToken } from '../../utils/jwtHelpers'
 
 export default function authenticateRequestByJwt(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.get('Authorization') ?? '';
     console.log('authenticateRequestByJwt\n\t[token is ' + authHeader + ']');
-    let userId: object;
+    let userId: number;
     try {
-        userId = verifyToken(authHeader).id
-    } catch (err) {
-        console.log(err);
+        const payload = verifyToken(authHeader);
+        userId = payload.id
+    } catch (err: any) {
+        console.log(err.message);
         res.status(401).json({status: "failed", message: "Not Authorized"});
         return;
     }

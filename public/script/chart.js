@@ -3,15 +3,17 @@ async function initialiseCharts() {
     document
         .querySelectorAll('.chart-pane-button')
         .forEach(e => e.addEventListener('click', handleChartControlClick));
+}
 
+async function getChart(chartType) {
     const cookieName = 'token=';
     const token = document.cookie
         .split(';')
         .find(cookie => cookie.trim().startsWith(cookieName))
-        .substring(cookieName.length + 1);
-
+        .trim()
+        .substring(cookieName.length);
     const response = await fetch(
-        '/api/visualize/moodFrequency',
+        '/api/visualize/' + chartType,
         {
             method: 'GET',
             headers: {
@@ -19,18 +21,10 @@ async function initialiseCharts() {
                 'Authorization': token
             }
         });
-    const json = await response.json();
-
-    console.dir(json);
-    // controls.intro;
-    // controls.moodFreq.addEventListener('click', handleChartControlClick);
-    // controls.arousal.addEventListener('click', handleChartControlClick);
-    // controls.valence.addEventListener('click', handleChartControlClick);
-    // controls.relationships.addEventListener('click', handleChartControlClick);
-    // controls.summary.addEventListener('click', handleChartControlClick);
+    return await response.json();
 }
 
-function handleChartControlClick(event) {
+async function handleChartControlClick(event) {
     Charts.destruct();
     const btnId = event.target.id;
     configureChartPane(btnId);
@@ -60,6 +54,17 @@ function configureChartPane(buttonId) {
     }
 
     document.querySelector('#' + buttonId).classList.add('selected');
+
+    const chartRelButtons = document.querySelector('#relationship-buttons-container');
+    console.log(chartRelButtons);
+    if (buttonId == 'chart-relationships') {
+        chartRelButtons.classList.remove('hidden');
+    } else {
+        chartRelButtons.classList.add('hidden');
+        for (const child of Array.from(chartRelButtons.children)) {
+            chartRelButtons.removeChild(child);
+        }
+    }
 }
 
 function initialiseChartsOld() {
@@ -115,51 +120,46 @@ class Charts {
             }
         }
     }
-    static arousal() {
-        return new Chart(document.getElementById(Charts.selector), {
-            type: 'pie',
-            data: {
-                labels: dataClient.frequencies.arousal.map(d => d.name),
-                datasets: [{
-                    label: 'Summary of Arousal',
-                    data: dataClient.frequencies.arousal.map(d => Number(d.frequency)),
-                    backgroundColor: [Charts.green, Charts.red],
-                    // borderColor: ['black'],
-                    // borderWidth: 1,
-                }]
-            },
-            options: {
-                // layout: {
-                //     padding: 100
-                // }
-            }
-        });
-    }
-    static valence() {
-        return new Chart(document.getElementById(Charts.selector), {
-            type: 'pie',
-            data: {
-                labels: dataClient.frequencies.valence.map(d => d.name),
-                datasets: [{
-                    label: 'Summary of Valence',
-                    data: dataClient.frequencies.valence.map(d => Number(d.frequency)),
-                    backgroundColor: [Charts.red, Charts.green],
-                    // borderColor: ['black'],
-                    // borderWidth: 1,
-                }]
-            }
-        });
-    }
-    static moodFrequency() {
+    static async arousal() {
         this.destruct();
+        const data = await getChart('arousal');
+        return new Chart(document.getElementById(Charts.selector), {
+            type: 'pie',
+            data: {
+                labels: data.map(d => d.name),
+                datasets: [{
+                    data: data.map(d => Number(d.frequency)),
+                    backgroundColor: [Charts.green, Charts.red],
+                }]
+            }
+        });
+    }
+    static async valence() {
+        this.destruct();
+        const data = await getChart('valence');
+        return new Chart(document.getElementById(Charts.selector), {
+            type: 'pie',
+            data: {
+                labels: data.map(d => d.name),
+                datasets: [{
+                    data: data.map(d => Number(d.frequency)),
+                    backgroundColor: [Charts.red, Charts.green],
+                }]
+            }
+        });
+    }
+    static async moodFrequency() {
+        this.destruct();
+        const data = await getChart('moodFrequency');
+        console.dir(data);
         return new Chart(document.getElementById(Charts.selector), {
             type: 'bar',
             data: {
-                labels: dataClient.frequencies.mood.map(d => d.name),
+                labels: data.map(d => d.name),
                 datasets: [{
                     label: 'Frequency of mood',
-                    data: dataClient.frequencies.mood.map(d => Number(d.frequency)),
-                    backgroundColor: dataClient.frequencies.mood.map(d => Number(d.valence) > 0 ? Charts.green : Charts.red),
+                    data: data.map(d => Number(d.frequency)),
+                    backgroundColor: data.map(d => Number(d.valence) > 0 ? Charts.green : Charts.red),
                     borderWidth: 1,
                 }]
             },
@@ -172,21 +172,105 @@ class Charts {
             }
         });
     }
-    static relationship(activity, data) {
+    static async relationship() {
+        // destroy old chart
         this.destruct();
-        const chartData = [];
-        for (const i in data) {
-            chartData.push(data[i]);
-        }
 
+        // get data
+        const data = await getChart('relationship');
+        console.log('-=-=-=-=-=-=-=-=-=-=-=-=-');
+        console.dir(data);
+        console.log('-=-=-=-=-=-=-=-=-=-=-=-=-');
+        // prepare buttons
+        const buttonContainers = document.querySelector('#relationship-buttons-container');
+        
+        const frequencySortedData = Array.from(data).sort((a, b) => b.frequency - a.frequency);
+        const activitySortedData = Array.from(data).sort((a, b) => {
+            if (a.activity > b.activity) { return 1; }
+            else if (a.activity > b.activity) {
+                return -1;
+            } else {
+                return 0;
+            }
+        });
+        const uniqueActivities = [...new Set(activitySortedData.map(d => d.activity))];
+        
+        for (const act of uniqueActivities) {
+            // console.groupCollapsed(act);
+            const btn = document.createElement('button');
+            btn.textContent = act;
+            btn.classList.add('button-style-1');
+            const newData = frequencySortedData.filter(d => d.activity.toLowerCase() == act.toLowerCase());
+            btn.addEventListener('click', () => Charts.relationshipSingle(newData));
+            buttonContainers.appendChild(btn);
+            // console.groupEnd(act);
+        }
         new Chart(document.getElementById(Charts.selector), {
-            type: 'pie',
+            type: 'bar',
             data: {
-                labels: Object.getOwnPropertyNames(data),
+                labels: frequencySortedData.map(d => d.valence),
                 datasets: [{
-                    label: 'Frequency of ' + activity,
-                    data: chartData
+                    // label: 'Frequency of ' + activity,
+                    data: frequencySortedData.map(d => d.frequency),
+                    backgroundColor: frequencySortedData.map(d => d.valence.toLowerCase() == 'negative' ? this.red : this.green)
                 }]
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'whatever'
+                    },
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        }
+        );
+    }
+    static async relationshipSingle(data) {
+        // destroy old chart
+        this.destruct();
+
+        // prepare buttons
+        
+        const frequencySortedData = Array.from(data).sort((a, b) => b.frequency - a.frequency);
+        const activitySortedData = Array.from(data).sort((a, b) => {
+            if (a.activity > b.activity) { return 1; }
+            else if (a.activity > b.activity) {
+                return -1;
+            } else {
+                return 0;
+            }
+        });
+        new Chart(document.getElementById(Charts.selector), {
+            type: 'bar',
+            data: {
+                labels: frequencySortedData.map(d => d.mood),
+                datasets: [{
+                    // label: 'Frequency of ' + activity,
+                    data: frequencySortedData.map(d => d.frequency),
+                    // backgroundColor: (cur) => {
+                    //     console.log(cur);
+                    //     if (cur.valence.toLowerCase() === 'negative') {
+                    //         return this.red;
+                    //     }
+                    //     return this.green;
+                    // }
+                    backgroundColor: frequencySortedData.map(d => d.valence.toLowerCase() == 'negative' ? this.red : this.green)
+                }]
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: data[0].activity
+                    },
+                    legend: {
+                        display: false
+                    }
+                }
             }
         }
         );

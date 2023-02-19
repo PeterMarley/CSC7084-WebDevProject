@@ -19,6 +19,10 @@ const visualizeRouter = express.Router();
 visualizeRouter.use(authenticateRequestByJwt);
 
 visualizeRouter.get('/moodFrequency', controller.moodFrequency);
+visualizeRouter.get('/arousal', controller.arousal);
+visualizeRouter.get('/valence', controller.valence);
+visualizeRouter.get('/relationship', controller.relationship);
+
 
 //moodRouter.get('/visual/:userId', controller.getVisual);
 
