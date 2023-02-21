@@ -2,40 +2,20 @@
 async function initialiseCharts() {
     document
         .querySelectorAll('.chart-pane-button')
-        .forEach(e => e.addEventListener('click', handleChartControlClick));
-}
-
-async function getChart(chartType) {
-    const cookieName = 'token=';
-    const token = document.cookie
-        .split(';')
-        .find(cookie => cookie.trim().startsWith(cookieName))
-        .trim()
-        .substring(cookieName.length);
-    const response = await fetch(
-        '/api/visualize/' + chartType,
-        {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': token
-            }
-        });
-    return await response.json();
+        .forEach(btn => btn.addEventListener('click', handleChartControlClick));
 }
 
 async function handleChartControlClick(event) {
-    Charts.destruct();
     const btnId = event.target.id;
     configureChartPane(btnId);
     switch (btnId) {
         case 'chart-intro': break;
-        case 'chart-mood-freq': Charts.moodFrequency(); break;
         case 'chart-arousal': Charts.arousal(); break;
         case 'chart-valence': Charts.valence(); break;
         case 'chart-relationships': Charts.relationship(); break;
         case 'chart-summary': Charts.summary(); break;
-        default:
+        case 'chart-mood-freq': 
+        default: Charts.moodFrequency();
     }
 }
 
@@ -56,7 +36,6 @@ function configureChartPane(buttonId) {
     document.querySelector('#' + buttonId).classList.add('selected');
 
     const chartRelButtons = document.querySelector('#relationship-buttons-container');
-    console.log(chartRelButtons);
     if (buttonId == 'chart-relationships') {
         chartRelButtons.classList.remove('hidden');
     } else {
@@ -67,99 +46,79 @@ function configureChartPane(buttonId) {
     }
 }
 
-function initialiseChartsOld() {
-    // const { activities, moods, map } = processData(dataClient);
-    const activityToFreqMap = new Map();
-    dataClient.relationships.activityMoodRelationships.forEach(element => {
-        if (!activityToFreqMap.get(element.activity)) {
-            const moodOccurances = {};
-            dataClient.relationships.activityMoodRelationships.forEach(e => {
-                if (e.activity === element.activity && !Object.hasOwnProperty(e.mood))
-                    moodOccurances[e.mood] = e.frequency;
-            });
-            activityToFreqMap.set(element.activity, moodOccurances);
-        }
-    });
-
-    const charts = new Charts();
-    const basic = charts.basic();
-    // const valence = charts.valence();
-    // const arousal = charts.arousal();
-
-    const container = document.querySelector('#relationship-buttons-container');
-    for (const record of activityToFreqMap) {
-        const [activity, frequency] = record;
-        const button = document.createElement('span');
-        button.classList.add('button-style-1');
-        button.textContent = activity;
-        button.addEventListener('click', () => charts.relationship(activity, frequency));
-        container.appendChild(button);
-    }
-};
-
-{/* <div class="chart-container">
-  <div class="charts">
-    <canvas id="current-chart" class="chart-canvas"></canvas>
-    <canvas id="valence-chart" class="chart-canvas"></canvas>
-    <canvas id="arousal-chart" class="chart-canvas"></canvas>
-    <div id="relationship-buttons-container"></div>
-    <canvas id="activity-relationship-chart" class="chart-canvas"></canvas>
-  </div>
-</div> */}
 
 class Charts {
-    static selector = 'current-chart';
-    static red = '#bf212f';
-    static green = '#27b376';
-    static destruct() {
+    static #canvasId = 'current-chart';
+    static #red = '#bf212f';
+    static #green = '#27b376';
+    static async #getChartData(chartType) {
+        const cookieName = 'token=';
+        const token = document.cookie
+            .split(';')
+            .find(cookie => cookie.trim().startsWith(cookieName))
+            .trim()
+            .substring(cookieName.length);
+        const response = await fetch(
+            '/api/visualize/' + chartType,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token
+                }
+            });
+        return await response.json();
+    }
+    static #destruct() {
+        console.dir(Chart.instances);
         for (const i in Chart.instances) {
             const instance = Chart.instances[i];
-            if (instance.canvas.id === Charts.selector) {
+            if (instance.canvas.id === this.#canvasId) {
                 instance.destroy();
                 break;
             }
         }
     }
     static async arousal() {
-        this.destruct();
-        const data = await getChart('arousal');
-        return new Chart(document.getElementById(Charts.selector), {
+        this.#destruct();
+        const data = await this.#getChartData('arousal');
+        return new Chart(document.getElementById(this.#canvasId), {
             type: 'pie',
             data: {
                 labels: data.map(d => d.name),
                 datasets: [{
                     data: data.map(d => Number(d.frequency)),
-                    backgroundColor: [Charts.green, Charts.red],
+                    backgroundColor: [this.#green, this.#red],
                 }]
             }
         });
     }
     static async valence() {
-        this.destruct();
-        const data = await getChart('valence');
-        return new Chart(document.getElementById(Charts.selector), {
+        this.#destruct();
+        const data = await this.#getChartData('valence');
+        return new Chart(document.getElementById(this.#canvasId), {
             type: 'pie',
             data: {
                 labels: data.map(d => d.name),
                 datasets: [{
                     data: data.map(d => Number(d.frequency)),
-                    backgroundColor: [Charts.red, Charts.green],
+                    backgroundColor: [this.#red, this.#green],
                 }]
             }
         });
     }
     static async moodFrequency() {
-        this.destruct();
-        const data = await getChart('moodFrequency');
+        this.#destruct();
+        const data = await this.#getChartData('moodFrequency');
         console.dir(data);
-        return new Chart(document.getElementById(Charts.selector), {
+        return new Chart(document.getElementById(this.#canvasId), {
             type: 'bar',
             data: {
                 labels: data.map(d => d.name),
                 datasets: [{
                     label: 'Frequency of mood',
                     data: data.map(d => Number(d.frequency)),
-                    backgroundColor: data.map(d => Number(d.valence) > 0 ? Charts.green : Charts.red),
+                    backgroundColor: data.map(d => Number(d.valence) > 0 ? this.#green : this.#red),
                     borderWidth: 1,
                 }]
             },
@@ -174,16 +133,16 @@ class Charts {
     }
     static async relationship() {
         // destroy old chart
-        this.destruct();
+        this.#destruct();
 
         // get data
-        const data = await getChart('relationship');
+        const data = await this.#getChartData('relationship');
         console.log('-=-=-=-=-=-=-=-=-=-=-=-=-');
         console.dir(data);
         console.log('-=-=-=-=-=-=-=-=-=-=-=-=-');
         // prepare buttons
         const buttonContainers = document.querySelector('#relationship-buttons-container');
-        
+
         const frequencySortedData = Array.from(data).sort((a, b) => b.frequency - a.frequency);
         const activitySortedData = Array.from(data).sort((a, b) => {
             if (a.activity > b.activity) { return 1; }
@@ -194,7 +153,7 @@ class Charts {
             }
         });
         const uniqueActivities = [...new Set(activitySortedData.map(d => d.activity))];
-        
+
         for (const act of uniqueActivities) {
             // console.groupCollapsed(act);
             const btn = document.createElement('button');
@@ -205,14 +164,14 @@ class Charts {
             buttonContainers.appendChild(btn);
             // console.groupEnd(act);
         }
-        new Chart(document.getElementById(Charts.selector), {
+        new Chart(document.getElementById(this.#canvasId), {
             type: 'bar',
             data: {
                 labels: frequencySortedData.map(d => d.valence),
                 datasets: [{
                     // label: 'Frequency of ' + activity,
                     data: frequencySortedData.map(d => d.frequency),
-                    backgroundColor: frequencySortedData.map(d => d.valence.toLowerCase() == 'negative' ? this.red : this.green)
+                    backgroundColor: frequencySortedData.map(d => d.valence.toLowerCase() == 'negative' ? this.#red : this.#green)
                 }]
             },
             options: {
@@ -231,20 +190,17 @@ class Charts {
     }
     static async relationshipSingle(data) {
         // destroy old chart
-        this.destruct();
+        this.#destruct();
 
         // prepare buttons
-        
+
         const frequencySortedData = Array.from(data).sort((a, b) => b.frequency - a.frequency);
-        const activitySortedData = Array.from(data).sort((a, b) => {
-            if (a.activity > b.activity) { return 1; }
-            else if (a.activity > b.activity) {
-                return -1;
-            } else {
-                return 0;
-            }
-        });
-        new Chart(document.getElementById(Charts.selector), {
+        const activitySortedData = Array.from(data).sort((a, b) => a.activity == b.activity ? 0 : (a.activity > b.activity ? -1 : 1));
+        console.log('-=-=-=-=-=-=-=-=-=-=-=-=-');
+        console.log(activitySortedData);
+        console.log('-=-=-=-=-=-=-=-=-=-=-=-=-');
+          
+        new Chart(document.getElementById(this.#canvasId), {
             type: 'bar',
             data: {
                 labels: frequencySortedData.map(d => d.mood),
@@ -258,7 +214,7 @@ class Charts {
                     //     }
                     //     return this.green;
                     // }
-                    backgroundColor: frequencySortedData.map(d => d.valence.toLowerCase() == 'negative' ? this.red : this.green)
+                    backgroundColor: frequencySortedData.map(d => d.valence.toLowerCase() == 'negative' ? this.#red : this.#green)
                 }]
             },
             options: {
