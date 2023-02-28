@@ -1,7 +1,7 @@
 import { format, ResultSetHeader, RowDataPacket } from "mysql2";
 import checkPasswordCorrect, { encrypt } from "../../utils/crypt";
 import getConnection from "../../utils/dbConnection";
-import { createToken } from "../../../utils/jwtHelpers"
+import { createToken } from "../../../app/utils/jwtHelpers"
 import AccountDetailsGetResponse from "../responses/auth/AccountDetailsGetResponse";
 import DeleteAccountResponse from "../responses/auth/DeleteAccountResponse";
 import LoginResponse from "../responses/auth/LoginResponse";
@@ -165,7 +165,7 @@ class AuthApiDataAccessObject {
         con.end();
 
         if (result[0][0] === undefined) {
-            return [200, new LoginResponse(false, undefined, ['user does not exist'])];
+            return [401, new LoginResponse(false, undefined, ['user does not exist'])];
         }
         // destructure data from DB resultset
         const { user_id, password: passwordFromDb, email } = result[0][0];
@@ -175,7 +175,7 @@ class AuthApiDataAccessObject {
             success = true;
             token = createToken(user_id, username, email);
         }
-
+        
         // prepare and send json response
         return [200, new LoginResponse(success, token, error)];
     }

@@ -7,7 +7,7 @@ export default async function apiCall(httpMethod: 'POST' | 'GET' | 'DELETE' | 'P
 		body,
 		headers: {
 			'Content-Type': 'application/x-www-form-urlencoded',
-			'Authorization': 'Bearer ' + process.env.REQUESTOR,
+			'Authorization': process.env.REQUESTOR ?? '',
 			...(token && { 'Cookie': 'token=' + token })
 		}
 	};

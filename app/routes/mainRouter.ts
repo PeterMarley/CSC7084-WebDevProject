@@ -1,10 +1,8 @@
 import { Router } from 'express';
-import authenticate from '../middleware/authenticate';
+import { restrictedArea } from '../middleware/authenticate';
 import controller from '../controllers/mainController';
 
 const mainRouter = Router();
-
-mainRouter.use(authenticate);
 
 /*******************************************************
  * 
@@ -12,8 +10,8 @@ mainRouter.use(authenticate);
  * 
  *******************************************************/
 
-mainRouter.all('/', controller.getWelcome);
-mainRouter.get('/test', controller.getTest);
-mainRouter.get('/visual', controller.getVisual);
+mainRouter.get('/', controller.getWelcome);
+mainRouter.get('/test', restrictedArea, controller.getTest);
+mainRouter.get('/visual', restrictedArea, controller.getVisual);
 
 export default mainRouter;

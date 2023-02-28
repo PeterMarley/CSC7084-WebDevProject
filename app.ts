@@ -4,15 +4,15 @@ import path from 'path';
 import cookieParser from 'cookie-parser';
 
 // app imports
-import authenticate from './middleware/authenticate';
 import dotenv from 'dotenv';
+import { authenticate } from './app/middleware/authenticate';
 
 // Router imports
 import api from './api/api';							// auth API
-import mainRouter from './routes/mainRouter';							// normal routing
-import userRouter from './routes/userRouter';
-import entryRouter from './routes/entryRouter';
-import fallbackRouter from './routes/fallbackRouter';
+import mainRouter from './app/routes/mainRouter';							// normal routing
+import userRouter from './app/routes/userRouter';
+import entryRouter from './app/routes/entryRouter';
+import fallbackRouter from './app/routes/fallbackRouter';
 
 /******************************
  * 
@@ -26,9 +26,9 @@ const app = express();
 dotenv.config();
 
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, 'app/views'));
 
-app.use(express.static('public'));
+app.use(express.static('app/public'));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(authenticate);
@@ -49,6 +49,7 @@ app.use('/api', api);
  * Routes / Routers
  * 
  ******************************/
+
 
 app.use('/', mainRouter);
 app.use('/', userRouter);

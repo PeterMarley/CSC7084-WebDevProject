@@ -1,8 +1,7 @@
 import { createToken, verifyToken } from '../utils/jwtHelpers';
 import { Request, Response, NextFunction } from 'express';
 
-function authenticate(req: Request, res: Response, next: NextFunction) {
-
+export function authenticate(req: Request, res: Response, next: NextFunction) {
 	let success = false;
 	if (req.cookies && req.cookies.token) {
 		try {
@@ -18,18 +17,23 @@ function authenticate(req: Request, res: Response, next: NextFunction) {
 		} catch (err) {
 			res.clearCookie('token');
 			if (err instanceof Error) console.log(err.message);
+			else console.log(err);
 		}
 	}
 
 	res.locals.authed = success;
+	// if (success === false) {
+	// 	//res.redirect(200, '/forbidden');
+	// 	res.render('forbidden');
+	// 	return;
+	// }
 	next();
 }
 
-/******************************
- * 
- * Exports
- * 
- ******************************/
-
-//module.exports = authenticate;
-export default authenticate;
+export function restrictedArea(req: Request, res: Response, next: NextFunction) {
+	if (!res.locals.authed) {
+		res.render('forbidden');
+		return;
+	}
+	next();
+}

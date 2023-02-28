@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import dao from '../models/daos/mood-dao';
 import SuccessResponse from "../models/responses/SuccessResponse";
-import logErrors from "../../utils/logError";
+import logErrors from "../../app/utils/logError";
 import EntryDataResponse from "../models/responses/mood/EntryDataResponse";
 import EntryFormDataResponse from "../models/responses/mood/EntryFormDataResponse";
 
