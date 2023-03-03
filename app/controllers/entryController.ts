@@ -11,7 +11,6 @@ class EntryController {
 		res.locals.entryFormData = null;
 		res.locals.entryData = null;
 		res.locals.action = null;
-		console.log('DERP');
 		
 		next();
 	}
@@ -88,6 +87,13 @@ class EntryController {
 	getActivity(req: Request, res: Response, next: NextFunction) {
 		res.send('not yet implemented');
 	}
+	async getVisual(req: Request, res: Response) {
+        if (!res.locals.authed) {
+            res.status(401).json({ success: false, message: "Not Authorized" })
+            return;
+        }
+        res.render('visual');
+    }
 }
 
 export default new EntryController();

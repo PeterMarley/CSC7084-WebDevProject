@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { restrictedArea } from '../middleware/authenticate';
 import controller from '../controllers/mainController';
 
 const mainRouter = Router();
@@ -11,7 +10,9 @@ const mainRouter = Router();
  *******************************************************/
 
 mainRouter.get('/', controller.getWelcome);
-mainRouter.get('/test', restrictedArea, controller.getTest);
-mainRouter.get('/visual', restrictedArea, controller.getVisual);
+
+mainRouter.all('/500', controller.internalServerError);
+mainRouter.all('/forbidden', controller.forbidden);
+mainRouter.all('*', controller.notFound);
 
 export default mainRouter;

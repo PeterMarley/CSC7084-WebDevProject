@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { JwtPayload } from "jsonwebtoken";
 import { verifyToken } from '../../app/utils/jwtHelpers'
 
 export default function authenticateRequestByJwt(req: Request, res: Response, next: NextFunction) {

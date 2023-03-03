@@ -1,5 +1,5 @@
 <div id="login-form-container">
-  <form method="POST" action="/login" class="form-style-1">
+  <form method="POST" action="/user/login" class="form-style-1">
     <div class="form-style-1-container">
       <div class="row">
         <label for="username">Username:</label>
@@ -13,9 +13,11 @@
       <div>
         <input type="submit" name="log-in" value="login" class="button-style-1" style="width:100%">
       </div>
+      <div style="display: flex; justify-content: center;">- or -</div>
       <div class="submitdiv">
-        <a href="/register"></a>
+        <input type="button" id="register-button" name="log-in" value="register" class="button-style-1" style="width:100%">
       </div>
+      <script src="/script/login-form.js"></script>
       <!-- <input type="text" name="redirect" value="/" hidden> -->
     </div>
   </form>

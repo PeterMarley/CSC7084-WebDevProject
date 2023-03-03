@@ -14,8 +14,9 @@
 <body>
 
   <div id="header">
-    <div class="modal-container hidden">
+    <div class="modal-container hidden" id="hamburger-modal">
       <div class="modal">
+        <div class="modal-close-button">✕</div>
         <% if (authed) { // if authenticated%>
         <%- include('../components/user-details-container') %>
         <% } else { // if not authenticated%>
@@ -25,7 +26,7 @@
         <% } %>
       </div>
     </div>
-    <!-- TODO this link doesnt work when served from routes, eg /entry/ -->
+    <!-- TODO this link doesnt work when served from routes, eg /mood/ -->
     <div class="home-icon-link">
       <a href="/">
         <img src="/icons/main_icon_128x128.png" alt="Moodr Icon" width="32px" height="32px">

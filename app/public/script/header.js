@@ -18,9 +18,8 @@
     //     //TODO sort nav menu drop down appearing when down arrow clicked
     // });
 
-    const modalContainer = document.querySelector('.modal-container');
-    modalContainer.addEventListener('click', handleModalClick);
-    console.log(modalContainer);
+    const modalContainers = document.querySelectorAll('.modal-container');
+    modalContainers.forEach(mc => mc.addEventListener('click', handleModalClick));
 
     // select theme
     const selectedTheme = localStorage.getItem("theme");
@@ -39,8 +38,9 @@
 
 function handleModalClick(event) {
     const clickedOnContainer = !event.target.closest('.modal');
-    if (clickedOnContainer) {
-        document.querySelector('.modal-container').classList.toggle('hidden');
+    const clickedOnX = event.target.classList.contains('modal-close-button');
+    if (clickedOnContainer || clickedOnX) {
+        event.target.closest('.modal-container').classList.toggle('hidden');
     }
 }
 

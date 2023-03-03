@@ -34,7 +34,7 @@ class UserController {
 
         const accountDetailsGetResponse = await apiCall(
             "GET",
-            '/auth/userdetails/' + res.locals.id
+            'api/auth/userdetails/' + res.locals.id
         );
         res.locals.username = accountDetailsGetResponse.username;
         res.locals.email = accountDetailsGetResponse.email;

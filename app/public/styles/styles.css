@@ -313,7 +313,7 @@ nav {
   USER DETAILS PANE
 ****************************/
 
-#user-details-container {
+.modalInnerDiv {
     width: 350px;
     border: 1px solid black;
     border: 1px solid var(--color-2);
@@ -835,6 +835,25 @@ input[type="password"].valid {
   MODAL
 ****************************/
 
+.modal-close-button {
+    position: absolute;
+    top: -0.5em;
+    right: -0.5em;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    border: 1px solid var(--color-bg-2);
+    background-color: var(--color-bg-1);
+    color: var(--color-1);
+    border-radius: 1em;
+    width: 1em;
+    height: 1em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2px;
+}
+
 .modal-container {
     background-color: rgba(94, 94, 94, 0.5);
     display: flex;
@@ -942,7 +961,7 @@ input[type="password"].valid {
         margin: 0px;
     }
 
-    #user-details-container {
+    .modalInnerDiv {
         width: 100%;
     }
 

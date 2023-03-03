@@ -1,25 +1,30 @@
-// let moodSelected = "";
-// const activitiesSelected = [];
-// const moodElements = document.querySelectorAll(".mood");
-// const activityElements = document.querySelectorAll(".activity");
-
 const entryFormComponents = {
     selected: {
         mood: "",
         activities: [],
     },
-    selectionButtons: {
-        mood: document.querySelectorAll(".mood"),
-        activity: document.querySelectorAll(".activity"),
-    },
-    action: document.querySelector('.mood-selection').dataset.action,
+    activitySelection: document.querySelectorAll(".activity"),
+    moodSelection: {
+        positive: {
+            container: document.querySelector('.mood-selection-container#positive-moods'),
+            valenceButton: document.querySelector('.mood-valence-button#valence-positive'),
+        },
+        negative: {
+            container: document.querySelector('.mood-selection-container#negative-moods'),
+            valenceButton: document.querySelector('.mood-valence-button#valence-negative'),
+        },
+        buttons: document.querySelectorAll('.mood'),
+        active: document.querySelector('#mood-valence-button-container').getAttribute('disabled') == 'false',
+        valenceContainer: document.querySelector('#mood-valence-button-container')
+    }
+
+    // action: document.querySelector('.mood-selection').dataset.action,
 }
 entryFormComponents.selected.mood;
 /**
  * Initialise elements, and add event listeners
  */
 (function intialiseMoodEntryForm() {
-
     // configure elements
 
     const activitiesDivs = document.querySelectorAll(".activity.selected");
@@ -35,25 +40,54 @@ entryFormComponents.selected.mood;
     moodHiddenInput.value = moodDiv ? moodDiv.children[1].textContent : "";
     entryFormComponents.selected.mood = moodDiv ? moodDiv.children[1].textContent : "";
 
+    const valenceButtons = document.querySelectorAll('.mood-valence-button');
+    valenceButtons.forEach(b => b.addEventListener('click', handleMoodValenceButtonClicks));
+
+    document.body.appendChild(createMoodEntryModal());
+
     // add event listeners
 
-    entryFormComponents.selectionButtons.mood.forEach((moodElement) =>
-        moodElement.addEventListener("click", () => handleMoodSelection(moodElement))
+    entryFormComponents.moodSelection.buttons.forEach((moodSelectionButton) =>
+        moodSelectionButton.addEventListener("click", () => handleMoodSelection(moodSelectionButton))
     );
 
-    entryFormComponents.selectionButtons.activity.forEach((activityElement) =>
+    entryFormComponents.activitySelection.forEach((activityElement) =>
         activityElement.addEventListener("click", handleActivitySelection)
     );
 
     document
         .querySelector("#mood-entry-form-submit")
-        .addEventListener("click", handleFormSubmission);
+        .addEventListener("click", handleMoodFormSubmission);
 
-    // console.log('activities selected');
-    // console.log(entryFormComponents.selected.activities);
-    // console.log('mood selected');
-    // console.log(entryFormComponents.selected.mood);
 })();
+
+function createMoodEntryModal() {
+    const modalContainer = document.createElement('div');
+    modalContainer.id = 'mood-entry-form-modal';
+    modalContainer.classList.add('modal-container');
+    modalContainer.classList.add('hidden');
+    modalContainer.addEventListener('click', handleModalClick);
+    const modal = document.createElement('div');
+    modal.classList.add('modal');
+
+    const closeBtn = document.createElement('div');
+    closeBtn.classList.add('modal-close-button');
+    closeBtn.textContent = '✕';
+    modal.appendChild(closeBtn);
+
+    const modalInnerDiv = document.createElement('div');
+    modalInnerDiv.classList.add('modalInnerDiv');
+    modalInnerDiv.style.padding = '5px 10px';
+    modalInnerDiv.style.display = 'flex';
+    modalInnerDiv.style.justifyContent = 'center';
+    modalInnerDiv.textContent = 'Mood is required!';
+
+    modal.appendChild(modalInnerDiv);
+
+    modalContainer.appendChild(modal);
+
+    return modalContainer;
+}
 
 /**
  * Event handler for user selecting an activity
@@ -82,9 +116,9 @@ function handleActivitySelection(event) {
  * @param {Element} moodElement 
  */
 function handleMoodSelection(moodElement) {
-    if (entryFormComponents.action === 'edit') return;
+    if (!entryFormComponents.moodSelection.active) return;
     //console.log(document.querySelector('.mood-selection').dataset.action);
-    entryFormComponents.selectionButtons.mood.forEach((el) => el.classList.remove("selected"));
+    entryFormComponents.moodSelection.buttons.forEach((el) => el.classList.remove("selected"));
     entryFormComponents.selected.mood = moodElement.querySelector(".mood-name").textContent;
     moodElement.classList.add("selected");
     entryFormComponents.selected.mood = moodElement.children[1].textContent;
@@ -95,7 +129,7 @@ function handleMoodSelection(moodElement) {
 /**
  * Event handler for a user submiting form
  */
-function handleFormSubmission() {
+function handleMoodFormSubmission() {
     // console.log(entryFormComponents.selected.mood);
     // console.log(entryFormComponents.selected.activities);
 
@@ -111,6 +145,18 @@ function handleFormSubmission() {
         const form = document.querySelector("#mood-entry-form");
         form.submit();
         // console.log('submit');
+    } else {
+        // const modalContainer = document.createElement('div');
+        // modalContainer.classList.add('modal-container');
+        // modalContainer.addEventListener('click', handleModalClick);
+        // const modal = document.createElement('div');
+        // modal.classList.add('modal');
+        // modal.textContent = 'Mood is required!';
+
+        // modalContainer.appendChild(modal);
+
+        // document.body.appendChild(modalContainer);
+        document.querySelector('#mood-entry-form-modal').classList.remove('hidden');
     }
 
 
@@ -143,26 +189,28 @@ function grabSelectedActivities() {
     activitiesInput.value = entryFormComponents.selected.activities.join(",");
 }
 
-// function validateSelectedActivities() {
-//     const moodSelectionBox = document.querySelector('.mood-selection');
-//     const { activities } = entryFormComponents.selected;
-//     let validated = false;
-//     if (activities.length === 0) {
-//         moodSelectionBox.classList.add('form-input-validation-error');
-//         // console.log(1);
-//     } else {
-//         moodSelectionBox.classList.remove('form-input-validation-error');
-//         // console.log(2);
-//         validated = true;
-//     }
-//     return validated;
-// }
+function handleMoodValenceButtonClicks(event) {
+    //console.log("disabled? " + document.querySelector('#mood-valence-button-container').getAttribute('disabled'));
 
-// when submit is pressed, if mood is not selected, highlight moods box in red
-// when mood button is pressed and valid mood selected, remove error highlight
-
-// when submit is pressed. if no activities are selected, that is acceptable, submit form
-
-// when submit is pressed, if no notes are selected, is this ok?
+    if (!entryFormComponents.moodSelection.active) return;
 
 
+    //FIXME redo the selection and mood/activity passthrough javascript
+    const { positive, negative } = entryFormComponents.moodSelection;
+    const buttonPressedId = event.target.id;
+    //console.log(buttonPressedId);
+
+    if (buttonPressedId === 'valence-negative') {
+        negative.valenceButton.classList.add('selected');
+        positive.valenceButton.classList.remove('selected');
+
+        negative.container.classList.remove('hidden');
+        positive.container.classList.add('hidden');
+    } else if (buttonPressedId === 'valence-positive') {
+        negative.valenceButton.classList.remove('selected');
+        positive.valenceButton.classList.add('selected');
+
+        negative.container.classList.add('hidden');
+        positive.container.classList.remove('hidden');
+    }
+}

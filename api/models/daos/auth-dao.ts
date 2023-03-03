@@ -6,6 +6,7 @@ import AccountDetailsGetResponse from "../responses/auth/AccountDetailsGetRespon
 import DeleteAccountResponse from "../responses/auth/DeleteAccountResponse";
 import LoginResponse from "../responses/auth/LoginResponse";
 import RegistrationResponse from "../responses/auth/RegistrationResponse";
+const userDetailsValidation = require('../../../config/userDetailsValidation.json');
 
 
 /**
@@ -187,7 +188,8 @@ class AuthApiDataAccessObject {
 
     private validateUsername(username: string): boolean {
         if (!username) return false;
-        return /[a-zA-Z0-9]{8,15}/.test(username);
+        //return /[a-zA-Z0-9]{8,15}/.test(username);
+        return new RegExp(userDetailsValidation.username.regex).test(username); 
     }
 
     private validateEmail(email: string): boolean {

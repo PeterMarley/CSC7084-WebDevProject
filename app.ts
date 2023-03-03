@@ -11,8 +11,7 @@ import { authenticate } from './app/middleware/authenticate';
 import api from './api/api';							// auth API
 import mainRouter from './app/routes/mainRouter';							// normal routing
 import userRouter from './app/routes/userRouter';
-import entryRouter from './app/routes/entryRouter';
-import fallbackRouter from './app/routes/fallbackRouter';
+import moodRouter from './app/routes/moodRouter';
 
 /******************************
  * 
@@ -50,12 +49,10 @@ app.use('/api', api);
  * 
  ******************************/
 
-
+app.use('/user', userRouter);
+app.use('/mood', moodRouter);
 app.use('/', mainRouter);
-app.use('/', userRouter);
-app.use('/entry', entryRouter);
 
-app.use('/', fallbackRouter);
 
 app.listen(port, () => console.log('Moodr listening on port ' + port));
 
