@@ -250,8 +250,36 @@ a.button-style-2 {
     background-position: center;
     background-attachment: fixed;
 }
+.flex-container {
+    display: flex;
+}
+
+.flex-container.centered-h {
+    justify-content: center;
+}
+
+.flex-container.centered-v {
+    align-items: center;
+    height: 100%;
+}
+
+.box-style-1 {
+    padding: 10px;
+    background-color: var(--color-bg-2);
+    border: 1px solid var(--color-bg-1);
+    border-radius: var(--general-border-radius);
+}
+
+.box-style-1.medium {
+    max-width: 600px;;
+}
 
 
+.centered {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 /* #body>* {
   margin: 10px;
@@ -629,6 +657,21 @@ input[type="password"].valid {
 #change-password-inputs>input[type="password"],
 .submitdiv>input[type="submit"] {
     margin-top: 5px;
+}
+
+.form-style-1 input:focus {
+    outline: none;
+}
+
+.form-style-1 input:invalid
+{
+    border: 1px solid red;
+    box-sizing: border-box;
+}
+
+.invalid {
+    border: 1px solid red !important;
+    box-sizing: border-box !important;
 }
 
 /****************************

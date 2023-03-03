@@ -2,14 +2,16 @@
 <%- include('partials/top.ejs') %>
 <% 
 if (locals.authed && authed) {
-      welcomeMsg = ', ' + username;
+      welcomeMsg = 'Welcome back, ' + username + '.';
 } else {
-      welcomeMsg = '';
+      welcomeMsg = 'Please register or log in to start logging your mood!';
 }
-let dogs = ['reggie', 'dax'];
 %>
 
-<%= authed %><br>
-Oh hai there<%= welcomeMsg %>
+<div class="flex-container centered-h centered-v">
+      <div class="box-style-1 centered medium" style="margin: 10px;">
+            Oh hai there<%= welcomeMsg %>      
+      </div>
+</div>
 
 <%- include('partials/bottom.ejs') %>

@@ -12,6 +12,7 @@ import api from './api/api';							// auth API
 import mainRouter from './app/routes/mainRouter';							// normal routing
 import userRouter from './app/routes/userRouter';
 import moodRouter from './app/routes/moodRouter';
+import injectConfig from './app/middleware/injectConfig';
 
 /******************************
  * 
@@ -30,6 +31,7 @@ app.set('views', path.join(__dirname, 'app/views'));
 app.use(express.static('app/public'));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(injectConfig);
 app.use(authenticate);
 
 /******************************

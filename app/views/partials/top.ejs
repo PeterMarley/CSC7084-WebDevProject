@@ -9,6 +9,12 @@
   <link href="/styles/styles.css" rel="stylesheet">
   <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"> -->
   <link rel="icon" type="image/x-icon" href="/icons/main_icon_16x16.png">
+  <script>
+    const usernameRegex = /<%- config.userDetailsValidation.username.regex %>/;
+    const passwordRegex = /<%- config.userDetailsValidation.password.regex %>/;
+    const emailRegex = /<%- config.userDetailsValidation.email.regex %>/;
+  </script>
+  <script src="/script/validator.js"></script>
 </head>
 
 <body>

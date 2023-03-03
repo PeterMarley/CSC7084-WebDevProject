@@ -3,15 +3,16 @@
     <div class="form-style-1-container">
       <div class="row">
         <label for="username">Username:</label>
-        <input type="text" name="username" placeholder="Enter username">
+        <!-- <input type="text" name="username" placeholder="Enter username" required minlength="<%- config.userDetailsValidation.username.minLength %>" maxlength="<%- config.userDetailsValidation.username.maxLength %>" pattern="<%- config.userDetailsValidation.username.regex %>"> -->
+        <input id="login-username-input" type="text" name="username" placeholder="Enter username">
       </div>
       <div class="row">
         <label for="username">Password:</label>
-        <input type="password" name="password" placeholder="Enter password">
+        <input id="login-password-input" type="password" name="password" placeholder="Enter password" required>
       </div>
       <!-- <div class="submitdiv"> -->
       <div>
-        <input type="submit" name="log-in" value="login" class="button-style-1" style="width:100%">
+        <input type="submit" name="log-in" value="login" class="button-style-1" style="width:100%" >
       </div>
       <div style="display: flex; justify-content: center;">- or -</div>
       <div class="submitdiv">

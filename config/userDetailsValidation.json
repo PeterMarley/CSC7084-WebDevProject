@@ -2,14 +2,14 @@
     "username": {
         "minLength": 8,
         "maxLength": 20,
-        "regex": "[a-zA-Z0-9]{8,20}"
+        "regex": "^[a-zA-Z0-9]{8,20}$"
     },
     "password": {
         "minLength": 8,
         "maxLength": 20,
-        "regex": "[a-zA-Z0-9_\\-\\?!\\*]{8,20}"
+        "regex": "^[a-zA-Z0-9_\\-\\?!\\*]{8,20}$"
     },
     "email": {
-        "regex":"[a-zA-Z0-8]{1,}[@][a-zA-Z0-8]{1,}[\\.][a-zA-Z0-8]{1,}"
+        "regex":"^[a-zA-Z0-8]{1,}[@][a-zA-Z0-8]{1,}[\\.][a-zA-Z0-8]{1,}$"
     }
 }
