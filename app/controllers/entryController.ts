@@ -15,7 +15,7 @@ class EntryController {
 		next();
 	}
 	async deleteEntry(req: Request, res: Response, next: NextFunction) {
-		const deleteEntryResponse: any = await apiCall('DELETE', '/api/mood/entry/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId);
+		const deleteEntryResponse: any = await apiCall('DELETE', '/api/mood/mood/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId);
 		next();
 	}
 	async postEdit(req: Request, res: Response) {
@@ -25,7 +25,7 @@ class EntryController {
 		const successResponse: SuccessResponse =
 			await apiCall(
 				'PUT',
-				'/api/mood/entry/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId,
+				'/api/mood/mood/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId,
 				new URLSearchParams([['activities', activities], ['notes', notes], ['entryId', req.params.entryId]])
 			);
 		//const x: EntryDataResponse = { entry: undefined, entryFormData: entryDataResponse };
@@ -38,7 +38,7 @@ class EntryController {
 	}
 	async getEdit(req: Request, res: Response) {
 		const entryDataResponse: EntryDataResponse =
-			await apiCall('GET', '/api/mood/entry/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId);
+			await apiCall('GET', '/api/mood/mood/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId);
 	
 		res.locals.entryFormData = entryDataResponse.entryFormData;
 		res.locals.entryData = entryDataResponse.entry;
@@ -59,18 +59,18 @@ class EntryController {
 	
 		const response = await apiCall(
 			'POST',
-			'/api/mood/entry/new/' + (res.locals.id ? res.locals.id : ''),
+			'/api/mood/mood/new/' + (res.locals.id ? res.locals.id : ''),
 			new URLSearchParams([['mood', mood], ['activities', activities], ['notes', notes]])
 		);
 	
 		res.locals.entryAdded = response.success ? true : false;
 	
 		// TODO redirect to single entry page, not list
-		res.redirect('/entry/list');
+		res.redirect('/mood/list');
 	}
 	async getNewEntryForm(req: Request, res: Response) {
 		const entryFormDataResponse: EntryFormDataResponse =
-			await apiCall('GET', '/api/mood/entry/new/' + (res.locals.id ? res.locals.id : ''));
+			await apiCall('GET', '/api/mood/mood/new/' + (res.locals.id ? res.locals.id : ''));
 	
 		res.locals.entryFormData = entryFormDataResponse;
 		res.locals.entryData = null;
@@ -79,7 +79,7 @@ class EntryController {
 		res.render('mood-entry-new');
 	}
 	async getEntryList(req: Request, res: Response) {
-		const response = await apiCall('GET', '/api/mood/entry/list/' + (res.locals.id ? res.locals.id : ''));
+		const response = await apiCall('GET', '/api/mood/mood/list/' + (res.locals.id ? res.locals.id : ''));
 	
 		res.locals.entries = response || {};
 		res.render('mood-entry-list');

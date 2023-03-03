@@ -20,7 +20,7 @@ const moodRouter = express.Router();
 
 moodRouter.use(authenticateRequestSource);
 
-const ENTRY_ROUTE = '/entry';
+const ENTRY_ROUTE = '/mood';
 
 moodRouter.get(ENTRY_ROUTE + '/new/:userId', controller.getEntryFormData)
 moodRouter.post(ENTRY_ROUTE + '/new/:userId', controller.createNewEntry);

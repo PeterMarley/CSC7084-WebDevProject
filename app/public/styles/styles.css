@@ -854,6 +854,11 @@ input[type="password"].valid {
     padding: 2px;
 }
 
+.modal-close-button:hover {
+    background-color: var(--color-accent);
+    border-color: var(--color-1);
+}
+
 .modal-container {
     background-color: rgba(94, 94, 94, 0.5);
     display: flex;
