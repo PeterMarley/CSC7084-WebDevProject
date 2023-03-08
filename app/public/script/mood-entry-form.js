@@ -130,36 +130,13 @@ function handleMoodSelection(moodElement) {
  * Event handler for a user submiting form
  */
 function handleMoodFormSubmission() {
-    // console.log(entryFormComponents.selected.mood);
-    // console.log(entryFormComponents.selected.activities);
-
-    // const activitiesInput = document.querySelector("#activities-hidden-input");
-    // activitiesInput.value = entryFormComponents.selected.activities.join(",");
     grabSelectedActivities();
-
-    // const moodInput = document.querySelector("#mood-hidden-input");
-    // moodInput.value = entryFormComponents.selected.mood;
-    // const moodsValidated = grabSelectedMood();
-
     if (grabSelectedMood()) { // only mood is required for an entry
         const form = document.querySelector("#mood-entry-form");
         form.submit();
-        // console.log('submit');
     } else {
-        // const modalContainer = document.createElement('div');
-        // modalContainer.classList.add('modal-container');
-        // modalContainer.addEventListener('click', handleModalClick);
-        // const modal = document.createElement('div');
-        // modal.classList.add('modal');
-        // modal.textContent = 'Mood is required!';
-
-        // modalContainer.appendChild(modal);
-
-        // document.body.appendChild(modalContainer);
         document.querySelector('#mood-entry-form-modal').classList.remove('hidden');
     }
-
-
 }
 
 function grabSelectedMood() {
