@@ -8,6 +8,7 @@ import Image from '../obj/mood/Image';
 import EntryFormDataResponse from '../responses/mood/EntryFormDataResponse';
 import EntryDataResponse from '../responses/mood/EntryDataResponse';
 import ActivityGroup from '../obj/mood/ActivityGroup';
+import validator from 'validator';
 
 /**
  * This is a static class in that it may not be instantiated. It's methods may be called to generate response objects after queries the database
@@ -343,7 +344,7 @@ class MoodApiDataAccessObject {
 		const responseEntry = new Entry(
 			entryId,
 			entry.timestamp,
-			entry.entryNotes,
+			validator.unescape(entry.entryNotes),
 			new Mood(
 				entry.moodId,
 				entry.mood,
@@ -400,7 +401,7 @@ class MoodApiDataAccessObject {
 		try {
 			const storedProcedureResponse = (
 				await con.execute(
-					formatSQL('CALL usp_insert_entry(?,?,?,?)', [userId, moodName, notes, activityNameCommaDelimStr])
+					formatSQL('CALL usp_insert_entry(?,?,?,?)', [userId, moodName, validator.escape(notes), activityNameCommaDelimStr])
 				) as ResultSetHeader[])
 				.at(0) as ResultSetHeader;
 			const { affectedRows, warningStatus } = storedProcedureResponse;

@@ -10,7 +10,13 @@ import authenticateRequestSource from '../middleware/authenticateRequestSource';
 
 const moodRouter = express.Router();
 
-// moodAPI.use(express.urlencoded({ extended: false }));
+/*******************************************************
+ * 
+ * MIDDLEWARE
+ * 
+ *******************************************************/
+
+moodRouter.use(authenticateRequestSource);
 
 /*******************************************************
  * 
@@ -18,18 +24,14 @@ const moodRouter = express.Router();
  * 
  *******************************************************/
 
-moodRouter.use(authenticateRequestSource);
 
-const ENTRY_ROUTE = '/mood';
+moodRouter.get('/new/:userId', controller.getEntryFormData)
+moodRouter.post('/new/:userId', controller.createNewEntry);
 
-moodRouter.get(ENTRY_ROUTE + '/new/:userId', controller.getEntryFormData)
-moodRouter.post(ENTRY_ROUTE + '/new/:userId', controller.createNewEntry);
+moodRouter.get('/list/:userId', controller.getEntryList);
 
-moodRouter.get(ENTRY_ROUTE + '/list/:userId', controller.getEntryList);
-
-const entryOperationsRoute = ENTRY_ROUTE + '/:userId/:entryId';
-moodRouter.get(entryOperationsRoute, controller.getEntryFormData, controller.getSingleEntry);
-moodRouter.put(entryOperationsRoute, controller.updateSingleEntry);
-moodRouter.delete(entryOperationsRoute, controller.deleteSingleEntry);
+moodRouter.get('/:userId/:entryId', controller.getEntryFormData, controller.getSingleEntry);
+moodRouter.put('/:userId/:entryId', controller.updateSingleEntry);
+moodRouter.delete('/:userId/:entryId', controller.deleteSingleEntry);
 
 export default moodRouter;

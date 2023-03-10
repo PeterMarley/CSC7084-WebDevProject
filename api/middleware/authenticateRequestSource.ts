@@ -14,7 +14,8 @@ export default async function authenticateRequestSource(req: Request, res: Respo
     const result = (await con.query(sql)).at(0) as RowDataPacket;
     con.end();
 
-    if (result.count < 1) {
+    const count = result[0].count;
+    if (count < 1) {
         res.statusCode = 401;
         res.send(new SuccessResponse(false, ['You are not authorized.']));
         return;

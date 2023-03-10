@@ -12,11 +12,17 @@ const authRouter = express.Router();
 
 /*******************************************************
  * 
- * ROUTES
+ * MIDDLEWARE
  * 
  *******************************************************/
 
 authRouter.use(authenticateRequestSource);
+
+/*******************************************************
+ * 
+ * ROUTES
+ * 
+ *******************************************************/
 
 authRouter.post('/login', controller.login);
 authRouter.post('/register', controller.register);
