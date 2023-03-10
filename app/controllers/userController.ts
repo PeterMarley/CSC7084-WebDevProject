@@ -97,12 +97,16 @@ class UserController {
             await apiCall(
                 'DELETE',
                 'http://localhost:3000/api/auth/deleteuser',
-                new URLSearchParams([['confirmation', req.body.confirmation ? 'true' : 'false']]),
-                req.cookies.token
+                // TODO add confirmation step back in
+				//new URLSearchParams([['confirmation', req.body.confirmation ? 'true' : 'false']])
+				new URLSearchParams([['confirmation', 'true']])
             );
             res.clearCookie('token');
             res.redirect(302, '/');
-        }
+        } else {
+			console.log('delete user body not complete')
+			res.status(500).redirect('/500');
+		}
     }
     async registerPost(req: Request, res: Response, next: NextFunction) {
 

@@ -1,9 +1,11 @@
 import { Router } from 'express';
 import { restrictedArea } from '../middleware/authenticate';
 import controller from '../controllers/userController';
+import methodOverride from 'method-override';
 
 const userRouter = Router();
 
+userRouter.use(methodOverride("_mo"));
 
 // log out
 userRouter.get('/logout', controller.logout);

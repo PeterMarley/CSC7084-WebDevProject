@@ -1,21 +1,19 @@
 <% if (authed) {%>
-<form id="account-form" class="form-style-1 account-form" action="/account" method="POST">
+	<form id="delete-account-form" action="/user/deleteuser?_mo=DELETE" method="POST"></form>
+	<form id="account-form" class="form-style-1 account-form" action="/user/account" method="POST">
   <div class="form-style-1-container">
     <div class="row">
       <label for="username">Username</label>
-      <script>
-        console.log('username: <%- username %>');
-      </script>
       <input type="text" name="username" value="<%- username %>">
     </div>
     <div class="row">
       <label for="email">Email</label>
       <input type="email" name="email" value="<%- email %>">
     </div>
-    <button id="save-account-details-change" class="button-style-1">Save Username and Email</button>
-    <button id="show-change-password" class="button-style-1">Change your password</button>
+    <button type="submit" id="save-account-details-change" class="button-style-1">Save Username and Email</button>
+    <button type="button" id="show-change-password" class="button-style-1">Change your password</button>
     <!-- TODO finish this delete account part, and add confirmation to save details change above -->
-    <div id="delete-account-button" class="button-style-1">Delete your account</div>
+    <button form="delete-account-form" type="submit" id="delete-account-button" class="button-style-1">Delete your account</button>
     <% 
     if (messages) {
       for (const message of messages) { 
@@ -27,6 +25,7 @@
     %>
   </div>
 </form>
+
 <form id="account-form-change-password" class="form-style-1 account-form hidden" action="/account/password" method="POST">
   <div class="form-style-1-container">
     <div class="row" id="change-password-inputs">

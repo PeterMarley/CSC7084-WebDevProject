@@ -32,7 +32,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
 
 export function restrictedArea(req: Request, res: Response, next: NextFunction) {
 	if (!res.locals.authed) {
-		res.render('forbidden');
+		res.status(403).render('forbidden');
 		return;
 	}
 	next();

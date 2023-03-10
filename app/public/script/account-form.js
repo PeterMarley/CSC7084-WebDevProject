@@ -5,7 +5,12 @@ const accountFormElements = {
     inputNewPwdConfirm: document.querySelector('#newpasswordconfirm'),
     inputNewPwd: document.querySelector('#newpassword'),
 };
-// Initialise Form
+
+/*****************************************
+ * 
+ * Initialise
+ * 
+ *****************************************/
 
 (function initialiseAccountForm() {
     const { buttonShowChangePassword, buttonSubmitChangePassword, inputNewPwdConfirm, inputNewPwd } = accountFormElements;
@@ -16,7 +21,11 @@ const accountFormElements = {
     buttonSubmitChangePassword.disabled = true;
 })();
 
-// Event Handlers
+/*****************************************
+ * 
+ * Event Handlers
+ * 
+ *****************************************/
 
 function handleShowAccountDelete(event) {
     event.preventDefault();
