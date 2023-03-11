@@ -58,19 +58,17 @@ class AuthApiDataAccessObject {
         return response;
     }
 
-    async deleteUserAccount(userId: number, username: string, email: string): Promise<DeleteAccountResponse> {
+    async deleteUserAccount(userId: number): Promise<DeleteAccountResponse> {
         let success = false;
         let error: string | undefined;
         try {
             const con = await getConnection();
             //TODO more probably needed here
-            con.execute('DELETE FROM tbl_activity WHERE user_id=?', [userId]);
-            con.execute('DELETE FROM tbl_activity_group WHERE user_id=?', [userId]);
-            con.execute('DELETE FROM tbl_mood WHERE user_id=?', [userId]);
-            con.execute('DELETE FROM tbl_user WHERE username=? AND user_id=? AND email=?', [username, userId, email]);
+            con.execute('CALL usp_delete_account(?)', [userId]);
             con.end();
             success = true;
         } catch (err: any) {
+            console.log(err);
             error = err.message as string;
         }
 

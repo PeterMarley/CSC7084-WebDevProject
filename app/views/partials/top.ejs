@@ -13,6 +13,7 @@
     const usernameRegex = /<%- config.userDetailsValidation.username.regex %>/;
     const passwordRegex = /<%- config.userDetailsValidation.password.regex %>/;
     const emailRegex = /<%- config.userDetailsValidation.email.regex %>/;
+    const username = '<%= (typeof username !== "undefined") ? username : "unknown" %>';
   </script>
   <script src="/script/validator.js"></script>
 </head>

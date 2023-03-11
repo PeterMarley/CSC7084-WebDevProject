@@ -76,8 +76,9 @@ async function getAccountDetails(req: Request, res: Response, next: NextFunction
 }
 
 async function deleteUserAccount(req: Request, res: Response, next: NextFunction) {
-    const {userId, username, email} = req.body;
-    const response = await dao.deleteUserAccount(Number(userId), username, email);
+    
+    const { userId } = req.params;
+    const response = await dao.deleteUserAccount(Number(userId));
     res.send(response);
 }
 

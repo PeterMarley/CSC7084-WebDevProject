@@ -5,6 +5,7 @@ import AccountPasswordUpdateResponse from '../../api/models/responses/auth/Accou
 import LoginResponse from '../../api/models/responses/auth/LoginResponse';
 import RegistrationResponse from '../../api/models/responses/auth/RegistrationResponse';
 import apiCall from "../utils/apiCall";
+import { verifyToken } from "../utils/jwtHelpers";
 
 class UserController {
     async passwordChange(req: Request, res: Response) {
@@ -93,20 +94,16 @@ class UserController {
         res.redirect('/');
     }
     async deleteUser(req: Request, res: Response, next: NextFunction) {
-        if (req.body.confirmation) {
-            await apiCall(
-                'DELETE',
-                'http://localhost:3000/api/auth/deleteuser',
-                // TODO add confirmation step back in
-				//new URLSearchParams([['confirmation', req.body.confirmation ? 'true' : 'false']])
-				new URLSearchParams([['confirmation', 'true']])
-            );
+        // const confirmed = (req.body.confirmation ?? false) ? true : false;
+        // if (confirmed) {
+            await apiCall('DELETE', '/api/auth/deleteuser/' + res.locals.id);
             res.clearCookie('token');
-            res.redirect(302, '/');
-        } else {
-			console.log('delete user body not complete')
-			res.status(500).redirect('/500');
-		}
+            //res.redirect(302, '/');
+            res.render('accountdeleted');
+        // } else {
+		// 	console.log('delete user body not complete')
+		// 	res.redirect(500, '/500');
+		// }
     }
     async registerPost(req: Request, res: Response, next: NextFunction) {
 
@@ -152,8 +149,7 @@ class UserController {
             res.statusCode = 400;
             res.locals.validations = errors;
             // TODO expand this       
-            res.status(400)
-                .render('loginfailed');
+            res.status(400).render('loginfailed');
             return;
         }
 
@@ -170,6 +166,8 @@ class UserController {
         if (loginResponse.success && loginResponse.token) {
             res.locals.authed = true;
             res.locals.username = username;
+            res.locals.userId = verifyToken(loginResponse.token).id;
+            
             res.status(200)
                 .cookie(COOKIE_NAME, loginResponse.token)
                 .render('welcome');

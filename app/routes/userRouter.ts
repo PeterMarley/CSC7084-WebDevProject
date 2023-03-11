@@ -5,7 +5,7 @@ import methodOverride from 'method-override';
 
 const userRouter = Router();
 
-userRouter.use(methodOverride("_mo"));
+userRouter.use(methodOverride("_mo", {methods: ['POST', 'GET']}));
 
 // log out
 userRouter.get('/logout', controller.logout);

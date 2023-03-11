@@ -27,7 +27,7 @@ authRouter.use(authenticateRequestSource);
 authRouter.post('/login', controller.login);
 authRouter.post('/register', controller.register);
 
-authRouter.delete('/deleteuser', controller.deleteUserAccount);
+authRouter.delete('/deleteuser/:userId', controller.deleteUserAccount);
 
 authRouter.get('/userdetails/:userId', controller.getAccountDetails);
 authRouter.put('/userdetails/:userId', controller.updateAccountDetails);
