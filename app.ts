@@ -2,6 +2,8 @@
 import express from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
+import https from 'https';
+import fs from 'fs';
 
 // app imports
 import dotenv from 'dotenv';
@@ -20,7 +22,12 @@ import injectConfig from './app/middleware/injectConfig';
  * 
  ******************************/
 
-const port  = 3000;
+const httpsOpts = {
+    key: fs.readFileSync('./private.key'),
+    cert: fs.readFileSync('./certificate.crt'),
+};
+
+const port = 443;
 const app = express();
 
 dotenv.config();
@@ -55,7 +62,8 @@ app.use('/user', userRouter);
 app.use('/mood', moodRouter);
 app.use('/', mainRouter);
 
+const server = https.createServer(httpsOpts, app);
 
-app.listen(port, () => console.log('Moodr listening on port ' + port));
+server.listen(port, () => console.log('Moodr listening on port ' + port));
 
 export default app;
