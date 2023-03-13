@@ -1,27 +1,66 @@
 <%_ if (authed) { // TODO tidy this%>
 You're already logged in mate
 <% } else { %>
+<% let username, email = '';                                                              %>
+<%if (typeof attemptedUsername !== 'undefined' && typeof attemptedEmail !== 'undefined'){     %>
+<%  username = attemptedUsername;                                                         %>
+<%  email = attemptedEmail;                                                               %>
+<%}                                                                                       %>
 <form method="POST" action="/user/register" class="form-style-1">
-  <div class="form-style-1-container">
+  <div class="form-style-1-container" style="position: relative;">
     <div class="row">
       <label for="username">Enter a username:</label>
-      <input type="text" name="username" id="username" placeholder="Username..."><br>
+      <input class="invalid" type="text" name="username" id="username" placeholder="Username..." value="<%- username %>"><br>
     </div>
     <div class="row">
       <label for="password">Enter a Password:</label>
-      <input type="password" name="password" id="password" placeholder="Password..."><br>
+      <input class="invalid" type="password" name="password" id="password" placeholder="Password..."><br>
     </div>
     <div class="row">
       <label for="password">Confirm Password:</label>
-      <input type="password" name="password" id="password-confirm" placeholder="Confirm Password..."><br>
+      <input class="invalid" type="password" name="password" id="password-confirm" placeholder="Confirm Password..."><br>
     </div>
     <div class="row">
       <label for="email">Enter an email:</label>
-      <input type="text" name="email" id="email" placeholder="Email..."><br>
+      <input class="invalid" type="text" name="email" id="email" placeholder="Email..." value="<%- email %>"><br>
     </div>
     <div class="submitdiv">
       <input type="submit" id="register-account-submit" value="Register Your Account">
-      <input type="text" name="redirect" value="/" hidden>
+      <input class="invalid" type="text" name="redirect" value="/" hidden>
+    </div>
+    <% if (typeof validationErrors !== 'undefined') {
+      console.log(validationErrors);
+      %>
+    <div class="form-style-1-container flex-container centered-v centered-h " style="max-width: 200px; position: absolute; right: -200px;">
+      <div class="form-style-1">
+        <div>
+          <%
+    if (validationErrors.includes('nousername')) {
+      %><div>No username</div><%
+    }
+    
+    if (validationErrors.includes('nopassword')) {
+      %><div>No password</div><%
+    }
+    
+    if (validationErrors.includes('noemail')) {
+      %><div>No Email</div><%
+    }
+    
+    if (validationErrors.includes('badusername')) {
+      %><div>Username must be 8 to 20 characters (inclusive) and can only be <em>a-z</em>, <em>A-Z</em>, <em>0-9</em></div><%
+    }
+    
+    if (validationErrors.includes('badpassword')) {
+      %><div>Password must be 8 to 20 characters (inclusive) and can only be <em>a-z</em>, <em>A-Z</em>, <em>0-9</em>, <em>-</em>, <em>_</em>, <em>?</em>, <em>!</em> and <em>*</em></div><%
+    }
+    
+    if (validationErrors.includes('bademail')) {
+      %><div>Email must be in the form <em>email@address.com</em></div><%
+    }
+   } %>
+        </div>
+      </div>
     </div>
   </div>
   <script src="/script/register-form.js"></script>

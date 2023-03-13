@@ -6,7 +6,7 @@ import AccountPasswordUpdateResponse from '../models/responses/auth/AccountPassw
 import DeleteAccountResponse from '../models/responses/auth/DeleteAccountResponse';
 import RegistrationResponse from '../models/responses/auth/RegistrationResponse';
 import LoginResponse from '../models/responses/auth/LoginResponse';
-
+import config from "../../config/Config";
 import dao from "../models/daos/auth-dao";
 
 
@@ -51,6 +51,12 @@ const SQL = {
     }
 }
 
+const regex = {
+    username: new RegExp(config.userDetailsValidation.username.regex),
+    password: new RegExp(config.userDetailsValidation.password.regex),
+    email: new RegExp(config.userDetailsValidation.email.regex),
+};
+
 async function accountPasswordPatch(req: Request, res: Response, next: NextFunction) {
     const userId = Number(req.params.userId);
     const { password } = req.body;
@@ -76,7 +82,7 @@ async function getAccountDetails(req: Request, res: Response, next: NextFunction
 }
 
 async function deleteUserAccount(req: Request, res: Response, next: NextFunction) {
-    
+
     const { userId } = req.params;
     const response = await dao.deleteUserAccount(Number(userId));
     res.send(response);
@@ -91,17 +97,26 @@ async function register(req: Request, res: Response, next: NextFunction) {
     const { username, email, password } = req.body;
 
     const bodyValidationErr: Array<string> = [];
-    if (!req.body) bodyValidationErr.push('post body empty');
-    if (!username) bodyValidationErr.push('post body missing username');
-    if (!email) bodyValidationErr.push('post body missing email');
-    if (!password) bodyValidationErr.push('post body missing password');
+    // validate post body
+    if (!username) bodyValidationErr.push('nousername');
+    if (!email) bodyValidationErr.push('noemail');
+    if (!password) bodyValidationErr.push('nopassword');
+    
+    // validate user account details
+    if (!regex.username.test(username)) bodyValidationErr.push('badusername');
+    if (!regex.email.test(email)) bodyValidationErr.push('bademail');
+    if (!regex.password.test(password)) bodyValidationErr.push('badpassword');
 
     if (bodyValidationErr.length !== 0) {
-        res.status(401).send(new RegistrationResponse(false, bodyValidationErr));
+        // form BadRequest
+        res.status(400).send(new RegistrationResponse(false, bodyValidationErr));
         return;
     }
 
+    // Database
     const [statusCode, registrationResponse] = await dao.register(username, email, password);
+
+    // Response
     res.status(statusCode).json(registrationResponse);
 }
 

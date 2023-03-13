@@ -3,9 +3,16 @@ import { Router } from 'express';
 import controller from '../controllers/entryController';
 import { authenticate, restrictedArea } from '../middleware/authenticate';
 
+/*******************************************************
+ * 
+ * CONFIGURATION
+ * 
+ *******************************************************/
+
 const moodRouter = Router();
 moodRouter.use(restrictedArea);
 moodRouter.use(cookieParser());
+moodRouter.use(restrictedArea);
 
 /*******************************************************
  * 
@@ -13,18 +20,18 @@ moodRouter.use(cookieParser());
  * 
  *******************************************************/
 
-moodRouter.get('/list', restrictedArea, controller.getEntryList);
+moodRouter.get('/list', controller.getEntryList);
 
-moodRouter.get('/new', restrictedArea, controller.getNewEntryForm);
-moodRouter.post('/new', restrictedArea, controller.createNewEntry);
+moodRouter.get('/new', controller.getNewEntryForm);
+moodRouter.post('/new', controller.createNewEntry);
 
-moodRouter.get('/edit/:entryId', restrictedArea, controller.initialiseLocalsForEntryEdit, controller.getEdit);
-moodRouter.post('/edit/:entryId', restrictedArea, controller.initialiseLocalsForEntryEdit, controller.postEdit);
+moodRouter.get('/edit/:entryId', controller.initialiseLocalsForEntryEdit, controller.getEdit);
+moodRouter.post('/edit/:entryId', controller.initialiseLocalsForEntryEdit, controller.postEdit);
 
-moodRouter.get('/delete/:entryId', restrictedArea, controller.deleteEntry, controller.getEntryList);
+moodRouter.get('/delete/:entryId', controller.deleteEntry, controller.getEntryList);
 
-moodRouter.get('/activity', restrictedArea, controller.getActivity);
+moodRouter.get('/activity', controller.getActivity);
 
-moodRouter.get('/visual', restrictedArea, controller.getVisual);
+moodRouter.get('/visual', controller.getVisual);
 
 export default moodRouter;

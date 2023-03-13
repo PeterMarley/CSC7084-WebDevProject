@@ -95,8 +95,8 @@ class AuthApiDataAccessObject {
         const emailCount = emailResponse.at(0).at(0).emailCount;
 
         const dbValidationErr: Array<string> = [];
-        if (usernameCount !== 0) dbValidationErr.push('username taken');
-        if (emailCount !== 0) dbValidationErr.push('email taken');
+        if (usernameCount !== 0) dbValidationErr.push('usernametaken');
+        if (emailCount !== 0) dbValidationErr.push('emailtaken');
 
         if (dbValidationErr.length !== 0) {
             return [401, new RegistrationResponse(false, dbValidationErr)];
@@ -146,7 +146,7 @@ class AuthApiDataAccessObject {
             return [200, new RegistrationResponse(true)];
         } catch (err: any) {
             console.log(err);
-            return [500, new RegistrationResponse(false, ['something went wrong registering you?! ' + err.message])];
+            return [500, new RegistrationResponse(false, ['unknownerror'])];
         } finally {
             con.end();
         }

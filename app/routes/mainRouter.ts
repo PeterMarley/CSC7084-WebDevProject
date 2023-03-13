@@ -1,6 +1,12 @@
 import { Router } from 'express';
 import controller from '../controllers/mainController';
 
+/*******************************************************
+ * 
+ * CONFIGURATION
+ * 
+ *******************************************************/
+
 const mainRouter = Router();
 
 /*******************************************************
@@ -11,6 +17,7 @@ const mainRouter = Router();
 
 mainRouter.get('/', controller.getWelcome);
 
+// Fallback routes
 mainRouter.all('/500', controller.internalServerError);
 mainRouter.all('/forbidden', controller.forbidden);
 mainRouter.all('*', controller.notFound);

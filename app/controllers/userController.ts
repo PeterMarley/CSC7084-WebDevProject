@@ -4,8 +4,10 @@ import AccountDetailsUpdateResponse from '../../api/models/responses/auth/Accoun
 import AccountPasswordUpdateResponse from '../../api/models/responses/auth/AccountPasswordUpdateResponse';
 import LoginResponse from '../../api/models/responses/auth/LoginResponse';
 import RegistrationResponse from '../../api/models/responses/auth/RegistrationResponse';
+import config from "../../config/Config";
 import apiCall from "../utils/apiCall";
 import { verifyToken } from "../utils/jwtHelpers";
+import validator from "validator";
 
 class UserController {
     async passwordChange(req: Request, res: Response) {
@@ -96,44 +98,45 @@ class UserController {
     async deleteUser(req: Request, res: Response, next: NextFunction) {
         // const confirmed = (req.body.confirmation ?? false) ? true : false;
         // if (confirmed) {
-            await apiCall('DELETE', '/api/auth/deleteuser/' + res.locals.id);
-            res.clearCookie('token');
-            //res.redirect(302, '/');
-            res.locals.authed = false;
-            res.render('accountdeleted');
+        await apiCall('DELETE', '/api/auth/deleteuser/' + res.locals.id);
+        res.clearCookie('token');
+        //res.redirect(302, '/');
+        res.locals.authed = false;
+        res.render('accountdeleted');
         // } else {
-		// 	console.log('delete user body not complete')
-		// 	res.redirect(500, '/500');
-		// }
+        // 	console.log('delete user body not complete')
+        // 	res.redirect(500, '/500');
+        // }
     }
     async registerPost(req: Request, res: Response, next: NextFunction) {
 
         const errors: String[] = [];
         if (req.method.toUpperCase() != 'POST') errors.push('cannotget')
-        if (!req.body) errors.push('nobody');
         if (!req.body.username) errors.push('nousername');
         if (!req.body.email) errors.push('noemail');
         if (!req.body.password) errors.push('nopassword');
 
         if (errors.length > 0) {
-            res.statusCode = 401;
-            // TODO expand this       
-            res.redirect('/register?vals=' + errors.join('-'));
+            res.status(400).render('register', { validationErrors: errors });
             return;
         }
+
         const { username, email, password } = req.body;
         const registrationResponse = await apiCall(
             'POST',
             'api/auth/register',
             new URLSearchParams([['username', username], ['email', email], ['password', password]])
-        );
+        ) as RegistrationResponse;
 
         if (registrationResponse.success) {
             next();
             return;
         } else {
-            res.send(registrationResponse.error); //TODO return an actual page
-            next('route');
+            res.render('register', {
+                attemptedUsername: username,
+                attemptedEmail: email,
+                validationErrors: registrationResponse.error
+            });
         }
     }
     async attemptLogin(req: Request, res: Response, next: NextFunction) {
@@ -168,7 +171,7 @@ class UserController {
             res.locals.authed = true;
             res.locals.username = username;
             res.locals.userId = verifyToken(loginResponse.token).id;
-            
+
             res.status(200)
                 .cookie(COOKIE_NAME, loginResponse.token)
                 .render('welcome');
