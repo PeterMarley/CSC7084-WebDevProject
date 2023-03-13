@@ -99,6 +99,7 @@ class UserController {
             await apiCall('DELETE', '/api/auth/deleteuser/' + res.locals.id);
             res.clearCookie('token');
             //res.redirect(302, '/');
+            res.locals.authed = false;
             res.render('accountdeleted');
         // } else {
 		// 	console.log('delete user body not complete')

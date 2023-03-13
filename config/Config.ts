@@ -1,9 +1,11 @@
 
 class Config {
-    private userDetailsValidation: IUserDetailsValidation;
+    userDetailsValidation: IUserDetailsValidation;
+    connection: IConnection;
     constructor() {
         try {
             this.userDetailsValidation = require('./userDetailsValidation.json');
+            this.connection = require('./connection.json');
         } catch (err: any) {
             throw new Error('Configuration file failed to load.');
         }
@@ -18,5 +20,9 @@ interface IUserDetailsValidation {
     email: { regex: RegExp };
 }
 
+interface IConnection {
+    port: number;
+}
+
 export default config;
-export { IUserDetailsValidation };
+export { IUserDetailsValidation, IConnection };

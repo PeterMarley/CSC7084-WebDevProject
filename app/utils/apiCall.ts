@@ -17,8 +17,6 @@ export default async function apiCall(httpMethod: 'POST' | 'GET' | 'DELETE' | 'P
 	// console.log(text);
 	// console.log(buildApiUrl(endpoint));
 	
-	
-	
 	try {
 		return JSON.parse(text);
 	} catch (err) {

@@ -4,6 +4,7 @@ import path from 'path';
 import cookieParser from 'cookie-parser';
 import https from 'https';
 import fs from 'fs';
+import config from './config/Config';
 
 // app imports
 import dotenv from 'dotenv';
@@ -21,13 +22,16 @@ import injectConfig from './app/middleware/injectConfig';
  * Express Config
  * 
  ******************************/
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 const httpsOpts = {
-    key: fs.readFileSync('./private.key'),
-    cert: fs.readFileSync('./certificate.crt'),
+    key: fs.readFileSync('./ssl/private.key'),
+    cert: fs.readFileSync('./ssl/certificate.crt'),
+    rejectUnauthorized: false
 };
 
-const port = 443;
+
+const port = config.connection.port;
 const app = express();
 
 dotenv.config();
