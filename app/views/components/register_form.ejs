@@ -12,13 +12,18 @@ You're already logged in mate
       <input type="password" name="password" id="password" placeholder="Password..."><br>
     </div>
     <div class="row">
+      <label for="password">Confirm Password:</label>
+      <input type="password" name="password" id="password-confirm" placeholder="Confirm Password..."><br>
+    </div>
+    <div class="row">
       <label for="email">Enter an email:</label>
       <input type="text" name="email" id="email" placeholder="Email..."><br>
     </div>
     <div class="submitdiv">
-      <input type="submit" value="Register Your Account">
+      <input type="submit" id="register-account-submit" value="Register Your Account">
       <input type="text" name="redirect" value="/" hidden>
     </div>
   </div>
+  <script src="/script/register-form.js"></script>
 </form>
 <% } %>
