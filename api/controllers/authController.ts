@@ -102,6 +102,9 @@ async function register(req: Request, res: Response, next: NextFunction) {
     if (!email) bodyValidationErr.push('noemail');
     if (!password) bodyValidationErr.push('nopassword');
     
+    console.log(regex);
+    
+
     // validate user account details
     if (!regex.username.test(username)) bodyValidationErr.push('badusername');
     if (!regex.email.test(email)) bodyValidationErr.push('bademail');

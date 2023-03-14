@@ -5,34 +5,34 @@
     const emailInput = document.querySelector('#email');
 
     const inputs = [usernameInput, pwdInput, pwdConfirmInput, emailInput];
+    usernameInput.addEventListener('keyup', (event) => handleValidation(event, validateUsername));
+    pwdInput.addEventListener('keyup', handlePasswordsValidation);
+    pwdConfirmInput.addEventListener('keyup', handlePasswordsValidation);
+    emailInput.addEventListener('keyup', (event) => handleValidation(event, validateEmail));
 
-    usernameInput.addEventListener('keyup', (event) => handleRegexTestInput(event, validateUsername));
-    usernameInput.addEventListener('keyup', () => registerFormSubmittable(inputs));
+    inputs.forEach(input => {
+        input.dispatchEvent(new Event('keyup'));
+        input.addEventListener('keyup', () => handleRegisterFormIsSubmittable(inputs));
+    });
 
-    pwdInput.addEventListener('keyup', (event) => handleRegexTestInput(event, validatePassword));
-    pwdInput.addEventListener('keyup', () => registerFormSubmittable(inputs));
+    const registrationForm = document.querySelector('#registration-form');
 
-    pwdConfirmInput.addEventListener('keyup', (event) => handleRegisterPasswordConfirmKeyup(event, validatePassword, pwdInput));
-    pwdConfirmInput.addEventListener('keyup', () => registerFormSubmittable(inputs));
 
-    emailInput.addEventListener('keyup', (event) => handleRegexTestInput(event, validateEmail));
-    emailInput.addEventListener('keyup', () => registerFormSubmittable(inputs));
+    handleRegisterFormIsSubmittable(inputs);
 })();
 
-function handleRegexTestInput(event, validator) {
-    const input = event.target;
-    if (validator(input.value)) {
-        input.classList.add('valid');
-        input.classList.remove('invalid');
+function handlePasswordsValidation(e) {
+    const pwdInput = document.querySelector('#password');
+    if (validatePassword(pwdInput.value)) {
+        pwdInput.classList.add('valid');
+        pwdInput.classList.remove('invalid');
     } else {
-        input.classList.remove('valid');
-        input.classList.add('invalid');
+        pwdInput.classList.remove('valid');
+        pwdInput.classList.add('invalid');
     }
-}
 
-function handleRegisterPasswordConfirmKeyup(event, validator, pwdInput) {
-    const pwdConfirmInput = event.target;
-    if (pwdInput.value === pwdConfirmInput.value && validator(pwdConfirmInput.value)) {
+    const pwdConfirmInput = document.querySelector('#password-confirm');
+    if (pwdInput.value === pwdConfirmInput.value && validatePassword(pwdConfirmInput.value)) {
         pwdConfirmInput.classList.add('valid');
         pwdConfirmInput.classList.remove('invalid');
     } else {
@@ -41,7 +41,18 @@ function handleRegisterPasswordConfirmKeyup(event, validator, pwdInput) {
     }
 }
 
-function registerFormSubmittable(elements) {
+function handleValidation(event, validateCallback) {
+    const input = event.target;
+    if (validateCallback(input.value.trim())) {
+        input.classList.add('valid');
+        input.classList.remove('invalid');
+    } else {
+        input.classList.remove('valid');
+        input.classList.add('invalid');
+    }
+}
+
+function handleRegisterFormIsSubmittable(elements) {
     const registerBtn = document.querySelector('#register-account-submit');
     for (let element of elements) {
         console.log(element);

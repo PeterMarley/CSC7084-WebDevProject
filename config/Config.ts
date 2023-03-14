@@ -1,14 +1,20 @@
 
 class Config {
-    userDetailsValidation: IUserDetailsValidation;
-    connection: IConnection;
+    private _userDetailsValidation: IUserDetailsValidation;
+    private _connection: IConnection;
     constructor() {
         try {
-            this.userDetailsValidation = require('./userDetailsValidation.json');
-            this.connection = require('./connection.json');
+            this._userDetailsValidation = require('./userDetailsValidation.json');
+            this._connection = require('./connection.json');
         } catch (err: any) {
             throw new Error('Configuration file failed to load.');
         }
+    }
+    get connection() {
+        return this._connection;
+    }
+    get userDetailsValidation() {
+        return this._userDetailsValidation;
     }
 }
 

@@ -8,16 +8,21 @@ import getConnection from '../utils/dbConnection';
  */
 export default async function authenticateRequestSource(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.get('Authorization') ?? '';
-    
-    const con = await getConnection();
-    const sql = format("SELECT COUNT(*) AS `count` FROM tbl_key k WHERE k.api_key=? AND k.active=1", [authHeader]);
-    const result = (await con.query(sql)).at(0) as RowDataPacket;
-    con.end();
+    let count = 0;
+    try {
+        const con = await getConnection();
+        const sql = format("SELECT COUNT(*) AS `count` FROM tbl_key k WHERE k.api_key=? AND k.active=1", [authHeader]);
+        const result = (await con.query(sql)).at(0) as RowDataPacket;
+        con.end();
+        count = result[0].count;
+    } catch (err: any) {
+        console.error(err);
+        res.status(500).send(new SuccessResponse(false, ['Something went wrong.']));
+        return;
+    }
 
-    const count = result[0].count;
     if (count < 1) {
-        res.statusCode = 401;
-        res.send(new SuccessResponse(false, ['You are not authorized.']));
+        res.status(401).send(new SuccessResponse(false, ['You are not authorized.']));
         return;
     }
     next();
