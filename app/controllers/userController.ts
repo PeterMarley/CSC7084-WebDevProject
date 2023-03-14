@@ -122,6 +122,7 @@ class UserController {
         }
 
         const { username, email, password } = req.body;
+        
         const registrationResponse = await apiCall(
             'POST',
             'api/auth/register',

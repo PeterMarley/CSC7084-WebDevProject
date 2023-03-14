@@ -6,7 +6,8 @@
 
 // express imports
 import express, { Request, Response } from 'express';
-import authenticateRequestSource from './middleware/authenticateRequestSource';
+import internalServerErrorHandler from './middleware/internalServerErrorHandler';
+
 
 // app imports
 import authRouter from './routes/authRouter';
@@ -27,6 +28,8 @@ api.use(express.urlencoded({ extended: false }));
 api.use('/auth', authRouter);
 api.use('/mood', moodRouter);
 api.use('/visualize', visualizeRouter);
+
+api.use(internalServerErrorHandler);
 
 // 404 NOT FOUND fallback route
 api.all('*', (req: Request, res: Response) => res.status(404).send('that aint no valid API JIMBOB ME SON: ' + req.originalUrl));

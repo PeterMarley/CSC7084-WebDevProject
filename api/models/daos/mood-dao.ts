@@ -97,7 +97,7 @@ class MoodApiDataAccessObject {
 				INNER JOIN tbl_mood m ON m.mood_id = e.mood_id
 				INNER JOIN tbl_mood_arousal ma ON ma.mood_arousal_id = m.mood_arousal_id
 				INNER JOIN tbl_mood_valence mv ON mv.mood_valence_id = m.mood_valence_id
-				WHERE a.user_id = 94
+				WHERE a.user_id = ?
 				GROUP BY m.mood_id, a.activity_id
 				ORDER BY e.timestamp DESC`,
 				[userId]
