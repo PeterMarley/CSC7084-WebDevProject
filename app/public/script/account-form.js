@@ -53,12 +53,12 @@ function handleConfirmPasswordValidation() {
 
 
     if (inputNewPwd.value !== inputNewPwdConfirm.value) {
-        inputNewPwdConfirm.classList.add('form-input-validation-error');
+        inputNewPwdConfirm.classList.add('invalid');
         inputNewPwdConfirm.classList.remove('valid');
         inputNewPwd.classList.remove('valid');
         buttonSubmitChangePassword.disabled = true;
     } else {
-        inputNewPwdConfirm.classList.remove('form-input-validation-error');
+        inputNewPwdConfirm.classList.remove('invalid');
         inputNewPwdConfirm.classList.add('valid');
         inputNewPwd.classList.add('valid');
         buttonSubmitChangePassword.disabled = false;

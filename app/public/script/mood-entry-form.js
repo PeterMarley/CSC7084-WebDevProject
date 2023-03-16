@@ -151,10 +151,10 @@ function validateSelectedMood() {
     const { mood } = entryFormComponents.selected;
     let validated = false;
     if (mood.length === 0) {
-        moodSelectionBox.classList.add('form-input-validation-error');
+        moodSelectionBox.classList.add('invalid');
         // console.log(1);
     } else {
-        moodSelectionBox.classList.remove('form-input-validation-error');
+        moodSelectionBox.classList.remove('invalid');
         // console.log(2);
         validated = true;
     }

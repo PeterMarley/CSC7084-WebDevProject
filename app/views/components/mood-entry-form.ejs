@@ -50,73 +50,77 @@ if (authed) {
   // console.log('pos selector: ' + posMoodsButtonSelector);
   // console.log('neg selector: ' + negMoodsButtonSelector);
 %>
-<div id="mood-entry-form-container">
+<div id="mood-entry-form-container" class="flex-container flex-start-h col">
   <form method="POST" action="<%- formAction %>" id="mood-entry-form">
     <input hidden name="action" value="<%- action %>">
-    <div id="mood-valence-button-container" disabled="<%- valenceButtonsDisabled %>">
-      <span id="valence-positive" class="mood-valence-button<%- posValenceButtonSelected %>">Positive Mood</span>
-      <span id="valence-negative" class="mood-valence-button<%- negValenceButtonSelected %>">Negative Mood</span>
+    <div id="mood-valence-button-container" disabled="<%- valenceButtonsDisabled %>" class="flex-container centered-h gap-10">
+      <span id="valence-positive" class="valence-selection-button mood-valence-button<%- posValenceButtonSelected %>">Positive Mood</span>
+      <span id="valence-negative" class="valence-selection-button mood-valence-button<%- negValenceButtonSelected %>">Negative Mood</span>
     </div>
-    <div id="positive-moods" class="mood-selection-container<%- posMoodsButtonSelector %>">
+    <div>
+      <div id="positive-moods" class="flex-container col centered-h centered-v-no-height mood-selection-container<%- posMoodsButtonSelector %>">
 
-      <div id="valence-positive" class="mood-selection" data-action="<%- action %>">
-        <% 
-      for (const mood of positiveMoods) {
-        const moodSelector = (action === 'edit' && entryData.mood.name == mood.name ? 'selected ' : '') + 'mood'; 
-      %>
+        <div id="valence-positive" class="mood-selection flex-container flex-wrap-on space-evenly-h  centered-v-no-height" data-action="<%- action %>">
+          <% 
+        for (const mood of positiveMoods) {
+          const moodSelector = (action === 'edit' && entryData.mood.name == mood.name ? 'selected ' : '') + 'mood flex-container col centered-v'; 
+        %>
 
-        <span class="<%- moodSelector %>">
-          <img src="<%- mood.image.url %>" class="mood-image">
-          <span class="mood-name"><%- mood.name %></span>
-        </span>
+          <span class="<%- moodSelector %>">
+            <img src="<%- mood.image.url %>" class="img32x32">
+            <span class="mood-name flex-container centered-h"><%- mood.name %></span>
+          </span>
+          <% } %>
+        </div>
+        <% if (action === 'edit') { %>
+        <div>Please note, you cannot edit a previous entries mood.</div>
         <% } %>
       </div>
-      <% if (action === 'edit') { %>
-      <div>Please note, you cannot edit a previous entries mood.</div>
-      <% } %>
-    </div>
-    <div id="negative-moods" class="mood-selection-container<%- negMoodsButtonSelector %>">
+      <div id="negative-moods" class="flex-container col centered-h centered-v-no-height mood-selection-container<%- negMoodsButtonSelector %>">
 
-      <div id="valence-negative" class="mood-selection" data-action="<%- action %>">
-        <% 
-      for (const mood of negativeMoods) {
-        const moodSelector = (action === 'edit' && entryData.mood.name == mood.name ? 'selected ' : '') + 'mood'; 
-      %>
+        <div id="valence-negative" class="mood-selection flex-container flex-wrap-on space-evenly-h  centered-v-no-height" data-action="<%- action %>">
+          <% 
+        for (const mood of negativeMoods) {
+          const moodSelector = (action === 'edit' && entryData.mood.name == mood.name ? 'selected ' : '') + 'mood flex-container col centered-v'; 
+        %>
 
-        <span class="<%- moodSelector %>">
-          <img src="<%- mood.image.url %>" class="mood-image">
-          <span class="mood-name"><%- mood.name %></span>
-        </span>
+          <span class="<%- moodSelector %>">
+            <img src="<%- mood.image.url %>" class="img32x32">
+            <span class="mood-name flex-container centered-h"><%- mood.name %></span>
+          </span>
+          <% } %>
+        </div>
+        <% if (action === 'edit') { %>
+        <div>Please note, you cannot edit a previous entries mood.</div>
         <% } %>
-      </div>
-      <% if (action === 'edit') { %>
-      <div>Please note, you cannot edit a previous entries mood.</div>
-      <% } %>
 
+      </div>
     </div>
 
-    <!-- <div class="container"> -->
-    <textarea name="notes" id="mood-entry-notes" placeholder="Leave some notes if you wish..."><%- notes %></textarea>
-    <div class="activity-selection-container">
-      <div class="activity-selection">
+    <textarea name="notes" maxLength="10" id="mood-entry-notes" placeholder="Leave some notes if you wish..."><%- notes %></textarea>
+    <div class="flex-container centered-h centered-v-no-height col">
+      <div class="activity-selection grid-container">
         <!-- Activity Groups -->
         <% for (const actGroup of entryFormData.activityGroups) { %>
         <div class="activity-group">
-          <div class="activity-group-name"><img src="<%- actGroup.image.url %>" alt="<%- actGroup.image.altText %>"><span><%- actGroup.activityGroupName %></span></div>
-          <div class="activity-group-activities">
+          <div class="activity-group-name flex-container flex-start-h centered-v-no-height">
+            <img class="img32x32 activity-group-name-img" src="<%- actGroup.image.url %>" alt="<%- actGroup.image.altText %>">
+            <span><%- actGroup.activityGroupName %></span>
+            </div>
+          <div class="activity-group-activities grid-container grid-auto-flow-row">
             <% 
             for (const act of actGroup.activities) { 
               // console.log('===act===');
               // console.log(act);
-              let activitySelector = 'activity';
+              let activitySelector = 'activity flex-container col centered-v-no-height';
               const activityIndex = entryData ? entryData.activities.findIndex(e => e.activityId === act.activityId) : -1;
               if (action === 'edit' && activityIndex !== -1) {
                 activitySelector += ' selected';
                 selectedActivities.push(entryData.activities[activityIndex].activityName);
               }
             %>
-            <div class="<%- activitySelector %>"><img src="<%- act.image.url %>" alt="<%- act.image.altText %>">
-              <div class="activity-name"><%- act.activityName %></div>
+            <div class="<%- activitySelector %>"><img class="img32x32" src="<%- act.image.url %>" alt="<%- act.image.altText %>">
+              <div class="activity-name flex-container flex-start-h"><%- act.activityName %></div>
             </div>
             <% } %>
           </div>
@@ -127,7 +131,9 @@ if (authed) {
     <!-- </div> -->
     <input hidden type="text" id="activities-hidden-input" name="activities" value="<%- selectedActivities.join(',') %>">
     <input hidden type="text" id="mood-hidden-input" name="mood" value="<%- entryData ? entryData.mood.name : '' %>">
-    <input type="button" value="<%- submitButtonText %>" id="mood-entry-form-submit">
+    <div class="flex-container centered-h">
+      <input type="button" value="<%- submitButtonText %>" id="mood-entry-form-submit" class="button-style-1">
+    </div>
   </form>
 </div>
 </div>

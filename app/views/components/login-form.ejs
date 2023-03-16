@@ -1,21 +1,20 @@
 <div id="login-form-container">
   <form method="POST" action="/user/login" class="form-style-1">
-    <div class="form-style-1-container">
-      <div class="row">
+    <div class="form-style-1-container grid-container gap-5">
+      <div class="grid-container">
         <label for="username">Username:</label>
         <!-- <input type="text" name="username" placeholder="Enter username" required minlength="<%- config.userDetailsValidation.username.minLength %>" maxlength="<%- config.userDetailsValidation.username.maxLength %>" pattern="<%- config.userDetailsValidation.username.regex %>"> -->
-        <input id="login-username-input" type="text" name="username" placeholder="Enter username">
+        <input id="login-username-input" type="text" name="username" placeholder="Enter username" required>
       </div>
-      <div class="row">
+      <div class="grid-container">
         <label for="username">Password:</label>
         <input id="login-password-input" type="password" name="password" placeholder="Enter password" required>
       </div>
-      <!-- <div class="submitdiv"> -->
       <div>
         <input type="submit" name="log-in" value="login" class="button-style-1" style="width:100%" >
       </div>
       <div style="display: flex; justify-content: center;">- or -</div>
-      <div class="submitdiv">
+      <div class="flex-container centered-h">
         <input type="button" id="register-button" name="log-in" value="register" class="button-style-1" style="width:100%">
       </div>
       <script src="/script/login-form.js"></script>

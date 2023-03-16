@@ -7,25 +7,25 @@ You're already logged in mate
 <%  email = attemptedEmail;                                                               %>
 <%}                                                                                       %>
 <form method="POST" action="/user/register" class="form-style-1" id="registration-form">
-  <div class="form-style-1-container" style="position: relative;">
-    <div class="row">
+  <div class="form-style-1-container grid-container centered-h gap-5" style="position: relative;">
+    <div class="grid-container">
       <label for="username">Enter a username:</label>
-      <input class="invalid" type="text" name="username" id="username" placeholder="Username..." value="<%- username %>"><br>
+      <input class="invalid" type="text" name="username" id="username" placeholder="Username..." value="<%- username %>" required><br>
     </div>
-    <div class="row">
+    <div class="grid-container">
       <label for="password">Enter a Password:</label>
-      <input class="invalid" type="password" name="password" id="password" placeholder="Password..."><br>
+      <input class="invalid" type="password" name="password" id="password" placeholder="Password..." required><br>
     </div>
-    <div class="row">
+    <div class="grid-container">
       <label for="password">Confirm Password:</label>
-      <input class="invalid" type="password" name="password-confirm" id="password-confirm" placeholder="Confirm Password..."><br>
+      <input class="invalid" type="password" name="password-confirm" id="password-confirm" placeholder="Confirm Password..." required><br>
     </div>
-    <div class="row">
+    <div class="grid-container">
       <label for="email">Enter an email:</label>
-      <input class="invalid" type="text" name="email" id="email" placeholder="Email..." value="<%- email %>"><br>
+      <input class="invalid" type="text" name="email" id="email" placeholder="Email..." value="<%- email %>" required><br>
     </div>
-    <div class="submitdiv">
-      <input type="submit" id="register-account-submit" value="Register Your Account">
+    <div class="flex-container centered-h">
+      <input type="submit" id="register-account-submit" value="Register Your Account" class="button-style-1">
       <input class="invalid" type="text" name="redirect" value="/" hidden>
     </div>
     <% if (typeof validationErrors !== 'undefined') {
