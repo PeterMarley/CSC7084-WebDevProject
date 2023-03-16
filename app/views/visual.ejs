@@ -1,6 +1,6 @@
 <%- include('partials/top.ejs') %>
 <div id="chart-pane">
-<div id="chart-pane-controls">
+<div id="chart-pane-controls" class="flex-container flex-wrap-on centered-h gap-5">
   <button id="chart-intro" class="chart-pane-button button-style-1 selected">Introduction</button>
   <button id="chart-mood-freq" class="chart-pane-button button-style-1">Mood Frequency</button>
   <button id="chart-arousal" class="chart-pane-button button-style-1">Arousal Breakdown</button>
@@ -8,9 +8,9 @@
   <button id="chart-relationships" class="chart-pane-button button-style-1">Activity/ Mood Relationships</button>
   <button id="chart-summary" class="chart-pane-button button-style-1">Summary</button>
 </div>
-<div id="chart-intro-text">Speak a bit about Russell's Circumplex Model of Effect</div>
-<div class="chart-container">
-  <div id="relationship-buttons-container"></div>
+<div id="chart-intro-text" class="flex-container centered-h">Speak a bit about Russell's Circumplex Model of Effect</div>
+<div id="chart-container" class="flex-container col centered-v-no-height centered-h">
+  <div id="relationship-buttons-container" class="flex-container centered-h flex-wrap-on"></div>
   <canvas id="current-chart" class="hidden"></canvas>
 </div>
 </div>

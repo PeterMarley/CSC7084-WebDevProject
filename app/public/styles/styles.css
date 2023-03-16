@@ -812,8 +812,8 @@ input[type="password"].valid {
 /****************************
   CHARTS
 ****************************/
+
 #chart-pane {
-    /* height: calc(90vh - var(--header-height)); */
     border-radius: var(--general-border-radius);
     border: 1px solid var(--color-bg-2);
     background-color: var(--color-bg-1);
@@ -822,13 +822,7 @@ input[type="password"].valid {
 }
 
 #chart-pane-controls {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 5px;
     margin-bottom: 1em;
-    /* border: 1px solid var(--color-bg-2); */
-    /* background-color: var(--color-3); */
 }
 
 .chart-pane-button.selected {
@@ -836,25 +830,13 @@ input[type="password"].valid {
     color: var(--color-4)
 }
 
-.chart-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+#chart-container {
     max-height: 75vh;
-}
-
-#chart-intro-text {
-    display: flex;
-    justify-content: center;
 }
 
 #relationship-buttons-container {
     background-color: var(--color-bg-1);
     border: 1px solid var(--color-bg-2);
-    display: flex;
-    justify-content: center;
-    flex-flow: wrap;
 }
 
 #relationship-buttons-container>button {
@@ -864,13 +846,10 @@ input[type="password"].valid {
 }
 
 .chart-canvas {
-    /* width: 20%;
-    height: 20%; */
     background-color: var(--color-bg-1);
     border: 1px solid var(--color-bg-2);
     border-radius: var(--general-border-radius);
     margin: 10px;
-    /* color: red; */
 }
 
 /****************************
@@ -898,6 +877,7 @@ input[type="password"].valid {
 /****************************
   BREAKPOINTS
 ****************************/
+
 @media only screen and (max-width: 350px) {
 
     #mood-entry-form {
@@ -950,27 +930,12 @@ input[type="password"].valid {
         width: 0px;
     }
 
-    /* #embedded-nav>nav {
-        width: auto;
-    } */
-
     #mood-entry-notes {
         min-height: 3em;
     }
 
-    /* #nav-menu-arrow {
-        background-image: url('../icons/down-arrow24x24.png');
-    } */
-
     #mood-entry-form {
         margin-left: 10px;
         margin-right: 10px;
-    }
-}
-
-@media only screen and (max-width: 1060px) {
-    .activity-selection-container {
-        /* margin-left: 8px;
-        margin-right: 8px; */
     }
 }
