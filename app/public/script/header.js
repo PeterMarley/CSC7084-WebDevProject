@@ -103,12 +103,12 @@ function createModal(modalId) {
     modalCloseButton.textContent = '✕';
     modalCloseButton.classList.add('modal-close-button');
 
-    const modalInnerDiv = document.createElement('div');
-    modalInnerDiv.className = 'modalInnerDiv';
-    modalInnerDiv.style.padding = '10px';
+    const modalContentDiv = document.createElement('div');
+    modalContentDiv.className = 'modal-content-div';
+    modalContentDiv.style.padding = '10px';
 
     // nest elements
-    modal.append(modalCloseButton, modalInnerDiv);
+    modal.append(modalCloseButton, modalContentDiv);
     modalContainer.appendChild(modal);
     modalContainer.addEventListener('click', handleModalClick);
 
@@ -184,7 +184,7 @@ function createDeleteUserConfirmModal() {
 
     modalContainer
         .querySelector('.modal')
-        .querySelector('.modalInnerDiv')
+        .querySelector('.modal-content-div')
         .append(wrapper);
 
     return modalContainer

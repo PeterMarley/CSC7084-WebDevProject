@@ -141,6 +141,12 @@ body {
     align-items: center;
 }
 
+#home-link-img {
+    margin-right: 10px;
+    width: 32px;
+    height: 32px;
+}
+
 /****************************
   BUTTON STYLES
 ****************************/
@@ -191,7 +197,7 @@ a.button-style-2 {
 }
 
 /****************************
-  BODY / CONTENT PANE
+  BODY + NAV
 ****************************/
 
 #body {
@@ -204,54 +210,6 @@ a.button-style-2 {
     background-position: center;
     background-attachment: fixed;
 }
-
-.flex-container {
-    display: flex;
-}
-
-.flex-container.flex-grow-1 {
-    flex-grow: 1;
-}
-
-.flex-container.row {
-    flex-direction: row;
-}
-
-.flex-container.col {
-    flex-direction: column;
-}
-
-.flex-container.centered-h {
-    justify-content: center;
-}
-
-.flex-container.centered-v {
-    align-items: center;
-    height: 100%;
-}
-
-.box-style-1 {
-    padding: 10px;
-    background-color: var(--color-bg-1);
-    border: 1px solid var(--color-bg-2);
-    border-radius: var(--general-border-radius);
-}
-
-.box-style-1.medium {
-    max-width: 600px;
-    ;
-}
-
-
-.centered {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* #body>* {
-  margin: 10px;
-} */
 
 nav {
     width: 150px;
@@ -283,102 +241,118 @@ nav {
 }
 
 
-#body>div {
-    flex-grow: 1;
-}
-
-
-#mood-entry-form-container {
-    display: flex;
-    justify-content: center;
-}
-
 /****************************
   FOOTER
 ****************************/
 
 #footer {
-    background-color: cornflowerblue;
-    /* margin: 10px; */
+    background-color: var(--color-1);
+    color: var(--text-color);
     margin-top: auto;
     position: sticky;
     bottom: 0;
+    border-top: var(--header-border-width) solid var(--color-2);
+    font-size: 0.75rem;
+}
+
+/****************************
+  BOX CLASSES
+****************************/
+
+.box-style-1 {
+    padding: 10px;
+    background-color: var(--color-bg-1);
+    border: 1px solid var(--color-bg-2);
+    border-radius: var(--general-border-radius);
+}
+
+.box-style-1.medium {
+    max-width: 600px;
+}
+
+/****************************
+  FLEX CLASSES
+****************************/
+
+/* Flex Containers */
+
+.flex-container {
+    display: flex;
+}
+
+.flex-container.row {
+    flex-direction: row;
+}
+
+.flex-container.col {
+    flex-direction: column;
+}
+
+.flex-container.centered-h {
+    justify-content: center;
+}
+
+.flex-container.centered-v {
+    align-items: center;
+    height: 100%;
+}
+
+.flex-container.flex-grow-1 {
+    flex-grow: 1;
+}
+
+.flex-container.gap-5 {
+    gap: 5px;
+}
+
+.flex-container.gap-10 {
+    gap: 10px;
+}
+
+/* Flex Items */
+
+.flex-container .flex-1 {
+    flex: 1;
+}
+
+/****************************
+  GRID CLASSES
+****************************/
+
+.grid-container {
+    display: grid;
+}
+
+.grid-container.centered-h {
+    justify-content: center;
+}
+
+.grid-container.centered-v {
+    align-items: center;
 }
 
 /****************************
   USER DETAILS PANE
 ****************************/
 
-.modalInnerDiv {
-    width: 350px;
-    border: 1px solid black;
-    border: 1px solid var(--color-2);
-    background-color: var(--color-4);
-    border-radius: var(--general-border-radius);
-}
-
-#login-form-container>.form-style-1 {
-    margin: 0px;
-}
-
 #user-details {
-    display: grid;
     grid-template: 1fr/ 20% 80%;
-    justify-content: center;
-    padding: 10px;
+    padding: var(--button-style-1-padding);
     border-radius: 0.2em;
 }
 
-
-#user-details-actions {
-    display: flex;
-    gap: 5px;
-}
-
-#user-details-actions>a {
-    flex: 1;
-    display: flex;
-    text-decoration: none;
-    align-items: center;
-    justify-content: center;
-}
-
-#user-details-actions>a>button {
-    flex: 1;
-}
-
-#user-details-avatar {
+#user-details-avatar-container {
+    box-sizing: border-box;
     border: 1px solid var(--color-1);
     border-radius: var(--general-border-radius);
-    margin: 2px 5px 2px 2px;
-    background-color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    margin-right: 5px;
+    background-color: var(--color-bg-1);
 }
 
-#user-details-avatar>img {
+#user-details-avatar-img {
     width: 100%;
     height: 100%;
 }
-
-#user-details-info {
-    display: grid;
-}
-
-/****************************
-  CONTROLS
-****************************/
-
-.login-control {
-    border: 0px;
-    background: none;
-}
-
-/* .login-form-container {
-    position: absolute;
-    margin: 0px;
-} */
 
 /****************************
   ENTRY LIST
@@ -569,13 +543,11 @@ input[type="email"].form-style-1 {
     /* padding: 2px 10px 2px 10px; */
     padding: 1em 2em;
     margin: 0.2em 0.2em;
-    border-radius: 0.3em
 }
 
 .form-style-1 input[type="submit"] {
-    border: 1px solid var(--color-2);
+    /* border: 1px solid var(--color-2); */
     background-color: var(--color-3);
-    border-radius: 0.2em;
     /* max-width: 200px; */
 }
 
@@ -660,6 +632,12 @@ input:focus.form-style-1 {
     /* flex: 1; */
     width: inherit;
     flex-basis: 0;
+}
+
+
+#mood-entry-form-container {
+    display: flex;
+    justify-content: center;
 }
 
 #mood-entry-form {
@@ -895,6 +873,13 @@ input:focus.form-style-1 {
     padding: 1em;
 }
 
+.modal-content-div {
+    width: 350px;
+    border: 1px solid var(--color-2);
+    background-color: var(--color-4);
+    border-radius: var(--general-border-radius);
+}
+
 /****************************
   CHARTS
 ****************************/
@@ -990,7 +975,7 @@ input:focus.form-style-1 {
         margin: 0px;
     }
 
-    .modalInnerDiv {
+    .modal-content-div {
         width: 100%;
     }
 

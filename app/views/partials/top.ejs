@@ -35,8 +35,8 @@
     </div>
     <!-- TODO this link doesnt work when served from routes, eg /mood/ -->
     <div class="flex-container centered-v centered-h">
-      <a href="/" class="home-link flex-container centered-v centered-h">
-        <img src="/icons/main_icon_128x128.png" alt="Moodr Icon" width="32px" height="32px">
+      <a href="/" class="flex-container centered-v centered-h">
+        <img id="home-link-img" src="/icons/main_icon_128x128.png" alt="Moodr Icon">
       </a>
       <!-- <img  class="theme"> -->
       <div class="theme-change-button"></div>
@@ -51,4 +51,4 @@
   </div>
   <div id="body" class="flex-container row flex-grow-1">
     <%- include('nav') %>
-    <div>
+    <div class="flex-grow-1">

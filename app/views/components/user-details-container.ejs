@@ -1,13 +1,13 @@
-<div class="modalInnerDiv">
-  <div id="user-details">
-    <div id="user-details-avatar">
-      <img src="/image/defaultavatar.png">
+<div class="modal-content-div">
+  <div id="user-details" class="grid-container">
+    <div id="user-details-avatar-container" class="flex-container centered-h centered-v">
+      <img src="/image/defaultavatar.png" id="user-details-avatar-img">
     </div>
-    <div id="user-details-info">
+    <div class="grid-container">
       <div><%- username %></div>
-      <div id="user-details-actions">
-        <a href="/user/account" class="button-style-1">Account</a>
-        <a href="/user/logout" class="button-style-1">Log Out</a>
+      <div id="user-details-actions" class="flex-container gap-5">
+        <a href="/user/account" class="button-style-1 flex-1">Account</a>
+        <a href="/user/logout" class="button-style-1 flex-1">Log Out</a>
       </div>
     </div>
   </div>

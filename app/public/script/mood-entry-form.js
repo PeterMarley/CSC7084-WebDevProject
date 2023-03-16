@@ -43,7 +43,7 @@ entryFormComponents.selected.mood;
     const valenceButtons = document.querySelectorAll('.mood-valence-button');
     valenceButtons.forEach(b => b.addEventListener('click', handleMoodValenceButtonClicks));
 
-    document.body.appendChild(createMoodEntryModal());
+    document.body.appendChild(createMoodEntryValidationModal());
 
     // add event listeners
 
@@ -61,7 +61,7 @@ entryFormComponents.selected.mood;
 
 })();
 
-function createMoodEntryModal() {
+function createMoodEntryValidationModal() {
     const modalContainer = document.createElement('div');
     modalContainer.id = 'mood-entry-form-modal';
     modalContainer.classList.add('modal-container');
@@ -75,14 +75,14 @@ function createMoodEntryModal() {
     closeBtn.textContent = '✕';
     modal.appendChild(closeBtn);
 
-    const modalInnerDiv = document.createElement('div');
-    modalInnerDiv.classList.add('modalInnerDiv');
-    modalInnerDiv.style.padding = '5px 10px';
-    modalInnerDiv.style.display = 'flex';
-    modalInnerDiv.style.justifyContent = 'center';
-    modalInnerDiv.textContent = 'Mood is required!';
+    const modalContentDiv = document.createElement('div');
+    modalContentDiv.classList.add('modal-content-div');
+    modalContentDiv.style.padding = '5px 10px';
+    modalContentDiv.style.display = 'flex';
+    modalContentDiv.style.justifyContent = 'center';
+    modalContentDiv.textContent = 'Mood is required!';
 
-    modal.appendChild(modalInnerDiv);
+    modal.appendChild(modalContentDiv);
 
     modalContainer.appendChild(modal);
 
