@@ -134,6 +134,12 @@ async function login(req: Request, res: Response, next: NextFunction) {
 
     if (!username) error.push('no username provided');
     if (!password) error.push('no password provided');
+    if (username && !regex.username.test(username)) {
+        error.push(config.userDetailsValidation.username.description); 
+    }
+    if (password && !regex.password.test(password)) {
+        error.push(config.userDetailsValidation.password.description); 
+    }
 
     if (error.length !== 0) {
         res.status(401).json(new LoginResponse(false, undefined, error));
@@ -141,7 +147,7 @@ async function login(req: Request, res: Response, next: NextFunction) {
     }
 
     const [statusCode, loginResponse] = await dao.login(username, password);
-
+    
     // prepare and send json response
     res.status(statusCode).json(loginResponse);
 }

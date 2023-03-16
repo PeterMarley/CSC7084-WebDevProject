@@ -21,9 +21,9 @@ class Config {
 const config = new Config();
 
 interface IUserDetailsValidation {
-    username: { minLength: number, maxLength: number, regex: RegExp };
-    password: { minLength: number, maxLength: number, regex: RegExp };
-    email: { regex: RegExp };
+    username: { minLength: number, maxLength: number, regex: RegExp, description: string };
+    password: { minLength: number, maxLength: number, regex: RegExp, description: string };
+    email: { regex: RegExp, description: string };
 }
 
 interface IConnection {

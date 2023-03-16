@@ -116,10 +116,13 @@ body {
     z-index: 100;
 }
 
+.margin-auto-left {
+    margin-left: auto;
+}
+
 #hamburger-container {
     background-color: var(--color-4);
     min-width: fit-content;
-    margin-left: auto;
     margin-right: 10px;
     padding: calc(var(--button-style-1-padding) / 2);
     position: relative;
@@ -279,6 +282,15 @@ nav {
 
 .box-style-1.medium {
     max-width: 600px;
+}
+
+.box-style-errors {
+    padding: 10px;
+    background-color: var(--highlight-bg-invalid);
+    color: var(--text-color);
+    border: 1px solid var(--highlight-border-invalid);
+    border-radius: var(--general-border-radius);
+    font-size: 0.75em;
 }
 
 /****************************
@@ -535,15 +547,21 @@ nav {
     position: relative;
 }
 
-/* .form-style-1-container>* {
+.form-style-1-container>* {
     position: relative;
-} */
+}
 
 .form-style-1 .validation-message-div {
     position: absolute;
-    top:50%;
-    right: -15em;
+    top:0;
+    bottom:0;
+    left: 100%;
+    right: -20em;
     z-index: 1000;
+    font-size: 0.65em;
+    background-color: var(--highlight-bg-invalid);
+    border-radius: var(--general-border-radius);
+    /* color: var(--highlight-border-invalid); */
 }
 
 .form-style-1 input[type="text"],
@@ -592,6 +610,32 @@ input:focus.form-style-1 {
 
 .account-form .form-style-1-container .row {
     min-width: 320px;
+}
+
+/* Login Form */
+
+#login-form-container {
+    width: 20em;
+}
+
+#login-form-container .button-style-1 {
+    width: 100%;
+}
+
+/* Registration Form */
+
+#register-form-validation-errors-container {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: -100%;
+    height: fit-content;
+    /* width: 200px; */
+}
+
+#register-form-validation-errors {
+    max-width: 200px;
+    height: fit-content;
 }
 
 /* Entry Form */
@@ -950,5 +994,13 @@ input[type="password"].valid {
     #mood-entry-form {
         margin-left: 10px;
         margin-right: 10px;
+    }
+
+    .validation-message-div {
+        position: relative !important;
+        top: unset !important;
+        right: unset !important;
+        bottom: unset !important;
+        left: unset !important;
     }
 }

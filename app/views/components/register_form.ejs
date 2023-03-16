@@ -31,38 +31,52 @@ You're already logged in mate
     <% if (typeof validationErrors !== 'undefined') {
       console.log(validationErrors);
       %>
-    <div class="form-style-1-container flex-container centered-v centered-h " style="max-width: 200px; position: absolute; right: -200px;">
-      <div class="form-style-1">
+    <div id="register-form-validation-errors-container" class="flex-container centered-v centered-h">
+      <div id="register-form-validation-errors" class="validation-message-div flex-container centered-v centered-h" style="position:static;">
         <div>
-          <%
-    if (validationErrors.includes('nousername')) {
-      %><div>No username</div><%
-    }
-    
-    if (validationErrors.includes('nopassword')) {
-      %><div>No password</div><%
-    }
-    
-    if (validationErrors.includes('noemail')) {
-      %><div>No Email</div><%
-    }
-    
-    if (validationErrors.includes('badusername')) {
-      %><div>Username must be 8 to 20 characters (inclusive) and can only be <em>a-z</em>, <em>A-Z</em>, <em>0-9</em></div><%
-    }
-    
-    if (validationErrors.includes('badpassword')) {
-      %><div>Password must be 8 to 20 characters (inclusive) and can only be <em>a-z</em>, <em>A-Z</em>, <em>0-9</em>, <em>-</em>, <em>_</em>, <em>?</em>, <em>!</em> and <em>*</em></div><%
-    }
-    
-    if (validationErrors.includes('bademail')) {
-      %><div>Email must be in the form <em>email@address.com</em></div><%
-    }
+          <div>
+            <%
+      const errsToDisplay = [];
+      if (validationErrors.includes('nousername')) {
+        errsToDisplay.push('No username');
+      }
+      
+      if (validationErrors.includes('nopassword')) {
+        errsToDisplay.push('No password');
+      }
+      
+      if (validationErrors.includes('noemail')) {
+        errsToDisplay.push('No Email');
+      }
+      
+      if (validationErrors.includes('badusername')) {
+        errsToDisplay.push('Username must be 8 to 20 characters (inclusive) and can only be <em>a-z</em>, <em>A-Z</em>, <em>0-9</em>');
+      }
+      
+      if (validationErrors.includes('badpassword')) {
+        errsToDisplay.push('Password must be 8 to 20 characters (inclusive) and can only be <em>a-z</em>, <em>A-Z</em>, <em>0-9</em>, <em>-</em>, <em>_</em>, <em>?</em>, <em>!</em> and <em>*</em>');
+      }
+      
+      if (validationErrors.includes('bademail')) {
+        errsToDisplay.push('Email must be in the form <em>email@address.com</em>');
+      }
 
-    if (validationErrors.includes('usernametaken')) {
-      %><div>That username is already taken!</div><%
-    }
-   } %>
+      if (validationErrors.includes('usernametaken')) {
+        errsToDisplay.push('That username is already taken!');
+      }
+
+      //const errDiv = document.querySelector('#register-form-validation-errors');
+      for (let i = 0; i < errsToDisplay.length; i++) {
+        //const newDiv = document.createElement('div');
+        %><div><%- errsToDisplay[i] %></div><%
+        //newDiv.innerHtml = errsToDisplay[i];
+        //errDiv.appendChild(newDiv);
+        if (i == errsToDisplay.length - 2) {
+          %><hr><%
+        }
+      }
+    } %>
+          </div>
         </div>
       </div>
     </div>

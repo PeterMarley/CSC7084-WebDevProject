@@ -12,13 +12,9 @@
 
     inputs.forEach(input => {
         input.dispatchEvent(new Event('keyup'));
-        input.addEventListener('keyup', () => handleRegisterFormIsSubmittable(inputs));
+        input.addEventListener('keyup', () => checkRegisterFormIsSubmittable(inputs));
     });
-
-    const registrationForm = document.querySelector('#registration-form');
-
-
-    handleRegisterFormIsSubmittable(inputs);
+    checkRegisterFormIsSubmittable(inputs);
 })();
 
 function handlePasswordsValidation(e) {
@@ -52,7 +48,7 @@ function handleValidation(event, validateCallback) {
     }
 }
 
-function handleRegisterFormIsSubmittable(elements) {
+function checkRegisterFormIsSubmittable(elements) {
     const registerBtn = document.querySelector('#register-account-submit');
     for (let element of elements) {
         console.log(element);

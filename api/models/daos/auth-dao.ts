@@ -164,7 +164,7 @@ class AuthApiDataAccessObject {
         con.end();
 
         if (result[0][0] === undefined) {
-            return [401, new LoginResponse(false, undefined, ['user does not exist'])];
+            return [401, new LoginResponse(false, undefined, ['User does not exist'])];
         }
         // destructure data from DB resultset
         const { user_id, password: passwordFromDb, email } = result[0][0];

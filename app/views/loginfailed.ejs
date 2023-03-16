@@ -1,6 +1,19 @@
 <%- include('partials/top.ejs') %>
-
-<%- include('components/login-form.ejs') %>
-Login was unsuccessful, sorry not sorry
+<script>
+    disableHamburger();
+</script>
+<div class="flex-container col centered-h centered-v">
+    <div class="box-style-errors flex-container col centered-v-no-height centered-h">
+        <b>Login was unsuccessful!</b><br>
+        <% if (typeof errors != 'undefined') { %>
+            <ul>
+            <% for (const err of errors) { %>
+                <li><%- err %></li>
+            <% } %>
+            </ul>
+        <% } %>
+    </div>
+    <%- include('components/login-form.ejs') %>
+</div>
 
 <%- include('partials/bottom.ejs') %>
