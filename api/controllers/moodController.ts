@@ -1,9 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import dao from '../models/daos/mood-dao';
 import SuccessResponse from "../models/responses/SuccessResponse";
-import logErrors from "../../app/utils/logError";
-import EntryDataResponse from "../models/responses/mood/EntryDataResponse";
-import EntryFormDataResponse from "../models/responses/mood/EntryFormDataResponse";
 
 /**
  * Express middleware that deletes a single mood entry entry from the database.
@@ -33,7 +30,6 @@ async function deleteSingleEntry(req: Request, res: Response, next: NextFunction
 		}
 		res.status(200).json(response);
 	} catch (err: any) {
-		logErrors([err]);
 		next(err);
 	}
 }
@@ -47,7 +43,6 @@ async function updateSingleEntry(req: Request, res: Response, next: NextFunction
 		const success: boolean = await dao.updateSingleEntry(userId, entryId, entryNotes, activityNamesCommaDelimStr);
 		res.json(new SuccessResponse(success));
 	} catch (err: any) {
-		logErrors([err]);
 		next(err);
 	}
 }
@@ -59,7 +54,7 @@ async function getSingleEntry(req: Request, res: Response, next: NextFunction) {
 	const errors: string[] = [];
 	if (!entryId) errors.push('no-entry-id');
 	if (!userId) errors.push('no-user-id');
-	if (errors.length !== 0) {
+	if (errors.length > 0) {
 		res.status(400).json(new SuccessResponse(false, errors));
 		return;
 	}
@@ -67,7 +62,6 @@ async function getSingleEntry(req: Request, res: Response, next: NextFunction) {
 	try {
 		res.status(200).json(await dao.getSingleEntry(userId, entryId, res.locals.entryFormData));
 	} catch (err: any) {
-		logErrors(err);
 		next(err);
 	}
 }
@@ -90,7 +84,6 @@ async function getEntryFormData(req: Request, res: Response, next: NextFunction)
 		}
 		res.status(200).json(response);
 	} catch (err: any) {
-		logErrors([err]);
 		next(err);
 	}
 }
@@ -124,7 +117,6 @@ async function createNewEntry(req: Request, res: Response, next: NextFunction) {
 		const success = await dao.createNewEntry(userId, mood, notes, activityNameCommaDelimStr);
 		res.status(201).json(new SuccessResponse(success));
 	} catch (err: any) {
-		logErrors([err]);
 		next(err);
 	}
 }
@@ -150,7 +142,6 @@ async function getEntryList(req: Request, res: Response, next: NextFunction) {
 		}
 		res.status(statusCode).json(response);
 	} catch (err: any) {
-		logErrors([err]);
 		next(err);
 	}
 }

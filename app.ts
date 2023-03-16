@@ -16,6 +16,7 @@ import mainRouter from './app/routes/mainRouter';							// normal routing
 import userRouter from './app/routes/userRouter';
 import moodRouter from './app/routes/moodRouter';
 import injectConfig from './app/middleware/injectConfig';
+import internalServerErrorHandler from './app/middleware/internalServerErrorHandler';
 
 /******************************
  * 
@@ -66,8 +67,22 @@ app.use('/user', userRouter);
 app.use('/mood', moodRouter);
 app.use('/', mainRouter);
 
-const server = https.createServer(httpsOpts, app);
+/******************************
+ * 
+ * Error Handlers
+ * 
+ ******************************/
 
-server.listen(port, () => console.log('Moodr listening on port ' + port));
+app.use(internalServerErrorHandler);
+
+/******************************
+ * 
+ * Server
+ * 
+ ******************************/
+
+https
+    .createServer(httpsOpts, app)
+    .listen(port, () => console.log('Moodr listening on port ' + port));
 
 export default app;

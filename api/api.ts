@@ -19,7 +19,7 @@ const api = express.Router();
 
 /******************************
  * 
- * APIs
+ * Routes
  * 
  ******************************/
 
@@ -28,6 +28,12 @@ api.use(express.urlencoded({ extended: false }));
 api.use('/auth', authRouter);
 api.use('/mood', moodRouter);
 api.use('/visualize', visualizeRouter);
+
+/******************************
+ * 
+ * Error Handlers
+ * 
+ ******************************/
 
 api.use(internalServerErrorHandler);
 

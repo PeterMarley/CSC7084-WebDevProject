@@ -16,6 +16,7 @@ const mainRouter = Router();
  *******************************************************/
 
 mainRouter.get('/', controller.getWelcome);
+mainRouter.get('/test', controller.test);
 
 // Fallback routes
 mainRouter.all('/500', controller.internalServerError);

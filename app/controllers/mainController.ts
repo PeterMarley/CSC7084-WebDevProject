@@ -16,6 +16,9 @@ class MainController {
     notFound(req: Request, res: Response) {
         res.status(404).render('404');
     }
+    test(req: Request, res: Response) {
+        throw new Error('test error');
+    }
 }
 
 export default new MainController();

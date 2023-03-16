@@ -8,15 +8,8 @@
     const hamburger = document.querySelector("#hamburger-container");
     hamburger.addEventListener("click", handleHamburgerButtonClick);
 
-    const themeButton = document.querySelector(".theme");
+    const themeButton = document.querySelector(".theme-change-button");
     themeButton.addEventListener("click", handleThemeButtonClick);
-
-    // const navMenuArrow = document.querySelector('#nav-menu-arrow')
-    // navMenuArrow.addEventListener('click', () => {
-    //     const navMenuDropdown = document.querySelector('#nav-menu-dropdown');
-    //     navMenuDropdown.classList.toggle('selected');
-    //     //TODO sort nav menu drop down appearing when down arrow clicked
-    // });
 
     const modalContainers = document.querySelectorAll('.modal-container');
     modalContainers.forEach(mc => mc.addEventListener('click', handleModalClick));
