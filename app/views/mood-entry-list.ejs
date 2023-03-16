@@ -1,5 +1,5 @@
 <%- include('partials/top.ejs') %>
-<div class="mood-entry-list">
+<div class="mood-entry-list grid-container grid-auto-flow-row centered-h">
   <% 
 if (authed) { // if authenticated
 
@@ -7,7 +7,7 @@ if (authed) { // if authenticated
   
   if (dayKeys.length === 0) {
 %>
-  <div class="mood-day">
+  <div class="mood-day flex-container col">
     <div>
       No Mood entries. Add some!
     </div>
@@ -24,7 +24,7 @@ if (authed) { // if authenticated
     const date = new Date(day);
 %>
 
-  <div class="mood-day">
+  <div class="mood-day flex-container col">
     <div>
       <%- date.toLocaleString('en-GB', { weekday: 'long' }) // day of week %>, <%- date.toLocaleDateString('en-GB') // date string %>
     </div>
@@ -35,24 +35,26 @@ if (authed) { // if authenticated
       const entryDate = new Date(datetime);
     %>
 
-    <div class="entry">
-      <div class="entry-mood">
-        <span class="entry-mood-name"><%- mood.name %> <img src="<%- mood.image.url %>" alt="<%- mood.image.altText %>" width="24px" height="24px"></span>
-        <span>( <%- entryDate.toTimeString().substring(0,8) %> )</span>
-        <span>
+    <div class="entry flex-container col centered-h">
+      <div class="entry-mood flex-container centered-v flex-start-h gap-5">
+        <span class="flex-container centered-v"><b><%- mood.name %></b></span>
+        <span><img src="<%- mood.image.url %>" alt="<%- mood.image.altText %>" width="24px" height="24px"></span>
+        <span class="mood-entry-timestamp">( <%- entryDate.toTimeString().substring(0,8) %> )</span>
+        <span class="mood-entry-controls">
           <a href="/mood/edit/<%- entryId %>" class="button-style-2">Edit</a>
           <a href="/mood/delete/<%- entryId %>" class="button-style-2">Delete</a>
         </span>
       </div>
-      <div class="entry-activities">
+      <div class="entry-section flex-container flex-wrap-on">
+        <div class="mood-entry-data-label">Activities</div>
         <% if (activities.length > 0)  {%>
         <% for (const activity of activities) { %>
-        <div class="entry-activity">
+        <div class="entry-activity flex-container row centered-v">
           <div class="entry-activity-name">
             <%- activity.activityName %>
           </div>
-          <div class="entry-activity-image">
-            <img src="<%- activity.image.url %>" alt="<%- activity.image.altText %>">
+          <div class="flex-container centered-v centered-h">
+            <img class="entry-activity-image" src="<%- activity.image.url %>" alt="<%- activity.image.altText %>">
           </div>
         </div>
         <% } %>
@@ -60,16 +62,18 @@ if (authed) { // if authenticated
         <div class="no-activities-message">No activities selected</div>
         <% } %>
       </div>
-
-        <div class="entry-notes entry-activities">
-          <%- notes %>
-        </div>
-
-      <div class="entry-images">
+      <div class="entry-section entry-notes">
+        <div class="mood-entry-data-label">Notes</div>
+        <%- notes %>
+      </div>
+      <% if (images.length > 0) { %>
+      <div class="entry-images entry-section grid-container">
+        <div class="mood-entry-data-label">Images (<%- images.length %>)</div>
         <% for (const image of images) { %>
-        <img src="<%- image.url %>" alt="<%- image.altText %>">
+        <img class="entry-image" src="<%- image.url %>" alt="<%- image.altText %>">
         <% } %>
       </div>
+      <% } %>
     </div>
 
 
