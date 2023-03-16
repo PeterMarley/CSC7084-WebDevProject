@@ -165,7 +165,8 @@ class UserController {
             'api/auth/login',
             new URLSearchParams([['username', username], ['password', password]])
         );
-
+            console.log(loginResponse);
+            
         // build response & send
         const COOKIE_NAME = "token";
         if (loginResponse.success && loginResponse.token) {
@@ -179,7 +180,8 @@ class UserController {
         } else if (!loginResponse.success) {
             //res.redirect('/login?vals=loginfail');
             res.locals.authed = false;
-            res.locals.validations = ['login-unsuccessful'];
+            // res.locals.validations = ['login-unsuccessful'];
+            res.locals.errors = loginResponse.error;
             res.status(401)
                 .clearCookie(COOKIE_NAME)
                 .render('loginfailed');

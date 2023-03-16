@@ -532,6 +532,18 @@ nav {
     background-color: var(--color-4);
     padding: 10px;
     border-radius: var(--general-border-radius);
+    position: relative;
+}
+
+/* .form-style-1-container>* {
+    position: relative;
+} */
+
+.form-style-1 .validation-message-div {
+    position: absolute;
+    top:50%;
+    right: -15em;
+    z-index: 1000;
 }
 
 .form-style-1 input[type="text"],
@@ -568,6 +580,7 @@ input:focus.form-style-1 {
 
 .form-style-1 input:invalid {
     border: 1px solid var(--highlight-border-invalid);
+    background-color: var(--highlight-bg-invalid);
     box-sizing: border-box;
 }
 

@@ -1,9 +1,15 @@
+<%
+  let showFailureMsgs = false;
+  if (typeof errors != 'undefined' && errors) {
+    showFailureMsgs = true;
+  }
+%>
 <div id="login-form-container">
   <form method="POST" action="/user/login" class="form-style-1">
     <div class="form-style-1-container grid-container gap-5">
       <div class="grid-container">
         <label for="username">Username:</label>
-        <!-- <input type="text" name="username" placeholder="Enter username" required minlength="<%- config.userDetailsValidation.username.minLength %>" maxlength="<%- config.userDetailsValidation.username.maxLength %>" pattern="<%- config.userDetailsValidation.username.regex %>"> -->
+        <% //if (showFailureMsgs && errors.contains('')) %>
         <input id="login-username-input" type="text" name="username" placeholder="Enter username" required>
       </div>
       <div class="grid-container">
@@ -17,8 +23,11 @@
       <div class="flex-container centered-h">
         <input type="button" id="register-button" name="log-in" value="register" class="button-style-1" style="width:100%">
       </div>
+      <div class="validation-message-div flex-container col gap-5">
+        <div id="login-form-validation-message-username" class="box-style-1"><%- config.userDetailsValidation.username.description %></div>
+        <div id="login-form-validation-message-password" class="box-style-1"><%- config.userDetailsValidation.password.description %></div>
+      </div>
       <script src="/script/login-form.js"></script>
-      <!-- <input type="text" name="redirect" value="/" hidden> -->
     </div>
   </form>
 </div>

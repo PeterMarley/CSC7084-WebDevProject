@@ -2,14 +2,17 @@
     "username": {
         "minLength": 8,
         "maxLength": 20,
-        "regex": "^[a-zA-Z0-9]{8,20}$"
+        "regex": "^[a-zA-Z0-9]{8,20}$",
+        "description": "Username must be between 8 and 20 characters, and have only alphanumeric characters"
     },
     "password": {
         "minLength": 8,
         "maxLength": 20,
-        "regex": "^[a-zA-Z0-9_\\-\\?!\\*]{8,20}$"
+        "regex": "^[a-zA-Z0-9_\\-\\?!\\*]{8,20}$",
+        "description": "Password must be between 8 and 20 characters, and have only alphanumeric characters, '-', '?', '!' or '*'"
     },
     "email": {
-        "regex":"^[a-zA-Z0-8]{1,}[@][a-zA-Z0-8]{1,}[\\.][a-zA-Z0-8]{1,}$"
+        "regex":"^[a-zA-Z0-8]{1,}[@][a-zA-Z0-8]{1,}[\\.][a-zA-Z0-8]{1,}$",
+        "description": "Email must be in the form 'example@email.com'"
     }
 }
