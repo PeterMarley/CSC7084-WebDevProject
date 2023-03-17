@@ -1,6 +1,6 @@
 <% if (authed) {%>
 	<form id="delete-account-form" action="/user/deleteuser?_mo=DELETE" method="POST"></form>
-	<form id="account-form" class="form-style-1 account-form" action="/user/account" method="POST">
+	<form id="account-form" class="form-style-1 account-form" action="/user/account?_mo=PATCH" method="POST">
   <div class="form-style-1-container grid-container gap-5">
     <div class="grid-container">
       <label for="username">Username</label>
@@ -29,7 +29,7 @@
   </div>
 </form>
 
-<form id="account-form-change-password" class="form-style-1 account-form hidden" action="/account/password" method="POST">
+<form id="account-form-change-password" class="form-style-1 account-form hidden" action="/user/account/password?_mo=PATCH" method="POST">
   <div class="form-style-1-container">
     <div class="grid-container col" id="change-password-inputs">
       <label>Change password</label>

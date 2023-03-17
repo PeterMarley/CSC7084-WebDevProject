@@ -84,8 +84,8 @@ async function getAccountDetails(req: Request, res: Response, next: NextFunction
 async function deleteUserAccount(req: Request, res: Response, next: NextFunction) {
 
     const { userId } = req.params;
-    const response = await dao.deleteUserAccount(Number(userId));
-    res.send(response);
+    const [statusCode, response] = await dao.deleteUserAccount(Number(userId));
+    res.status(statusCode).send(response);
 }
 
 
@@ -142,7 +142,7 @@ async function login(req: Request, res: Response, next: NextFunction) {
     }
 
     if (error.length !== 0) {
-        res.status(401).json(new LoginResponse(false, undefined, error));
+        res.status(400).json(new LoginResponse(false, undefined, error));
         return;
     }
 

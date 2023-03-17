@@ -14,9 +14,6 @@ export default async function apiCall(httpMethod: 'POST' | 'GET' | 'DELETE' | 'P
 	};
 	const fetchResponse = await fetch(buildApiUrl(endpoint), opts);
 	const text = await fetchResponse.text();
-	// console.log(text);
-	// console.log(buildApiUrl(endpoint));
-	
 	try {
 		return JSON.parse(text);
 	} catch (err) {

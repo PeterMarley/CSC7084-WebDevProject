@@ -8,6 +8,7 @@ import config from "../../config/Config";
 import apiCall from "../utils/apiCall";
 import { verifyToken } from "../utils/jwtHelpers";
 import validator from "validator";
+import DeleteAccountResponse from "../../api/models/responses/auth/DeleteAccountResponse";
 
 const regex = {
     username: new RegExp(config.userDetailsValidation.username.regex),
@@ -54,7 +55,7 @@ class UserController {
     renderAccountPage(req: Request, res: Response) {
         res.render('account');
     }
-    async postAccount(req: Request, res: Response, next: NextFunction) {
+    async patchAccount(req: Request, res: Response, next: NextFunction) {
 
         const userId = res.locals.id;
         const { username: newUsername, email: newEmail }: AccountDetailsGetResponse = req.body;
@@ -64,7 +65,7 @@ class UserController {
         if (newUsername !== oldUsername || newEmail !== oldEmail) {
 
             const accountDetailsUpdateResponse = await apiCall(
-                'PUT',
+                'PATCH',
                 'api/auth/userdetails/' + userId,
                 new URLSearchParams([['username', newUsername], ['email', newEmail]])
             );
@@ -103,31 +104,28 @@ class UserController {
         res.redirect('/');
     }
     async deleteUser(req: Request, res: Response, next: NextFunction) {
-        // const confirmed = (req.body.confirmation ?? false) ? true : false;
-        // if (confirmed) {
-        await apiCall('DELETE', '/api/auth/deleteuser/' + res.locals.id);
+        await apiCall('DELETE', '/api/auth/deleteuser/' + res.locals.id);   
         res.clearCookie('token');
-        //res.redirect(302, '/');
         res.locals.authed = false;
         res.render('accountdeleted');
-        // } else {
-        // 	console.log('delete user body not complete')
-        // 	res.redirect(500, '/500');
-        // }
     }
     async registerPost(req: Request, res: Response, next: NextFunction) {
+
+        // validate POST body
 
         const errors: String[] = [];
         if (!req.body.username) errors.push('No Username');
         if (!req.body.email) errors.push('No Email');
         if (!req.body.password) errors.push('No Password');
+        if (!req.body['password-confirm']) errors.push('No Password Confirmation');
 
         const { username, email, password } = req.body;
+        const passwordConfirm = req.body['password-confirm'];
 
         if (username && !regex.username.test(username)) errors.push(config.userDetailsValidation.username.description);
         if (password && !regex.password.test(password)) errors.push(config.userDetailsValidation.password.description);
         if (email && !regex.email.test(email)) errors.push(config.userDetailsValidation.email.description);
-
+        if (passwordConfirm && password !== passwordConfirm) errors.push("Password and Confirm Password do not match");
 
         if (errors.length > 0) {
             res.status(400).render('registerfailed', {
@@ -138,6 +136,7 @@ class UserController {
             return;
         }
 
+        // call to API
 
         const registrationResponse = await apiCall(
             'POST',
@@ -145,11 +144,13 @@ class UserController {
             new URLSearchParams([['username', username], ['email', email], ['password', password]])
         ) as RegistrationResponse;
 
+        // process response
+
         if (registrationResponse.success) {
             next();
             return;
         } else {
-            res.render('registerfailed', {
+            res.status(200).render('registerfailed', {
                 attemptedUsername: username,
                 attemptedEmail: email,
                 validationErrors: registrationResponse.error

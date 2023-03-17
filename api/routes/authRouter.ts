@@ -30,7 +30,7 @@ authRouter.post('/register', controller.register);
 authRouter.delete('/deleteuser/:userId', controller.deleteUserAccount);
 
 authRouter.get('/userdetails/:userId', controller.getAccountDetails);
-authRouter.put('/userdetails/:userId', controller.updateAccountDetails);
+authRouter.patch('/userdetails/:userId', controller.updateAccountDetails);
 authRouter.patch('/userdetails/:userId/password', controller.accountPasswordPatch);
 
 export default authRouter;

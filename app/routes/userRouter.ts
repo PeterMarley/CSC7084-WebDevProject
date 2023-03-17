@@ -36,7 +36,7 @@ userRouter.delete('/deleteuser', restrictedArea, controller.deleteUser);
 
 // edit account
 userRouter.get('/account', restrictedArea, controller.initAccountDetailsLocals, controller.accountDetailsToLocals, controller.renderAccountPage);
-userRouter.post('/account', restrictedArea, controller.initAccountDetailsLocals, controller.accountDetailsToLocals, controller.postAccount, controller.renderAccountPage);
-userRouter.post('/account/password', restrictedArea, controller.initAccountDetailsLocals, controller.passwordChange);
+userRouter.patch('/account', restrictedArea, controller.initAccountDetailsLocals, controller.accountDetailsToLocals, controller.patchAccount, controller.renderAccountPage);
+userRouter.patch('/account/password', restrictedArea, controller.initAccountDetailsLocals, controller.passwordChange);
 
 export default userRouter;

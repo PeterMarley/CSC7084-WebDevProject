@@ -8,7 +8,7 @@ class MainController {
         res.render('test');
     }
     internalServerError(req: Request, res: Response) {
-        res.status(500).send('big fat 500: ' + req.originalUrl);
+        res.status(500).render('500');
     }
     forbidden(req: Request, res: Response) {
         res.render('forbidden');

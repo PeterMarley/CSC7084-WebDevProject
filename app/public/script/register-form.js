@@ -1,20 +1,4 @@
 (function initialiseRegisterForm() {
-    // const usernameInput = document.querySelector('#username');
-    // const pwdInput = document.querySelector('#password');
-    // const pwdConfirmInput = document.querySelector('#password-confirm');
-    // const emailInput = document.querySelector('#email');
-
-    // const inputs = [usernameInput, pwdInput, pwdConfirmInput, emailInput];
-    // usernameInput.addEventListener('keyup', (event) => handleValidation(event, validateUsername));
-    // pwdInput.addEventListener('keyup', handlePasswordsValidation);
-    // pwdConfirmInput.addEventListener('keyup', handlePasswordsValidation);
-    // emailInput.addEventListener('keyup', (event) => handleValidation(event, validateEmail));
-
-    // inputs.forEach(input => {
-    //     input.dispatchEvent(new Event('keyup'));
-    //     input.addEventListener('keyup', () => checkRegisterFormIsSubmittable(inputs));
-    // });
-    // checkRegisterFormIsSubmittable(inputs);
     const registrationValidations = [
         { sel: '#username', validationSel: '#register-form-validation-message-username', validator: validateUsername },
         { sel: '#password', validationSel: '#register-form-validation-message-password', validator: validatePassword },

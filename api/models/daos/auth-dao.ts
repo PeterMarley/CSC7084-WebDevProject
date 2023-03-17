@@ -58,21 +58,27 @@ class AuthApiDataAccessObject {
         return response;
     }
 
-    async deleteUserAccount(userId: number): Promise<DeleteAccountResponse> {
+    async deleteUserAccount(userId: number): Promise<[number, DeleteAccountResponse]> {
         let success = false;
         let error: string | undefined;
+        let statusCode = 200;
         try {
             const con = await getConnection();
             //TODO more probably needed here
-            con.execute('CALL usp_delete_account(?)', [userId]);
+            const result = (await con.execute('CALL usp_delete_account(?)', [userId])).at(0) as ResultSetHeader;
             con.end();
-            success = true;
+            success = result.affectedRows !== 0;
+            if (!success) {
+                error = 'User does not exist'
+                statusCode = 404;
+            }
         } catch (err: any) {
             console.log(err);
             error = err.message as string;
+            statusCode = 500;
         }
 
-        return new DeleteAccountResponse(success, error);
+        return [statusCode, new DeleteAccountResponse(success, error)];
     }
 
     /**
@@ -99,7 +105,7 @@ class AuthApiDataAccessObject {
         if (emailCount !== 0) dbValidationErr.push('emailtaken');
 
         if (dbValidationErr.length !== 0) {
-            return [401, new RegistrationResponse(false, dbValidationErr)];
+            return [409, new RegistrationResponse(false, dbValidationErr)];
         }
 
         con = await getConnection();
@@ -143,7 +149,7 @@ class AuthApiDataAccessObject {
             );
             const insertDefaultActivitiesResult = await con.execute(insertDefaultActivitiesSql) as any;
 
-            return [200, new RegistrationResponse(true)];
+            return [201, new RegistrationResponse(true, null, userId)];
         } catch (err: any) {
             console.log(err);
             return [500, new RegistrationResponse(false, ['unknownerror'])];
@@ -174,7 +180,7 @@ class AuthApiDataAccessObject {
             success = true;
             token = createToken(user_id, username, email);
         }
-        
+
         // prepare and send json response
         return [200, new LoginResponse(success, token, error)];
     }
@@ -187,7 +193,7 @@ class AuthApiDataAccessObject {
     private validateUsername(username: string): boolean {
         if (!username) return false;
         //return /[a-zA-Z0-9]{8,15}/.test(username);
-        return new RegExp(userDetailsValidation.username.regex).test(username); 
+        return new RegExp(userDetailsValidation.username.regex).test(username);
     }
 
     private validateEmail(email: string): boolean {
