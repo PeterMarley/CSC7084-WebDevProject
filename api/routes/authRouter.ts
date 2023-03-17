@@ -6,7 +6,7 @@
 
 import express from 'express';
 import controller from '../controllers/authController';
-import authenticateRequestSource from '../middleware/authenticateRequestSource';
+import authorizeRequestSource from '../middleware/authorizeRequestSource';
 
 const authRouter = express.Router();
 
@@ -16,7 +16,7 @@ const authRouter = express.Router();
  * 
  *******************************************************/
 
-authRouter.use(authenticateRequestSource);
+authRouter.use(authorizeRequestSource);
 
 /*******************************************************
  * 

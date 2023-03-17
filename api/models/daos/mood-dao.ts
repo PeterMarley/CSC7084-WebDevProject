@@ -106,7 +106,7 @@ class MoodApiDataAccessObject {
 		con.end();
 		return activityMoodRelationships;
 	}
-	
+
 	async getVisual(userId: number, cutoff: Date | undefined = undefined) {
 		const con = await getConnection();
 
@@ -172,8 +172,8 @@ class MoodApiDataAccessObject {
 				, [userId]
 			)
 		)).at(0) as any;
-		
-		
+
+
 		const activityMoodRelationships = (await con.query(
 			formatSQL(
 				`SELECT 
@@ -226,11 +226,11 @@ class MoodApiDataAccessObject {
 
 
 		// console.log(activityMoodRelationships);
-		
+
 		// get the most common mood for each activity
 		//	get all entries and their activities and mood
 		//  compute what is the most common activity for each mood
-		
+
 		// console.log(valenceFrequencyData);
 		//SELECT CURRENT_TIMESTAMP,e.timestamp,DATEDIFF(e.timestamp,CURRENT_TIMESTAMP), e.notes, e.entry_id FROM tbl_entry e
 		//WHERE DATEDIFF(e.timestamp,CURRENT_TIMESTAMP) >= -7;
@@ -399,12 +399,12 @@ class MoodApiDataAccessObject {
 		const con = await getConnection();
 
 		try {
-			const storedProcedureResponse = (
-				await con.execute(
-					formatSQL('CALL usp_insert_entry(?,?,?,?)', [userId, moodName, validator.escape(notes), activityNameCommaDelimStr])
-				) as ResultSetHeader[])
-				.at(0) as ResultSetHeader;
-			const { affectedRows, warningStatus } = storedProcedureResponse;
+			const sql = formatSQL('CALL usp_insert_entry(?,?,?,?,@userIdOut)', [userId, moodName, validator.escape(notes), activityNameCommaDelimStr]);
+			const storedProcedureResponse = await con.execute(sql);
+			const resultSetHeader = storedProcedureResponse.at(0) as ResultSetHeader;
+			console.log(storedProcedureResponse);
+			
+			const { affectedRows, warningStatus } = resultSetHeader;
 			success = affectedRows > 0 && warningStatus === 0;
 		} catch (err: any) {
 			logErrors([typeof err == 'string' ? err : err.message]);

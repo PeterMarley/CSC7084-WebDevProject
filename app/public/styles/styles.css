@@ -882,6 +882,7 @@ input[type="password"].valid {
     background-color: var(--color-bg-1);
     margin: 10px;
     padding: 10px;
+    height: fit-content;
 }
 
 #chart-pane-controls {

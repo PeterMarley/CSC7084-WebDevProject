@@ -6,7 +6,7 @@
 
 import express from 'express';
 import controller from '../controllers/moodController';
-import authenticateRequestSource from '../middleware/authenticateRequestSource';
+import authorizeRequestSource from '../middleware/authorizeRequestSource';
 
 const moodRouter = express.Router();
 
@@ -16,7 +16,7 @@ const moodRouter = express.Router();
  * 
  *******************************************************/
 
-moodRouter.use(authenticateRequestSource);
+moodRouter.use(authorizeRequestSource);
 
 /*******************************************************
  * 

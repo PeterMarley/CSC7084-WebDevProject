@@ -1,6 +1,6 @@
 
 import { Router } from 'express';
-import { restrictedArea } from '../middleware/authenticate';
+import { restrictedArea } from '../middleware/authorize';
 import controller from '../controllers/userController';
 import methodOverride from 'method-override';
 

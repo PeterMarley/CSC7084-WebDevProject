@@ -8,7 +8,7 @@ import config from './config/Config';
 
 // app imports
 import dotenv from 'dotenv';
-import { authenticate } from './app/middleware/authenticate';
+import { authorize } from './app/middleware/authorize';
 
 // Router imports
 import api from './api/api';							// auth API
@@ -44,7 +44,7 @@ app.use(express.static('app/public'));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(injectConfig);
-app.use(authenticate);
+app.use(authorize);
 
 /******************************
  * 

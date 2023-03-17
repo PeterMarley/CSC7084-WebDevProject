@@ -1,7 +1,7 @@
 import cookieParser from 'cookie-parser';
 import { Router } from 'express';
 import controller from '../controllers/entryController';
-import { authenticate, restrictedArea } from '../middleware/authenticate';
+import { restrictedArea } from '../middleware/authorize';
 
 /*******************************************************
  * 

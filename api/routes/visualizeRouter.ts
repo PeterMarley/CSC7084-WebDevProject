@@ -6,7 +6,7 @@
 
 import express from 'express';
 import controller from '../controllers/visualizeController';
-import authenticateRequestByJwt from '../middleware/authenticateRequestByJwt';
+import authorizeRequestByJwt from '../middleware/authorizeRequestByJwt';
 
 const visualizeRouter = express.Router();
 
@@ -16,7 +16,7 @@ const visualizeRouter = express.Router();
  * 
  *******************************************************/
 
-visualizeRouter.use(authenticateRequestByJwt);
+visualizeRouter.use(authorizeRequestByJwt);
 
 /*******************************************************
  * 

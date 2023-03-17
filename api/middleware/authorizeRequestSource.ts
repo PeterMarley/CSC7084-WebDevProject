@@ -6,7 +6,7 @@ import getConnection from '../utils/dbConnection';
 /**
  * Express Middleware: Allows only authorized calls to this API.
  */
-export default async function authenticateRequestSource(req: Request, res: Response, next: NextFunction) {
+export default async function authorizeRequestSource(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.get('Authorization') ?? '';
     let count = 0;
     try {

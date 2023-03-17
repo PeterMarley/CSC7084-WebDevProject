@@ -1,7 +1,7 @@
 import { createToken, verifyToken } from '../utils/jwtHelpers';
 import { Request, Response, NextFunction } from 'express';
 
-export function authenticate(req: Request, res: Response, next: NextFunction) {
+export function authorize(req: Request, res: Response, next: NextFunction) {
 	let success = false;
 	if (req.cookies && req.cookies.token) {
 		try {
