@@ -10,75 +10,26 @@ You're already logged in mate
   <div class="form-style-1-container grid-container centered-h gap-5" style="position: relative;">
     <div class="grid-container">
       <label for="username">Enter a username:</label>
-      <input class="invalid" type="text" name="username" id="username" placeholder="Username..." value="<%- username %>" required><br>
+      <div id="register-form-validation-message-username" class="hidden validation-message-div box-style-errors"><%- config.userDetailsValidation.username.description %></div>
+      <input class="invalid register-input" type="text" name="username" id="username" placeholder="Username..." value="<%- username %>" required><br>
     </div>
     <div class="grid-container">
       <label for="password">Enter a Password:</label>
-      <input class="invalid" type="password" name="password" id="password" placeholder="Password..." required><br>
+      <div id="register-form-validation-message-password" class="hidden validation-message-div box-style-errors"><%- config.userDetailsValidation.password.description %></div>
+      <input class="invalid register-input" type="password" name="password" id="password" placeholder="Password..." required><br>
     </div>
     <div class="grid-container">
       <label for="password">Confirm Password:</label>
-      <input class="invalid" type="password" name="password-confirm" id="password-confirm" placeholder="Confirm Password..." required><br>
+      <div id="register-form-validation-message-password-confirm" class="hidden validation-message-div box-style-errors"><%- config.userDetailsValidation.password.description %></div>
+      <input class="invalid register-input" type="password" name="password-confirm" id="password-confirm" placeholder="Confirm Password..." required><br>
     </div>
     <div class="grid-container">
       <label for="email">Enter an email:</label>
-      <input class="invalid" type="text" name="email" id="email" placeholder="Email..." value="<%- email %>" required><br>
+      <div id="register-form-validation-message-email" class="hidden validation-message-div box-style-errors"><%- config.userDetailsValidation.email.description %></div>
+      <input class="invalid register-input" type="text" name="email" id="email" placeholder="Email..." value="<%- email %>" required><br>
     </div>
     <div class="flex-container centered-h">
-      <input type="submit" id="register-account-submit" value="Register Your Account" class="button-style-1">
-      <input class="invalid" type="text" name="redirect" value="/" hidden>
-    </div>
-    <% if (typeof validationErrors !== 'undefined') {
-      console.log(validationErrors);
-      %>
-    <div id="register-form-validation-errors-container" class="flex-container centered-v centered-h">
-      <div id="register-form-validation-errors" class="validation-message-div flex-container centered-v centered-h" style="position:static;">
-        <div>
-          <div>
-            <%
-      const errsToDisplay = [];
-      if (validationErrors.includes('nousername')) {
-        errsToDisplay.push('No username');
-      }
-      
-      if (validationErrors.includes('nopassword')) {
-        errsToDisplay.push('No password');
-      }
-      
-      if (validationErrors.includes('noemail')) {
-        errsToDisplay.push('No Email');
-      }
-      
-      if (validationErrors.includes('badusername')) {
-        errsToDisplay.push('Username must be 8 to 20 characters (inclusive) and can only be <em>a-z</em>, <em>A-Z</em>, <em>0-9</em>');
-      }
-      
-      if (validationErrors.includes('badpassword')) {
-        errsToDisplay.push('Password must be 8 to 20 characters (inclusive) and can only be <em>a-z</em>, <em>A-Z</em>, <em>0-9</em>, <em>-</em>, <em>_</em>, <em>?</em>, <em>!</em> and <em>*</em>');
-      }
-      
-      if (validationErrors.includes('bademail')) {
-        errsToDisplay.push('Email must be in the form <em>email@address.com</em>');
-      }
-
-      if (validationErrors.includes('usernametaken')) {
-        errsToDisplay.push('That username is already taken!');
-      }
-
-      //const errDiv = document.querySelector('#register-form-validation-errors');
-      for (let i = 0; i < errsToDisplay.length; i++) {
-        //const newDiv = document.createElement('div');
-        %><div><%- errsToDisplay[i] %></div><%
-        //newDiv.innerHtml = errsToDisplay[i];
-        //errDiv.appendChild(newDiv);
-        if (i == errsToDisplay.length - 2) {
-          %><hr><%
-        }
-      }
-    } %>
-          </div>
-        </div>
-      </div>
+      <input type="button" id="register-account-submit" value="Register Your Account" class="button-style-1">
     </div>
   </div>
   <script src="/script/register-form.js"></script>

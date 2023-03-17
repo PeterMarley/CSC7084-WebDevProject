@@ -9,6 +9,13 @@ import apiCall from "../utils/apiCall";
 import { verifyToken } from "../utils/jwtHelpers";
 import validator from "validator";
 
+const regex = {
+    username: new RegExp(config.userDetailsValidation.username.regex),
+    password: new RegExp(config.userDetailsValidation.password.regex),
+    email: new RegExp(config.userDetailsValidation.email.regex)
+};
+
+
 class UserController {
     async passwordChange(req: Request, res: Response) {
 
@@ -111,18 +118,27 @@ class UserController {
     async registerPost(req: Request, res: Response, next: NextFunction) {
 
         const errors: String[] = [];
-        if (req.method.toUpperCase() != 'POST') errors.push('cannotget')
-        if (!req.body.username) errors.push('nousername');
-        if (!req.body.email) errors.push('noemail');
-        if (!req.body.password) errors.push('nopassword');
+        if (!req.body.username) errors.push('No Username');
+        if (!req.body.email) errors.push('No Email');
+        if (!req.body.password) errors.push('No Password');
+
+        const { username, email, password } = req.body;
+
+        if (username && !regex.username.test(username)) errors.push(config.userDetailsValidation.username.description);
+        if (password && !regex.password.test(password)) errors.push(config.userDetailsValidation.password.description);
+        if (email && !regex.email.test(email)) errors.push(config.userDetailsValidation.email.description);
+
 
         if (errors.length > 0) {
-            res.status(400).render('register', { validationErrors: errors });
+            res.status(400).render('registerfailed', {
+                attemptedUsername: username,
+                attemptedEmail: email,
+                validationErrors: errors
+            });
             return;
         }
 
-        const { username, email, password } = req.body;
-        
+
         const registrationResponse = await apiCall(
             'POST',
             'api/auth/register',
@@ -133,7 +149,7 @@ class UserController {
             next();
             return;
         } else {
-            res.render('register', {
+            res.render('registerfailed', {
                 attemptedUsername: username,
                 attemptedEmail: email,
                 validationErrors: registrationResponse.error
@@ -165,18 +181,19 @@ class UserController {
             'api/auth/login',
             new URLSearchParams([['username', username], ['password', password]])
         );
-            console.log(loginResponse);
-            
+        console.log(loginResponse);
+
         // build response & send
         const COOKIE_NAME = "token";
         if (loginResponse.success && loginResponse.token) {
-            res.locals.authed = true;
-            res.locals.username = username;
-            res.locals.userId = verifyToken(loginResponse.token).id;
-
+            const userId = verifyToken(loginResponse.token).id;
             res.status(200)
                 .cookie(COOKIE_NAME, loginResponse.token)
-                .render('welcome');
+                .render('welcome', {
+                    authed: true,
+                    username: username,
+                    userId: userId,
+                });
         } else if (!loginResponse.success) {
             //res.redirect('/login?vals=loginfail');
             res.locals.authed = false;

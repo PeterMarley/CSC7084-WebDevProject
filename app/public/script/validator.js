@@ -27,3 +27,37 @@ function validateEmail(email) {
     }
     return valid;
 }
+
+function handleValidateInput(inputSelector, validationDivSelector, validatorFunc) {
+    const input = document.querySelector(inputSelector);
+    const validator = document.querySelector(validationDivSelector);
+    if (validatorFunc(input.value)) {
+        input.classList.remove('invalid');
+        input.classList.add('valid');
+        validator.classList.add('hidden');
+        input.parentNode.querySelector('.validation-message-div').classList.add('hidden');
+        return;
+    }
+    input.classList.add('invalid');
+    input.classList.remove('valid');
+}
+
+function handleValidatePasswordInputsTogether(e) {
+    const pwdInput = document.querySelector('#password');
+    if (validatePassword(pwdInput.value)) {
+        pwdInput.classList.add('valid');
+        pwdInput.classList.remove('invalid');
+    } else {
+        pwdInput.classList.remove('valid');
+        pwdInput.classList.add('invalid');
+    }
+
+    const pwdConfirmInput = document.querySelector('#password-confirm');
+    if (pwdInput.value === pwdConfirmInput.value && validatePassword(pwdConfirmInput.value)) {
+        pwdConfirmInput.classList.add('valid');
+        pwdConfirmInput.classList.remove('invalid');
+    } else {
+        pwdConfirmInput.classList.remove('valid');
+        pwdConfirmInput.classList.add('invalid');
+    }
+}

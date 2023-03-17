@@ -11,7 +11,7 @@
     validations.forEach(v => {
         document
             .querySelector(v.sel)
-            .addEventListener('keyup', () => handleValidation(v.sel, v.validationSel, v.validator));
+            .addEventListener('keyup', () => handleValidateInput(v.sel, v.validationSel, v.validator));
     });
 
     document
@@ -19,25 +19,10 @@
         .addEventListener('click', (event) => handleLoginSubmission(event, validations))
 })();
 
-
-function handleValidation(inputSelector, validationDivSelector, validatorFunc) {
-    const input = document.querySelector(inputSelector);
-    const validator = document.querySelector(validationDivSelector);
-    if (validatorFunc(input.value)) {
-        input.classList.remove('invalid');
-        input.classList.add('valid');
-        validator.classList.add('hidden');
-        input.parentNode.querySelector('.validation-message-div').classList.add('hidden');
-        return;
-    }
-    input.classList.add('invalid');
-    input.classList.remove('valid');
-}
-
 function handleLoginSubmission(event, validations) {
     event.preventDefault();
 
-    for (const v of validations) handleValidation(v.sel, v.validationSel, v.validator);
+    for (const v of validations) handleValidateInput(v.sel, v.validationSel, v.validator);
 
     const inputs = document.querySelectorAll('.login-input');
 
@@ -52,9 +37,4 @@ function handleLoginSubmission(event, validations) {
         }
     }
     if (allValid) document.querySelector('#login-form').submit();
-}
-
-function disableHamburger() {
-    document.querySelector('#hamburger-container').remove();
-    document.querySelector('#hamburger-modal').remove();
 }

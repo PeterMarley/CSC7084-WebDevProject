@@ -328,6 +328,10 @@ nav {
     justify-content: flex-start;
 }
 
+.flex-container.flex-start-v {
+    align-items: flex-start;
+}
+
 .flex-container.space-evenly-h {
     justify-content: space-evenly;
 }
@@ -930,6 +934,41 @@ input[type="password"].valid {
 .dark .theme-change-button {
     background-image: url('../icons/sun.png');
 }
+
+/****************************
+  ANIMATIONS
+****************************/
+
+@keyframes shake {
+    0% {
+      transform: translateX(0);
+    }
+    20% {
+      transform: translateX(-10px) rotateZ(-10deg);
+    }
+    40% {
+      transform: translateX(10px) rotateZ(10deg);
+    }
+    60% {
+      transform: translateX(-10px) rotateZ(-10deg);
+    }
+    80% {
+      transform: translateX(10px) rotateZ(10deg);
+    }
+    100% {
+      transform: translateX(0) rotateZ(0);
+    }
+  }
+  
+  .shake {
+    transition: transform 1s ease;
+    transform: translateX(42px) translateX(-84px) translateX(84px) translateX(-42px);
+}
+
+  .shake {
+    animation: shake 0.5s;
+    animation-iteration-count: 1;
+  }
 
 /****************************
   BREAKPOINTS

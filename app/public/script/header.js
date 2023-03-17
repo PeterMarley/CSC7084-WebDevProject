@@ -206,9 +206,15 @@ function handleConfirmDeleteAccountKeyup(e) {
 function handleConfirmAccountDeletion(event) {
     const confirmUsername = document.querySelector('#account-delete-confirm-input');
     if (confirmUsername.value == username) {
-        console.log("This would delete");
         window.location = '/user/deleteuser?_mo=DELETE'
     } else {
-        console.log("This would NOT delete");
+        confirmUsername.classList.add('shake');
+        setTimeout(() => confirmUsername.classList.remove('shake'),250);
+        document.querySelector('#account-delete-confirm-input').classList.add('invalid');
     }
+}
+
+function disableHamburger() {
+    document.querySelector('#hamburger-container').remove();
+    document.querySelector('#hamburger-modal').remove();
 }

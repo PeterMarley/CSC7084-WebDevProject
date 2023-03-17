@@ -1,0 +1,17 @@
+
+<%- include('partials/top.ejs') %>
+<div class="flex-container col centered-h centered-v" style="margin-top: 15px">
+    <div class="box-style-errors flex-container col centered-v-no-height centered-h">
+        <% if (typeof validationErrors != 'undefined') { %>
+            <b>Registration was unsuccessful!</b><br>
+            <ul class="flex-container col flex-start-v centered-h" style="width: 100%">
+            <% for (const err of validationErrors) { %>
+                <li class="flex-grow-1"><%- err %></li>
+            <% } %>
+            </ul>
+        <% } %>
+    </div>
+    <%- include('components/register_form.ejs') %>
+</div>
+
+<%- include('partials/bottom.ejs') %>

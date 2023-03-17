@@ -12,7 +12,7 @@ import methodOverride from 'method-override';
 
 const userRouter = Router();
 
-userRouter.use(methodOverride("_mo", { methods: ['POST'] }));
+userRouter.use(methodOverride("_mo", { methods: ['GET', 'POST'] }));
 
 /*******************************************************
  * 
