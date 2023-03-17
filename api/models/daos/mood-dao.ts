@@ -1,5 +1,5 @@
 import getConnection from '../../utils/dbConnection';
-import { FieldPacket, format as formatSQL, ResultSetHeader, RowDataPacket } from 'mysql2';
+import mysql2, { FieldPacket, format as formatSQL, ResultSetHeader, RowDataPacket } from 'mysql2';
 import logErrors from '../../../app/utils/logError';
 import Activity from '../obj/mood/Activity';
 import Entry from '../obj/mood/Entry';
@@ -9,6 +9,7 @@ import EntryFormDataResponse from '../responses/mood/EntryFormDataResponse';
 import EntryDataResponse from '../responses/mood/EntryDataResponse';
 import ActivityGroup from '../obj/mood/ActivityGroup';
 import validator from 'validator';
+import CreateEntryResponse from '../responses/mood/CreateEntryResponse';
 
 /**
  * This is a static class in that it may not be instantiated. It's methods may be called to generate response objects after queries the database
@@ -286,9 +287,6 @@ class MoodApiDataAccessObject {
 			INNER JOIN tbl_activity_group ag ON a.activity_group_id = ag.activity_group_id
             INNER JOIN tbl_activity_image ai ON ai.activity_image_id = a.icon_image_id
 			WHERE ea.entry_id=?`
-		},
-		editSingleEntry: {
-			updateEntry: 'CALL usp_update_entry(?,?,?,?)'
 		}
 	}
 
@@ -304,33 +302,37 @@ class MoodApiDataAccessObject {
 		return response;
 	}
 
-	async updateSingleEntry(userId: number, entryId: number, entryNotes: string, activityCommaDelimStr: string) {
+	async updateSingleEntry(userId: number, entryId: number, entryNotes: string, activityCommaDelimStr: string): Promise<[number, boolean]> {
 		const con = await getConnection();
-		const sql = formatSQL(
-			this.sql.editSingleEntry.updateEntry,
-			[userId, entryId, entryNotes, activityCommaDelimStr]
-		);
-		// console.log('updateSingleEntry formatted sql: ');
-		// console.log(sql);
+		try {
+			console.log(entryId);
 
+			// check entry exits - should be moved into usp_update_entry if i had time
+			const checkSql = formatSQL('SELECT COUNT(entry_id) AS `count` FROM tbl_entry WHERE user_id=? AND entry_id=?', [userId, entryId]);
+			const check = (await con.execute(checkSql)).at(0) as RowDataPacket;
+			if (check.at(0).count === 0) return [404, false];
 
-		const response: ResultSetHeader = ((await con.execute(sql)) as Array<any>)[0]
-		//console.log(response);
+			// if it exists, update it
+			const sql = formatSQL('CALL usp_update_entry(?,?,?,?)', [userId, entryId, entryNotes, activityCommaDelimStr]);
+			const response: ResultSetHeader = (await con.execute(sql)).at(0) as ResultSetHeader;
 
-		con.end();
-		// console.log('=============================');
-
-		// console.log(response.affectedRows > 0 && response.warningStatus === 0);
-		// console.log('=============================');
-
-		return response.affectedRows > 0 && response.warningStatus === 0;
-		// i added this wee schneaky line
+			return (response.affectedRows > 0 && response.warningStatus === 0) ? [200, true] : [200, false];
+		} catch (err: any) {
+			logErrors([err]);
+		} finally {
+			con.end();
+		}
+		return [500, false];
 	}
 
-	async getSingleEntry(userId: number, entryId: number, entryFormData: EntryFormDataResponse) {
+	async getSingleEntry(userId: number, entryId: number, entryFormData: EntryFormDataResponse): Promise<[number, EntryDataResponse | undefined]> {
 		// get data from database
 		const con = await getConnection();
 		const entry: IDbEntry = (await con.execute(formatSQL(this.sql.getSingleEntry.entry, [userId, entryId])) as Array<any>)[0][0][0];
+		if (!entry) {
+			return [404, undefined];
+		}
+
 		const entryImages: IDbEntriesImages[] = (await con.execute(formatSQL(this.sql.getSingleEntry.entryImages, [entryId])) as Array<any>)[0];
 		const dbActs: IDbActivity[] = (await con.execute(formatSQL(this.sql.getSingleEntry.entryActivities, [entryId])) as Array<any>)[0];
 		con.end();
@@ -359,7 +361,7 @@ class MoodApiDataAccessObject {
 		);
 		responseEntry.activities = acts;
 		// build response and send as json
-		return new EntryDataResponse(responseEntry, entryFormData, images);
+		return [200, new EntryDataResponse(responseEntry, entryFormData, images)];
 	}
 
 	async getEntryFormData(userId: number) {
@@ -393,19 +395,24 @@ class MoodApiDataAccessObject {
 		return entryFormData;
 	}
 
-	async createNewEntry(userId: number, moodName: String, notes: string, activityNameCommaDelimStr: string) {
+	async createNewEntry(userId: number, moodName: String, notes: string, activityNameCommaDelimStr: string): Promise<CreateEntryResponse> {
 
 		let success = true;
 		const con = await getConnection();
 
 		try {
-			const sql = formatSQL('CALL usp_insert_entry(?,?,?,?,@userIdOut)', [userId, moodName, validator.escape(notes), activityNameCommaDelimStr]);
+			const sql = formatSQL('CALL usp_insert_entry(?,?,?,?,@entryId)', [userId, moodName, validator.escape(notes), activityNameCommaDelimStr]);
+
 			const storedProcedureResponse = await con.execute(sql);
+			const output = (await con.query('SELECT @entryId AS entryId')).at(0) as RowDataPacket;
+			const entryId = output.at(0).entryId;
+			console.log(entryId);
+
 			const resultSetHeader = storedProcedureResponse.at(0) as ResultSetHeader;
-			console.log(storedProcedureResponse);
-			
+
 			const { affectedRows, warningStatus } = resultSetHeader;
 			success = affectedRows > 0 && warningStatus === 0;
+			return new CreateEntryResponse(success, entryId);
 		} catch (err: any) {
 			logErrors([typeof err == 'string' ? err : err.message]);
 			success = false;
@@ -413,7 +420,7 @@ class MoodApiDataAccessObject {
 			con.end();
 		}
 
-		return success;
+		return new CreateEntryResponse(false, null, ['Something went wrong']);
 	}
 
 	async getEntryList(userId: number): Promise<any> {

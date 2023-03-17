@@ -20,19 +20,14 @@ class EntryController {
 	}
 	async postEdit(req: Request, res: Response) {
 		const { activities, notes } = req.body;
-		console.log(notes);
-	
+		
 		const successResponse: SuccessResponse =
 			await apiCall(
 				'PUT',
 				'/api/mood/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId,
 				new URLSearchParams([['activities', activities], ['notes', notes], ['entryId', req.params.entryId]])
 			);
-		//const x: EntryDataResponse = { entry: undefined, entryFormData: entryDataResponse };
-		// console.log('post edit response received by postEdit:');
-		// console.log(successResponse);
-	
-	
+
 		res.locals.updateSingleEntrySuccess = successResponse.success
 		res.render('mood-entry-edit');
 	}

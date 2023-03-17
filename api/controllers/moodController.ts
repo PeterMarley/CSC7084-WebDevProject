@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import dao from '../models/daos/mood-dao';
+import CreateEntryResponse from "../models/responses/mood/CreateEntryResponse";
 import SuccessResponse from "../models/responses/SuccessResponse";
 
 /**
@@ -24,8 +25,7 @@ async function deleteSingleEntry(req: Request, res: Response, next: NextFunction
 		const success = result.affectedRows > 0;
 		let response = new SuccessResponse(success);
 		if (!success) {
-			res.status(404).json(new SuccessResponse(false,
-				[`the delete operation failed: [${result.affectedRows} rows were deleted] [${result.warningStatus} is the warningStatus of the database]`]));
+			res.status(404).json(new SuccessResponse(false));
 			return;
 		}
 		res.status(200).json(response);
@@ -38,10 +38,11 @@ async function updateSingleEntry(req: Request, res: Response, next: NextFunction
 	const entryId = Number(req.params.entryId);
 	const userId = Number(req.params.userId);
 	const { activities: activityNamesCommaDelimStr, notes: entryNotes } = req.body;
-
+	console.log(req.body);
+	
 	try {
-		const success: boolean = await dao.updateSingleEntry(userId, entryId, entryNotes, activityNamesCommaDelimStr);
-		res.json(new SuccessResponse(success));
+		const [statusCode, success] = await dao.updateSingleEntry(userId, entryId, entryNotes, activityNamesCommaDelimStr);
+		res.status(statusCode).json(new SuccessResponse(success));
 	} catch (err: any) {
 		next(err);
 	}
@@ -52,15 +53,16 @@ async function getSingleEntry(req: Request, res: Response, next: NextFunction) {
 	const entryId = Number(req.params.entryId);
 	const userId = Number(req.params.userId);
 	const errors: string[] = [];
-	if (!entryId) errors.push('no-entry-id');
-	if (!userId) errors.push('no-user-id');
+	if (!entryId) errors.push('No Entry Id specified');
+	if (!userId) errors.push('No User Id specified');
 	if (errors.length > 0) {
 		res.status(400).json(new SuccessResponse(false, errors));
 		return;
 	}
 
 	try {
-		res.status(200).json(await dao.getSingleEntry(userId, entryId, res.locals.entryFormData));
+		const [statusCode, response] = await dao.getSingleEntry(userId, entryId, res.locals.entryFormData);
+		res.status(statusCode).json(response);
 	} catch (err: any) {
 		next(err);
 	}
@@ -114,8 +116,8 @@ async function createNewEntry(req: Request, res: Response, next: NextFunction) {
 	}
 
 	try {
-		const success = await dao.createNewEntry(userId, mood, notes, activityNameCommaDelimStr);
-		res.status(201).json(new SuccessResponse(success));
+		const success: CreateEntryResponse = await dao.createNewEntry(userId, mood, notes, activityNameCommaDelimStr);
+		res.status(201).json(success);
 	} catch (err: any) {
 		next(err);
 	}

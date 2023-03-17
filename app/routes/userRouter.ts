@@ -2,7 +2,6 @@
 import { Router } from 'express';
 import { restrictedArea } from '../middleware/authorize';
 import controller from '../controllers/userController';
-import methodOverride from 'method-override';
 
 /*******************************************************
  * 
@@ -11,8 +10,6 @@ import methodOverride from 'method-override';
  *******************************************************/
 
 const userRouter = Router();
-
-userRouter.use(methodOverride("_mo", { methods: ['GET', 'POST'] }));
 
 /*******************************************************
  * 

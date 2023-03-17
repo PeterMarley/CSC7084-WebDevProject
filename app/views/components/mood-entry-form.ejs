@@ -25,7 +25,7 @@ if (authed) {
       break;
     case 'edit':
       notes = entryData.notes;
-      formAction = '/mood/edit/' + entryData.entryId;
+      formAction = '/mood/' + entryData.entryId + '?_mo=PUT';
       //httpVerb ='dont know this either';
       submitButtonText = 'Edit Entry';
       posMoodsButtonSelector = positiveMoods.reduce((prev, cur) => {

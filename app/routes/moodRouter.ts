@@ -26,9 +26,10 @@ moodRouter.get('/new', controller.getNewEntryForm);
 moodRouter.post('/new', controller.createNewEntry);
 
 moodRouter.get('/edit/:entryId', controller.initialiseLocalsForEntryEdit, controller.getEdit);
-moodRouter.post('/edit/:entryId', controller.initialiseLocalsForEntryEdit, controller.postEdit);
+// TODO fix this routing
+moodRouter.put('/:entryId', controller.initialiseLocalsForEntryEdit, controller.postEdit);
 
-moodRouter.get('/delete/:entryId', controller.deleteEntry, controller.getEntryList);
+moodRouter.delete('/:entryId', controller.deleteEntry, controller.getEntryList);
 
 moodRouter.get('/activity', controller.getActivity);
 

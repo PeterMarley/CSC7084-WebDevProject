@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import https from 'https';
 import fs from 'fs';
 import config from './config/Config';
+import methodOverride from 'method-override';
 
 // app imports
 import dotenv from 'dotenv';
@@ -45,6 +46,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(injectConfig);
 app.use(authorize);
+app.use(methodOverride("_mo", { methods: ['GET', 'POST'] }));
 
 /******************************
  * 
