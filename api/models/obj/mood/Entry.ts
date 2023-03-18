@@ -1,16 +1,16 @@
-import Mood from "./Mood";
-import Image from "./Image";
-import Activity from "./Activity";
-
-export default class Entry {
+import IEntry from '../../../../common/model/IEntry'
+import IMood from '../../../../common/model/IMood'
+import IImage from '../../../../common/model/IImage'
+import IActivity from '../../../../common/model/IActivity'
+export default class Entry implements IEntry {
 	entryId: number;
 	datetime: Date;
-	mood: Mood;
+	mood: IMood;
 	notes: string;
-	images: Image[];
-	activities: Activity[];
+	images: IImage[];
+	activities: IActivity[];
 
-	constructor(id: number, timestamp: string, notes: string, mood: Mood) {
+	constructor(id: number, timestamp: string, notes: string, mood: IMood) {
 		this.entryId = id;
 		this.datetime = new Date(timestamp);
 		this.mood = mood;

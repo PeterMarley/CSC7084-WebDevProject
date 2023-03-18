@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import { ResultSetHeader, format, RowDataPacket } from "mysql2";
-import AccountDetailsUpdateResponse from '../models/responses/auth/AccountDetailsUpdateResponse';
-import AccountDetailsGetResponse from '../models/responses/auth/AccountDetailsGetResponse';
-import AccountPasswordUpdateResponse from '../models/responses/auth/AccountPasswordUpdateResponse';
-import DeleteAccountResponse from '../models/responses/auth/DeleteAccountResponse';
-import RegistrationResponse from '../models/responses/auth/RegistrationResponse';
-import LoginResponse from '../models/responses/auth/LoginResponse';
+import AccountDetailsUpdateResponse from '../../common/response/AccountDetailsUpdateResponse';
+import AccountDetailsGetResponse from '../../common/response/AccountDetailsGetResponse';
+import AccountPasswordUpdateResponse from '../../common/response/AccountPasswordUpdateResponse';
+import DeleteAccountResponse from '../../common/response/DeleteAccountResponse';
+import RegistrationResponse from '../../common/response/RegistrationResponse';
+import LoginResponse from '../../common/response/LoginResponse';
 import config from "../../config/Config";
 import dao from "../models/daos/auth-dao";
 

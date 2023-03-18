@@ -1,14 +1,14 @@
 import { Request, Response, NextFunction } from "express";
-import AccountDetailsGetResponse from '../../api/models/responses/auth/AccountDetailsGetResponse';
-import AccountDetailsUpdateResponse from '../../api/models/responses/auth/AccountDetailsUpdateResponse';
-import AccountPasswordUpdateResponse from '../../api/models/responses/auth/AccountPasswordUpdateResponse';
-import LoginResponse from '../../api/models/responses/auth/LoginResponse';
-import RegistrationResponse from '../../api/models/responses/auth/RegistrationResponse';
+import AccountDetailsGetResponse from '../../common/response/AccountDetailsGetResponse';
+import AccountDetailsUpdateResponse from '../../common/response/AccountDetailsUpdateResponse';
+import AccountPasswordUpdateResponse from '../../common/response/AccountPasswordUpdateResponse';
+import LoginResponse from '../../common/response/LoginResponse';
+import RegistrationResponse from '../../common/response/RegistrationResponse';
 import config from "../../config/Config";
 import apiCall from "../utils/apiCall";
 import { verifyToken } from "../utils/jwtHelpers";
 import validator from "validator";
-import DeleteAccountResponse from "../../api/models/responses/auth/DeleteAccountResponse";
+import DeleteAccountResponse from "../../common/response/DeleteAccountResponse";
 
 const regex = {
     username: new RegExp(config.userDetailsValidation.username.regex),

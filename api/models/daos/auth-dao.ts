@@ -2,10 +2,10 @@ import { format, ResultSetHeader, RowDataPacket } from "mysql2";
 import checkPasswordCorrect, { encrypt } from "../../utils/crypt";
 import getConnection from "../../utils/dbConnection";
 import { createToken } from "../../../app/utils/jwtHelpers"
-import AccountDetailsGetResponse from "../responses/auth/AccountDetailsGetResponse";
-import DeleteAccountResponse from "../responses/auth/DeleteAccountResponse";
-import LoginResponse from "../responses/auth/LoginResponse";
-import RegistrationResponse from "../responses/auth/RegistrationResponse";
+import AccountDetailsGetResponse from "../../../common/response/AccountDetailsGetResponse";
+import DeleteAccountResponse from "../../../common/response/DeleteAccountResponse";
+import LoginResponse from "../../../common/response/LoginResponse";
+import RegistrationResponse from "../../../common/response/RegistrationResponse";
 const userDetailsValidation = require('../../../config/userDetailsValidation.json');
 
 

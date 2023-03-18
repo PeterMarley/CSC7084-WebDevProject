@@ -1,4 +1,7 @@
-export default class Image {
+import IImage from '../../../../common/model/IImage'
+
+
+export default class Image implements IImage {
 	url: string;
 	altText: string;
 
