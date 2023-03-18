@@ -1,6 +1,6 @@
 
 import { Router } from 'express';
-import { restrictedArea } from '../middleware/authorize';
+import restrictedArea from '../middleware/restrictedArea';
 import controller from '../controllers/userController';
 
 /*******************************************************
@@ -17,23 +17,25 @@ const userRouter = Router();
  * 
  *******************************************************/
 
-// log out
-userRouter.get('/logout', controller.logout);
 
-// log in
-userRouter.post('/login', controller.attemptLogin);
-userRouter.get('/loginfailed', controller.loginFailed);
+userRouter
+    // log out
+    .get('/logout', controller.logout)
 
-// register
-userRouter.get('/register', controller.registerGet);
-userRouter.post('/register', controller.registerPost, controller.attemptLogin);
+    // log in
+    .post('/login', controller.attemptLogin)
+    .get('/loginfailed', controller.loginFailed)
 
-// delete account
-userRouter.delete('/deleteuser', restrictedArea, controller.deleteUser);
+    // register
+    .get('/register', controller.registerGet)
+    .post('/register', controller.registerPost, controller.attemptLogin)
 
-// edit account
-userRouter.get('/account', restrictedArea, controller.initAccountDetailsLocals, controller.accountDetailsToLocals, controller.renderAccountPage);
-userRouter.patch('/account', restrictedArea, controller.initAccountDetailsLocals, controller.accountDetailsToLocals, controller.patchAccount, controller.renderAccountPage);
-userRouter.patch('/account/password', restrictedArea, controller.initAccountDetailsLocals, controller.passwordChange);
+    // delete account
+    .delete('/deleteuser', restrictedArea, controller.deleteUser)
+
+    // edit account
+    .get('/account', restrictedArea, controller.initAccountDetailsLocals, controller.accountDetailsToLocals, controller.renderAccountPage)
+    .patch('/account', restrictedArea, controller.initAccountDetailsLocals, controller.accountDetailsToLocals, controller.patchAccount, controller.renderAccountPage)
+    .patch('/account/password', restrictedArea, controller.initAccountDetailsLocals, controller.passwordChange);
 
 export default userRouter;

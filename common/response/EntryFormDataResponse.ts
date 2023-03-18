@@ -1,5 +1,5 @@
-import ActivityGroup from "../../obj/mood/ActivityGroup";
-import Mood from "../../obj/mood/Mood";
+import ActivityGroup from "../model/ActivityGroup";
+import Mood from "../model/Mood";
 
 /**
  * This Response object holds the data requires to build an Entry form, either for adding a new entry, or editing an existing one.

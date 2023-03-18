@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import dao from '../models/daos/mood-dao';
-import CreateEntryResponse from "../models/responses/mood/CreateEntryResponse";
-import SuccessResponse from "../models/responses/SuccessResponse";
+import dao from '../database/mood-dao';
+import CreateEntryResponse from "../../common/response/CreateEntryResponse";
+import SuccessResponse from "../../common/response/SuccessResponse";
 
 /**
  * Express middleware that deletes a single mood entry entry from the database.

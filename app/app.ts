@@ -4,20 +4,20 @@ import path from 'path';
 import cookieParser from 'cookie-parser';
 import https from 'https';
 import fs from 'fs';
-import config from './config/Config';
+import config from '../common/config/Config';
 import methodOverride from 'method-override';
 
 // app imports
 import dotenv from 'dotenv';
-import { authorize } from './app/middleware/authorize';
+import { authorize } from './middleware/authorize';
 
 // Router imports
-import api from './api/api';							// auth API
-import mainRouter from './app/routes/mainRouter';							// normal routing
-import userRouter from './app/routes/userRouter';
-import moodRouter from './app/routes/moodRouter';
-import injectConfig from './app/middleware/injectConfig';
-import internalServerErrorHandler from './app/middleware/internalServerErrorHandler';
+import api from '../api/api';							// auth API
+import mainRouter from './routes/mainRouter';							// normal routing
+import userRouter from './routes/userRouter';
+import moodRouter from './routes/moodRouter';
+import injectConfig from './middleware/injectConfig';
+import internalServerErrorHandler from './middleware/internalServerErrorHandler';
 
 /******************************
  * 

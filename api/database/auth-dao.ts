@@ -1,13 +1,13 @@
 import { format, ResultSetHeader, RowDataPacket } from "mysql2";
-import checkPasswordCorrect, { encrypt } from "../../utils/crypt";
-import getConnection from "../../utils/dbConnection";
-import { createToken } from "../../../app/utils/jwtHelpers"
-import AccountDetailsGetResponse from "../../../common/response/AccountDetailsGetResponse";
-import DeleteAccountResponse from "../../../common/response/DeleteAccountResponse";
-import LoginResponse from "../../../common/response/LoginResponse";
-import RegistrationResponse from "../../../common/response/RegistrationResponse";
-const userDetailsValidation = require('../../../config/userDetailsValidation.json');
+import checkPasswordCorrect, { encrypt } from "../utils/crypt";
+import getConnection from "../utils/dbConnection";
+import { createToken } from "../../app/utils/jwtHelpers"
+import AccountDetailsGetResponse from "../../common/response/AccountDetailsGetResponse";
+import DeleteAccountResponse from "../../common/response/DeleteAccountResponse";
+import LoginResponse from "../../common/response/LoginResponse";
+import RegistrationResponse from "../../common/response/RegistrationResponse";
 
+const userDetailsValidation = require('../../common/config/userDetailsValidation.json');
 
 /**
  * This is a static class in that it may not be instantiated. It's methods may be called to generate response objects after queries the database

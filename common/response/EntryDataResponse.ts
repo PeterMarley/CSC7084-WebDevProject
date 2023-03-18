@@ -1,6 +1,6 @@
-import Entry from "../../obj/mood/Entry";
+import Entry from "../model/Entry";
 import EntryFormDataResponse from "./EntryFormDataResponse";
-import Image from "../../obj/mood/Image";
+import Image from "../model/Image";
 
 export default class EntryDataResponse {
 	entry?: Entry;

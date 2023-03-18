@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { format, RowDataPacket } from "mysql2";
-import SuccessResponse from "../models/responses/SuccessResponse";
+import SuccessResponse from "../../common/response/SuccessResponse";
 import getConnection from '../utils/dbConnection';
 
 /**

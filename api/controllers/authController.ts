@@ -6,8 +6,8 @@ import AccountPasswordUpdateResponse from '../../common/response/AccountPassword
 import DeleteAccountResponse from '../../common/response/DeleteAccountResponse';
 import RegistrationResponse from '../../common/response/RegistrationResponse';
 import LoginResponse from '../../common/response/LoginResponse';
-import config from "../../config/Config";
-import dao from "../models/daos/auth-dao";
+import config from "../../common/config/Config";
+import dao from "../database/auth-dao";
 
 
 

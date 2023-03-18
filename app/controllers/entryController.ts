@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import apiCall from "../utils/apiCall";
-import EntryDataResponse from '../../api/models/responses/mood/EntryDataResponse';
-import EntryFormDataResponse from '../../api/models/responses/mood/EntryFormDataResponse';
-import SuccessResponse from '../../api/models/responses/SuccessResponse';
+import EntryDataResponse from '../../common/response/EntryDataResponse';
+import EntryFormDataResponse from '../../common/response/EntryFormDataResponse';
+import SuccessResponse from '../../common/response/SuccessResponse';
 
 class EntryController {
 	initialiseLocalsForEntryEdit(req: Request, res: Response, next: NextFunction) {

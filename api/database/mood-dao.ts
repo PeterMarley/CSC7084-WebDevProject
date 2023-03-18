@@ -1,15 +1,15 @@
-import getConnection from '../../utils/dbConnection';
+import getConnection from '../utils/dbConnection';
 import mysql2, { FieldPacket, format as formatSQL, ResultSetHeader, RowDataPacket } from 'mysql2';
-import logErrors from '../../../app/utils/logError';
-import Activity from '../obj/mood/Activity';
-import Entry from '../obj/mood/Entry';
-import Mood from '../obj/mood/Mood';
-import Image from '../obj/mood/Image';
-import EntryFormDataResponse from '../responses/mood/EntryFormDataResponse';
-import EntryDataResponse from '../responses/mood/EntryDataResponse';
-import ActivityGroup from '../obj/mood/ActivityGroup';
+import logErrors from '../../app/utils/logError';
+import Activity from '../../common/model/Activity';
+import Entry from '../../common/model/Entry';
+import Mood from '../../common/model/Mood';
+import Image from '../../common/model/Image';
+import EntryFormDataResponse from '../../common/response/EntryFormDataResponse';
+import EntryDataResponse from '../../common/response/EntryDataResponse';
+import ActivityGroup from '../../common/model/ActivityGroup';
 import validator from 'validator';
-import CreateEntryResponse from '../responses/mood/CreateEntryResponse';
+import CreateEntryResponse from '../../common/response/CreateEntryResponse';
 
 /**
  * This is a static class in that it may not be instantiated. It's methods may be called to generate response objects after queries the database

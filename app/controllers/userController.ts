@@ -4,7 +4,7 @@ import AccountDetailsUpdateResponse from '../../common/response/AccountDetailsUp
 import AccountPasswordUpdateResponse from '../../common/response/AccountPasswordUpdateResponse';
 import LoginResponse from '../../common/response/LoginResponse';
 import RegistrationResponse from '../../common/response/RegistrationResponse';
-import config from "../../config/Config";
+import config from "../../common/config/Config";
 import apiCall from "../utils/apiCall";
 import { verifyToken } from "../utils/jwtHelpers";
 import validator from "validator";

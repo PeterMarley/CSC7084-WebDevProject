@@ -1,4 +1,4 @@
-import config from "../../config/Config";
+import config from "../../common/config/Config";
 const port = config.connection.port;
 
 export default function buildApiUrl(route: string) {

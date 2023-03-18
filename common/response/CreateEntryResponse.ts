@@ -1,4 +1,4 @@
-import SuccessResponse from "../SuccessResponse";
+import SuccessResponse from "./SuccessResponse";
 
 export default class CreateEntryResponse extends SuccessResponse {
     entryId: number | undefined;
