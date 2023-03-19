@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import AccountDetailsGetResponse from '../../common/response/AccountDetailsGetResponse';
-import AccountPasswordUpdateResponse from '../../common/response/AccountPasswordUpdateResponse';
 import RegistrationResponse from '../../common/response/RegistrationResponse';
 import config from "../../common/config/Config";
 import apiCall from "../utils/apiCall";
 import { verifyToken } from "../utils/jwtHelpers";
+import SuccessResponse from "../../common/response/SuccessResponse";
 
 const regex = {
     username: new RegExp(config.userDetailsValidation.username.regex),
@@ -23,8 +23,10 @@ class UserController {
         if (passwordNew !== passwordNewConfirm) {
             res.locals.messages = ['Password confirmation failed, be sure that your new password is exactly the same in both fields.'];
         } else {
-            const { success }: AccountPasswordUpdateResponse =
-                await apiCall("PATCH", 'api/user/' + res.locals.id + '/password', new URLSearchParams([['password', passwordNew]]));
+            const { success }: SuccessResponse =
+                await apiCall("PATCH",
+                    'api/user/' + res.locals.id + '/password',
+                    new URLSearchParams([['password', encodeURIComponent(passwordNew)]]));
             if (success) {
                 res.locals.messages = ['Password updated!']
             } else {
@@ -65,7 +67,10 @@ class UserController {
             const accountDetailsUpdateResponse = await apiCall(
                 'PATCH',
                 'api/user/' + userId,
-                new URLSearchParams([['username', newUsername], ['email', newEmail]])
+                new URLSearchParams([
+                    ['username', encodeURIComponent(newUsername)],
+                    ['email', encodeURIComponent(newEmail)]
+                ])
             );
             const { success } = accountDetailsUpdateResponse;
             if (success && newUsername !== oldUsername) {
@@ -144,7 +149,10 @@ class UserController {
         const registrationResponse = await apiCall(
             'POST',
             'api/user/register',
-            new URLSearchParams([['username', username], ['email', email], ['password', password]])
+            new URLSearchParams([
+                ['username', encodeURIComponent(username)],
+                ['email', encodeURIComponent(email)],
+                ['password', encodeURIComponent(password)]])
         ) as RegistrationResponse;
 
         // process response
@@ -166,13 +174,11 @@ class UserController {
         // validate request
         const errors: String[] = [];
 
-        if (req.method.toUpperCase() != 'POST') errors.push('cannotget')
-        if (!req.body) errors.push('nobody');
-        if (!req.body.username) errors.push('nousername');
-        if (!req.body.password) errors.push('nopassword');
+        if (!req.body.username) errors.push('No Username provided');
+        if (!req.body.password) errors.push('No Password provided');
 
         if (errors.length > 0) {
-            res.locals.validations = errors;
+            res.locals.errors = errors;
             res.status(400).render('loginfailed');
             return;
         }
@@ -182,7 +188,10 @@ class UserController {
         const loginResponse = await apiCall(
             'POST',
             'api/user/login',
-            new URLSearchParams([['username', username], ['password', password]])
+            new URLSearchParams([
+                ['username', encodeURIComponent(username)],
+                ['password', encodeURIComponent(password)]
+            ])
         );
 
         // build response & send

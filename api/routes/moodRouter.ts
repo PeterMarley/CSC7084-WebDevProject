@@ -24,11 +24,10 @@ moodRouter.use(authorizeRequestSource);
  * 
  *******************************************************/
 
+moodRouter.get('/:userId/new', controller.getEntryFormData)
+moodRouter.post('/:userId/new', controller.createNewEntry);
 
-moodRouter.get('/new/:userId', controller.getEntryFormData)
-moodRouter.post('/new/:userId', controller.createNewEntry);
-
-moodRouter.get('/list/:userId', controller.getEntryList);
+moodRouter.get('/:userId/list', controller.getEntryList);
 
 moodRouter.get('/:userId/:entryId', controller.getEntryFormData, controller.getSingleEntry);
 moodRouter.put('/:userId/:entryId', controller.updateSingleEntry);

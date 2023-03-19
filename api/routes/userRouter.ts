@@ -5,7 +5,7 @@
  *******************************************************/
 
 import express from 'express';
-import controller from '../controllers/authController';
+import controller from '../controllers/userController';
 import authorizeRequestSource from '../middleware/authorizeRequestSource';
 
 const userRouter = express.Router();

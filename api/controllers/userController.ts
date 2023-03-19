@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import AccountDetailsUpdateResponse from '../../common/response/AccountDetailsUpdateResponse';
-import AccountPasswordUpdateResponse from '../../common/response/AccountPasswordUpdateResponse';
 import RegistrationResponse from '../../common/response/RegistrationResponse';
 import LoginResponse from '../../common/response/LoginResponse';
 import config from "../../common/config/Config";
 import dao from "../database/auth-dao";
+import SuccessResponse from "../../common/response/SuccessResponse";
 
 const regex = {
     username: new RegExp(config.userDetailsValidation.username.regex),
@@ -16,7 +16,7 @@ async function accountPasswordPatch(req: Request, res: Response, next: NextFunct
     const userId = Number(req.params.userId);
     const { password } = req.body;
     let success = await dao.changePassword(password, userId);
-    res.json(new AccountPasswordUpdateResponse(success));
+    res.json(new SuccessResponse(success));
 }
 
 async function updateAccountDetails(req: Request, res: Response, next: NextFunction) {
@@ -86,8 +86,8 @@ async function login(req: Request, res: Response, next: NextFunction) {
     const error: Array<string> = [];
     const { username, password } = req.body;
 
-    if (!username) error.push('no username provided');
-    if (!password) error.push('no password provided');
+    if (!username) error.push('No Username provided.');
+    if (!password) error.push('No Password provided.');
     if (username && !regex.username.test(username)) {
         error.push(config.userDetailsValidation.username.description); 
     }

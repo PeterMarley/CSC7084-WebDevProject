@@ -101,6 +101,8 @@ async function createNewEntry(req: Request, res: Response, next: NextFunction) {
 		notes
 	} = req.body; // only mood is required
 
+	console.log(req.body);
+	
 	// normalise empty values from body
 	if (!activityNameCommaDelimStr) activityNameCommaDelimStr = '';
 	if (!notes) notes = '';
