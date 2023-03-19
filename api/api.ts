@@ -10,7 +10,7 @@ import internalServerErrorHandler from './middleware/internalServerErrorHandler'
 
 
 // app imports
-import authRouter from './routes/authRouter';
+import userRouter from './routes/userRouter';
 import moodRouter from './routes/moodRouter';
 import visualizeRouter from './routes/visualizeRouter';
 
@@ -25,7 +25,7 @@ const api = express.Router();
 
 api.use(express.urlencoded({ extended: false }));
 
-api.use('/auth', authRouter);
+api.use('/user', userRouter);
 api.use('/mood', moodRouter);
 api.use('/visualize', visualizeRouter);
 

@@ -1,11 +1,13 @@
 import { format, ResultSetHeader, RowDataPacket } from "mysql2";
+import { Connection } from 'mysql2/promise';
 import checkPasswordCorrect, { encrypt } from "../utils/crypt";
 import getConnection from "../utils/dbConnection";
 import { createToken } from "../../app/utils/jwtHelpers"
 import AccountDetailsGetResponse from "../../common/response/AccountDetailsGetResponse";
-import DeleteAccountResponse from "../../common/response/DeleteAccountResponse";
+import SuccessResponse from "../../common/response/SuccessResponse";
 import LoginResponse from "../../common/response/LoginResponse";
 import RegistrationResponse from "../../common/response/RegistrationResponse";
+import logError from '../../common/utils/logError';
 
 const userDetailsValidation = require('../../common/config/userDetailsValidation.json');
 
@@ -15,17 +17,20 @@ const userDetailsValidation = require('../../common/config/userDetailsValidation
 class AuthApiDataAccessObject {
     async changePassword(password: string, userId: number): Promise<boolean> {
         let success = false;
+        let con: Connection | null = null;
         try {
             if (this.validatePassword(password)) {
                 const updateAccountDetailsSql = format(`CALL usp_update_password(?,?)`, [userId, encrypt(password)]);
-                const con = await getConnection();
+                con = await getConnection();
 
                 success = ((await con.execute(updateAccountDetailsSql)).at(0) as ResultSetHeader).affectedRows === 1;
 
                 con.end();
             }
         } catch (err) {
-            console.log('updating account password failed.');
+            logError(['updating account password failed.']);
+        } finally {
+            if (con) con.end();
         }
         return success;
     }
@@ -33,16 +38,17 @@ class AuthApiDataAccessObject {
     async updateAccountDetails(userId: number, username: string, email: string): Promise<boolean> {
         let success = false;
 
+        let con: Connection | null = null;
         try {
             if (this.validateUsername(username) && this.validateEmail(email)) {
                 const updateAccountDetailsSql = format(`UPDATE tbl_user u SET u.username = ?, u.email=? WHERE u.user_id = ?`, [username, email, userId]);
-                const con = await getConnection();
+                con = await getConnection();
                 success = ((await con.execute(updateAccountDetailsSql)).at(0) as ResultSetHeader).affectedRows === 1;
-                con.end();
             }
         } catch (err) {
-            console.log('updating account details failed:');
-            console.log(`userId: ${userId}, new username: ${username}, new email: ${email}`);
+            logError(['updating account details failed:', `userId: ${userId}, new username: ${username}, new email: ${email}`])
+        } finally {
+            if (con) con.end();
         }
 
         return success;
@@ -58,27 +64,29 @@ class AuthApiDataAccessObject {
         return response;
     }
 
-    async deleteUserAccount(userId: number): Promise<[number, DeleteAccountResponse]> {
+    async deleteUserAccount(userId: number): Promise<[number, SuccessResponse]> {
         let success = false;
-        let error: string | undefined;
+        let error: string[] | null = null;
         let statusCode = 200;
+        let con: Connection | null = null;
+
         try {
-            const con = await getConnection();
+            con = await getConnection();
             //TODO more probably needed here
             const result = (await con.execute('CALL usp_delete_account(?)', [userId])).at(0) as ResultSetHeader;
-            con.end();
             success = result.affectedRows !== 0;
             if (!success) {
-                error = 'User does not exist'
+                error = ['User does not exist'];
                 statusCode = 404;
             }
         } catch (err: any) {
-            console.log(err);
-            error = err.message as string;
+            logError([err]);
             statusCode = 500;
+        } finally {
+            if (con) con.end();
         }
 
-        return [statusCode, new DeleteAccountResponse(success, error)];
+        return [statusCode, new SuccessResponse(success, error)];
     }
 
     /**
@@ -151,7 +159,7 @@ class AuthApiDataAccessObject {
 
             return [201, new RegistrationResponse(true, null, userId)];
         } catch (err: any) {
-            console.log(err);
+            logError([err]);
             return [500, new RegistrationResponse(false, ['unknownerror'])];
         } finally {
             con.end();

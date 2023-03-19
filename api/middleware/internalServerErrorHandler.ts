@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import logErrors from "../../app/utils/logError";
+import logErrors from "../../common/utils/logError";
 import SuccessResponse from "../../common/response/SuccessResponse";
 
 export default function internalServerErrorHandler(err: any, req: Request, res: Response, next: NextFunction) {

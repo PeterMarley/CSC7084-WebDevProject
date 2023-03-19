@@ -15,11 +15,10 @@ const mainRouter = Router();
  * 
  *******************************************************/
 
-mainRouter.get('/', controller.getWelcome);
-mainRouter.get('/test', controller.test);
+mainRouter.get('/', controller.index);
 
 // Fallback routes
-mainRouter.all('/500', controller.internalServerError);
+mainRouter.all('/error', controller.internalServerError);
 mainRouter.all('/forbidden', controller.forbidden);
 mainRouter.all('*', controller.notFound);
 

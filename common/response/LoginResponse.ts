@@ -1,12 +1,10 @@
-export default class LoginResponse {
-    success: boolean;
-    token: string | undefined;
-    error: Array<string> | undefined;
+import SuccessResponse from './SuccessResponse';
 
-    constructor(success: boolean, token: string | undefined = undefined, error: Array<string> | undefined = undefined) {
-        this.success = success;
+export default class LoginResponse extends SuccessResponse {
+    token: string | undefined;
+    constructor(success: boolean, token: string | undefined | null = null, error: string[] | undefined | null = null) {
+        super(success, error);
         if (token) this.token = token;
-        if (error && error.length != 0) this.error = error;
     }
 }
 

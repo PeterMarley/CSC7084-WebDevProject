@@ -8,7 +8,7 @@ import express from 'express';
 import controller from '../controllers/authController';
 import authorizeRequestSource from '../middleware/authorizeRequestSource';
 
-const authRouter = express.Router();
+const userRouter = express.Router();
 
 /*******************************************************
  * 
@@ -16,7 +16,7 @@ const authRouter = express.Router();
  * 
  *******************************************************/
 
-authRouter.use(authorizeRequestSource);
+userRouter.use(authorizeRequestSource);
 
 /*******************************************************
  * 
@@ -24,13 +24,13 @@ authRouter.use(authorizeRequestSource);
  * 
  *******************************************************/
 
-authRouter.post('/login', controller.login);
-authRouter.post('/register', controller.register);
+userRouter.post('/login', controller.login);
+userRouter.post('/register', controller.register);
 
-authRouter.delete('/deleteuser/:userId', controller.deleteUserAccount);
+userRouter.delete('/:userId', controller.deleteUserAccount);
 
-authRouter.get('/userdetails/:userId', controller.getAccountDetails);
-authRouter.patch('/userdetails/:userId', controller.updateAccountDetails);
-authRouter.patch('/userdetails/:userId/password', controller.accountPasswordPatch);
+userRouter.get('/:userId', controller.getAccountDetails);
+userRouter.patch('/:userId', controller.updateAccountDetails);
+userRouter.patch('/:userId/password', controller.accountPasswordPatch);
 
-export default authRouter;
+export default userRouter;

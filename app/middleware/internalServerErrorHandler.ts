@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import logErrors from "../../app/utils/logError";
+import logErrors from "../../common/utils/logError";
 
 export default function internalServerErrorHandler(err: any, req: Request, res: Response, next: NextFunction) {
     logErrors([err]);
@@ -8,6 +8,6 @@ export default function internalServerErrorHandler(err: any, req: Request, res: 
     if (res.headersSent) {
         return next(err);
     }
-    res.redirect('/500');
+    res.redirect('/error');
     return;
 }

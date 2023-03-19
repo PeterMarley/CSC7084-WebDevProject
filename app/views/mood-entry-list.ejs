@@ -41,7 +41,7 @@ if (authed) { // if authenticated
         <span><img src="<%- mood.image.url %>" alt="<%- mood.image.altText %>" width="24px" height="24px"></span>
         <span class="mood-entry-timestamp">( <%- entryDate.toTimeString().substring(0,8) %> )</span>
         <span class="mood-entry-controls">
-          <a href="/mood/<%- entryId %>?_mo=PUT" class="button-style-2">Edit</a>
+          <a href="/mood/<%- entryId %>" class="button-style-2">Edit</a>
           <a href="/mood/<%- entryId %>?_mo=DELETE" class="button-style-2">Delete</a>
         </span>
       </div>

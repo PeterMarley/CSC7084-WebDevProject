@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import logErrors from "../../app/utils/logError";
+import logErrors from "../../common/utils/logError";
 import dao from '../database/mood-dao';
 
 async function moodFrequency(req: Request, res: Response, next: NextFunction) {

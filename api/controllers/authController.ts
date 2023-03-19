@@ -1,55 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import { ResultSetHeader, format, RowDataPacket } from "mysql2";
 import AccountDetailsUpdateResponse from '../../common/response/AccountDetailsUpdateResponse';
-import AccountDetailsGetResponse from '../../common/response/AccountDetailsGetResponse';
 import AccountPasswordUpdateResponse from '../../common/response/AccountPasswordUpdateResponse';
-import DeleteAccountResponse from '../../common/response/DeleteAccountResponse';
 import RegistrationResponse from '../../common/response/RegistrationResponse';
 import LoginResponse from '../../common/response/LoginResponse';
 import config from "../../common/config/Config";
 import dao from "../database/auth-dao";
-
-
-
-const SQL = {
-    register: {
-        insertUser: 'INSERT INTO tbl_user (username, password, email, user_icon_id) VALUES (?,?,?,1)',
-        // insertMoods:
-        //     `INSERT INTO tbl_mood
-        //     (
-        //         tbl_mood.name, 
-        //         tbl_mood.order, 
-        //         tbl_mood.icon_image_id, 
-        //         tbl_mood.user_id
-        //     )
-        //     VALUES 
-        //     ('Awful', 1, 1, ?),
-        //     ('Bad', 2, 2, ?),
-        //     ('Ok', 3, 3, ?),
-        //     ('Good', 4, 4, ?),
-        //     ('Great', 5, 5, ?)`,
-        insertActivityGroups:
-            `INSERT INTO tbl_activity_group
-            (
-                tbl_activity_group.name,
-                tbl_activity_group.icon_image_id,
-                tbl_activity_group.user_id
-            )
-            VALUES
-            ('Default', 1, ?)`,
-        insertDefaultActivities:
-            `INSERT INTO tbl_activity
-            (
-                tbl_activity.name,
-                tbl_activity.icon_image_id,
-                tbl_activity.activity_group_id,
-                tbl_activity.user_id
-            )
-            VALUES
-            ('Work',1,?,?),
-            ('Exersize',2,?,?)`
-    }
-}
 
 const regex = {
     username: new RegExp(config.userDetailsValidation.username.regex),
@@ -87,7 +42,6 @@ async function deleteUserAccount(req: Request, res: Response, next: NextFunction
     const [statusCode, response] = await dao.deleteUserAccount(Number(userId));
     res.status(statusCode).send(response);
 }
-
 
 async function register(req: Request, res: Response, next: NextFunction) {
     // validate post body properties exist

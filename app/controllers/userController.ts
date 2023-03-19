@@ -1,21 +1,16 @@
 import { Request, Response, NextFunction } from "express";
 import AccountDetailsGetResponse from '../../common/response/AccountDetailsGetResponse';
-import AccountDetailsUpdateResponse from '../../common/response/AccountDetailsUpdateResponse';
 import AccountPasswordUpdateResponse from '../../common/response/AccountPasswordUpdateResponse';
-import LoginResponse from '../../common/response/LoginResponse';
 import RegistrationResponse from '../../common/response/RegistrationResponse';
 import config from "../../common/config/Config";
 import apiCall from "../utils/apiCall";
 import { verifyToken } from "../utils/jwtHelpers";
-import validator from "validator";
-import DeleteAccountResponse from "../../common/response/DeleteAccountResponse";
 
 const regex = {
     username: new RegExp(config.userDetailsValidation.username.regex),
     password: new RegExp(config.userDetailsValidation.password.regex),
     email: new RegExp(config.userDetailsValidation.email.regex)
 };
-
 
 class UserController {
     async passwordChange(req: Request, res: Response) {
@@ -29,32 +24,35 @@ class UserController {
             res.locals.messages = ['Password confirmation failed, be sure that your new password is exactly the same in both fields.'];
         } else {
             const { success }: AccountPasswordUpdateResponse =
-                await apiCall("PATCH", 'api/auth/userdetails/' + res.locals.id + '/password', new URLSearchParams([['password', passwordNew]]));
+                await apiCall("PATCH", 'api/user/' + res.locals.id + '/password', new URLSearchParams([['password', passwordNew]]));
             if (success) {
                 res.locals.messages = ['Password updated!']
             } else {
                 res.locals.messages = ['Password update failed! Try again later.']
             }
         }
-        const { username, email }: AccountDetailsGetResponse = await apiCall("GET", 'api/auth/userdetails/' + res.locals.id);
+        const { username, email }: AccountDetailsGetResponse = await apiCall("GET", 'api/user/' + res.locals.id);
         res.locals.username = username;
         res.locals.email = email;
         res.render('account');
     }
+
     async accountDetailsToLocals(req: Request, res: Response, next: NextFunction) {
 
         const accountDetailsGetResponse = await apiCall(
             "GET",
-            'api/auth/userdetails/' + res.locals.id
+            'api/user/' + res.locals.id
         );
         res.locals.username = accountDetailsGetResponse.username;
         res.locals.email = accountDetailsGetResponse.email;
 
         next();
     }
+
     renderAccountPage(req: Request, res: Response) {
         res.render('account');
     }
+
     async patchAccount(req: Request, res: Response, next: NextFunction) {
 
         const userId = res.locals.id;
@@ -66,7 +64,7 @@ class UserController {
 
             const accountDetailsUpdateResponse = await apiCall(
                 'PATCH',
-                'api/auth/userdetails/' + userId,
+                'api/user/' + userId,
                 new URLSearchParams([['username', newUsername], ['email', newEmail]])
             );
             const { success } = accountDetailsUpdateResponse;
@@ -91,24 +89,29 @@ class UserController {
 
         next();
     }
+
     loginFailed(req: Request, res: Response) {
         res.render('test');
     }
+
     registerGet(req: Request, res: Response) {
         res.render('register');
     }
+
     logout(req: Request, res: Response) {
         req.cookies.token = undefined;
         res.clearCookie('token');
         res.statusCode = 200;
         res.redirect('/');
     }
+
     async deleteUser(req: Request, res: Response, next: NextFunction) {
-        await apiCall('DELETE', '/api/auth/deleteuser/' + res.locals.id);   
+        await apiCall('DELETE', '/api/user/' + res.locals.id);
         res.clearCookie('token');
         res.locals.authed = false;
         res.render('accountdeleted');
     }
+
     async registerPost(req: Request, res: Response, next: NextFunction) {
 
         // validate POST body
@@ -140,7 +143,7 @@ class UserController {
 
         const registrationResponse = await apiCall(
             'POST',
-            'api/auth/register',
+            'api/user/register',
             new URLSearchParams([['username', username], ['email', email], ['password', password]])
         ) as RegistrationResponse;
 
@@ -153,10 +156,11 @@ class UserController {
             res.status(200).render('registerfailed', {
                 attemptedUsername: username,
                 attemptedEmail: email,
-                validationErrors: registrationResponse.error
+                validationErrors: registrationResponse.errors
             });
         }
     }
+
     async attemptLogin(req: Request, res: Response, next: NextFunction) {
 
         // validate request
@@ -168,9 +172,7 @@ class UserController {
         if (!req.body.password) errors.push('nopassword');
 
         if (errors.length > 0) {
-            res.statusCode = 400;
             res.locals.validations = errors;
-            // TODO expand this       
             res.status(400).render('loginfailed');
             return;
         }
@@ -179,39 +181,37 @@ class UserController {
         const { username, password } = req.body;
         const loginResponse = await apiCall(
             'POST',
-            'api/auth/login',
+            'api/user/login',
             new URLSearchParams([['username', username], ['password', password]])
         );
-        console.log(loginResponse);
 
         // build response & send
         const COOKIE_NAME = "token";
         if (loginResponse.success && loginResponse.token) {
             const userId = verifyToken(loginResponse.token).id;
+            res.locals.authed = true;
+            res.locals.username = username;
+            res.locals.userId - userId;
+
             res.status(200)
                 .cookie(COOKIE_NAME, loginResponse.token)
-                .render('welcome', {
-                    authed: true,
-                    username: username,
-                    userId: userId,
-                });
+                .render('welcome');
         } else if (!loginResponse.success) {
-            //res.redirect('/login?vals=loginfail');
             res.locals.authed = false;
-            // res.locals.validations = ['login-unsuccessful'];
             res.locals.errors = loginResponse.error;
+
             res.status(401)
                 .clearCookie(COOKIE_NAME)
                 .render('loginfailed');
-            return;
         } else {
             res.locals.authed = false;
+
             res.status(500)
                 .clearCookie(COOKIE_NAME)
-                .redirect('/500');
-            return;
+                .redirect('/error');
         }
     }
+
     initAccountDetailsLocals(req: Request, res: Response, next: NextFunction) {
         res.locals.username = null;
         res.locals.email = null;

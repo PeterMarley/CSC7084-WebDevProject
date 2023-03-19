@@ -4,7 +4,7 @@ import EntryDataResponse from '../../common/response/EntryDataResponse';
 import EntryFormDataResponse from '../../common/response/EntryFormDataResponse';
 import SuccessResponse from '../../common/response/SuccessResponse';
 
-class EntryController {
+class MoonController {
 	initialiseLocalsForEntryEdit(req: Request, res: Response, next: NextFunction) {
 		res.locals.updateSingleEntrySuccess = null;
 		res.locals.initialiseLocalsForEntryEdit = null;
@@ -79,9 +79,6 @@ class EntryController {
 		res.locals.entries = response || {};
 		res.render('mood-entry-list');
 	}
-	getActivity(req: Request, res: Response, next: NextFunction) {
-		res.send('not yet implemented');
-	}
 	async getVisual(req: Request, res: Response) {
         if (!res.locals.authed) {
             res.status(401).json({ success: false, message: "Not Authorized" })
@@ -91,4 +88,4 @@ class EntryController {
     }
 }
 
-export default new EntryController();
+export default new MoonController();

@@ -136,12 +136,7 @@ async function getEntryList(req: Request, res: Response, next: NextFunction) {
 	}
 
 	try {
-		let statusCode = 200;
-		const response = await dao.getEntryList(userId);
-		// TODO build proper response interface/ class
-		if (response.hasOwnProperty('success') && response.error) {
-			statusCode = 500;
-		}
+		const [statusCode, response] = await dao.getEntryList(userId);
 		res.status(statusCode).json(response);
 	} catch (err: any) {
 		next(err);
