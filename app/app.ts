@@ -1,19 +1,21 @@
-// express imports
+// node module imports
+import dotenv from 'dotenv';
+import fs from 'fs';
+import methodOverride from 'method-override';
 import express from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import https from 'https';
-import fs from 'fs';
-import config from '../common/config/Config';
-import methodOverride from 'method-override';
 
-// app imports
-import dotenv from 'dotenv';
+
+// my module imports
 import { authorize } from './middleware/authorize';
+import config from '../common/config/Config';
+
 
 // Router imports
-import api from '../api/api';							// auth API
-import mainRouter from './routes/mainRouter';							// normal routing
+import api from '../api/api';
+import mainRouter from './routes/mainRouter';
 import userRouter from './routes/userRouter';
 import moodRouter from './routes/moodRouter';
 import injectConfig from './middleware/injectConfig';
@@ -24,6 +26,7 @@ import internalServerErrorHandler from './middleware/internalServerErrorHandler'
  * Express Config
  * 
  ******************************/
+
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 const httpsOpts = {

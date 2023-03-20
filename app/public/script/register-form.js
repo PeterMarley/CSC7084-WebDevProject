@@ -1,4 +1,5 @@
 (function initialiseRegisterForm() {
+    // an array of objects used to create event handlers
     const registrationValidations = [
         { sel: '#username', validationSel: '#register-form-validation-message-username', validator: validateUsername },
         { sel: '#password', validationSel: '#register-form-validation-message-password', validator: validatePassword },
@@ -6,19 +7,23 @@
         { sel: '#email', validationSel: '#register-form-validation-message-email', validator: validateEmail },
     ]
 
+    // attach basic validation event handlers
     registrationValidations.forEach(v => {
         document
             .querySelector(v.sel)
             .addEventListener('keyup', () => handleValidateInput(v.sel, v.validationSel, v.validator));
     });
 
+    // attach event handlers to validate password == confirm password
     const passwordInputs = [document.querySelector('#password'), document.querySelector('#password-confirm')]
     passwordInputs.forEach(pi => pi.addEventListener('keyup', handleValidatePasswordInputsTogether));
 
+    // attach form handler, than controls for submission.
     document
         .querySelector('#register-account-submit')
         .addEventListener('click', (event) => handleRegisterSubmission(event, registrationValidations));
 
+    // add "show password" event handler
     document.querySelector('#show-password-register').addEventListener('change', () => handleShowPasswordInputs('#password'));
 })();
 
@@ -40,16 +45,4 @@ function handleRegisterSubmission(event, validations) {
         }
     }
     if (allValid) document.querySelector('#registration-form').submit();
-}
-
-function checkRegisterFormIsSubmittable(elements) {
-    const registerBtn = document.querySelector('#register-account-submit');
-    for (let element of elements) {
-        console.log(element);
-        if (!element.classList.contains('valid')) {
-            registerBtn.disabled = true;
-            return;
-        }
-    }
-    registerBtn.disabled = false;
 }

@@ -1,6 +1,4 @@
-<%_ if (authed) { // TODO tidy this%>
-You're already logged in mate
-<% } else { %>
+<%_ if (!authed) { // TODO tidy this%>
 <% let username, email = '';                                                              %>
 <%if (typeof attemptedUsername !== 'undefined' && typeof attemptedEmail !== 'undefined'){ %>
 <%  username = attemptedUsername;                                                         %>

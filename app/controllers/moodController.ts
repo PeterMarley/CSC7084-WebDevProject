@@ -139,6 +139,7 @@ class MoodController {
 		if (!activityId) {
 			messages.push('The form has been tampered with! Update unsuccessful.');
 		}
+		
 		if (messages.length > 0) {
 			const entryFormDataResponse: EntryFormDataResponse = await apiCall('GET', '/api/mood/' + (res.locals.id ? res.locals.id : '') + '/new');
 			res.render('context', { activityGroups: entryFormDataResponse.activityGroups, messages });

@@ -254,7 +254,7 @@ class MoodApiDataAccessObject {
 
 		// process data
 		try {
-
+			// set the Map as entryID => Entry object
 			entries.forEach((dbEntry: IDbEntry) => {
 				const mood = new Mood(
 					dbEntry.moodId,
@@ -264,17 +264,19 @@ class MoodApiDataAccessObject {
 					dbEntry.moodArousal);
 				map.set(dbEntry.entryId, new Entry(dbEntry.entryId, dbEntry.timestamp, validator.escape(decodeURIComponent(dbEntry.entryNotes)), mood))
 			});
+			// add all activites to relevent entries in map
 			activities.forEach((dbActivity: IDbEntryActivities) => {
 				const { entryId, activityName, activityId, activityIconUrl, activityIconAltText } = dbActivity;
 				map.get(entryId)?.activities.push(new Activity(activityName, activityId, new Image(activityIconUrl, activityIconAltText)))
 			});
+			// add all entry images to relevent entries in map
 			entryImages.forEach((entryImage: IDbEntriesImages) => {
 				const { entryId, url, altText } = entryImage;
 				map.get(entryId)?.images.push(new Image(url, altText))
 			});
 		} catch (err: any) {
 			logErrors([err]);
-			return [500, { error: "server ded. rip." }];
+			return [500, { error: "Something went wrong processing the entry list." }];
 		}
 		// console.log(formatSQL('INSERT INTO tbl VALUES (?);', ['); DROP TABLE tbl;']));
 
