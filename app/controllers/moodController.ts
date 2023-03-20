@@ -10,7 +10,7 @@ const regex = {
 	contextIconUrl: new RegExp(config.contexts.iconUrl.regex)
 };
 
-class MoonController {
+class MoodController {
 	initialiseLocalsForEntryEdit(req: Request, res: Response, next: NextFunction) {
 		res.locals.updateSingleEntrySuccess = null;
 		res.locals.initialiseLocalsForEntryEdit = null;
@@ -197,4 +197,4 @@ class MoonController {
 	}
 }
 
-export default new MoonController();
+export default new MoodController();

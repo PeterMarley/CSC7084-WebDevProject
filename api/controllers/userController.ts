@@ -38,7 +38,11 @@ async function getAccountDetails(req: Request, res: Response, next: NextFunction
 
 async function deleteUserAccount(req: Request, res: Response, next: NextFunction) {
 
-    const { userId } = req.params;
+    const userId = Number(req.params.userId);
+    if (!userId) {
+        res.status(400).json(new SuccessResponse(false, ['UserID was not a numeric value']));
+        return;
+    }
     const [statusCode, response] = await dao.deleteUserAccount(Number(userId));
     res.status(statusCode).send(response);
 }
@@ -49,30 +53,31 @@ async function register(req: Request, res: Response, next: NextFunction) {
 
     // destructure registration information
     let { username, email, password } = req.body;
-    username = decodeURIComponent(username);
-    email = decodeURIComponent(email);
-    password = decodeURIComponent(password);
-    
+
+
     const bodyValidationErr: Array<string> = [];
     // validate post body
     if (!username) bodyValidationErr.push('nousername');
     if (!email) bodyValidationErr.push('noemail');
     if (!password) bodyValidationErr.push('nopassword');
-    
+
     console.log(regex.email);
     console.log(email);
-    
-    
+
     // validate user account details
-    if (!regex.username.test(username)) bodyValidationErr.push('badusername');
-    if (!regex.email.test(email)) bodyValidationErr.push('bademail');
-    if (!regex.password.test(password)) bodyValidationErr.push('badpassword');
+    if (username && !regex.username.test(username)) bodyValidationErr.push('badusername');
+    if (email && !regex.email.test(email)) bodyValidationErr.push('bademail');
+    if (password && !regex.password.test(password)) bodyValidationErr.push('badpassword');
 
     if (bodyValidationErr.length !== 0) {
         // form BadRequest
         res.status(400).send(new RegistrationResponse(false, bodyValidationErr));
         return;
     }
+
+    username = decodeURIComponent(username);
+    email = decodeURIComponent(email);
+    password = decodeURIComponent(password);
 
     // Database
     const [statusCode, registrationResponse] = await dao.register(username, email, password);
@@ -96,10 +101,10 @@ async function login(req: Request, res: Response, next: NextFunction) {
     if (!username) error.push('No Username provided.');
     if (!password) error.push('No Password provided.');
     if (username && !regex.username.test(username)) {
-        error.push(config.userDetailsValidation.username.description); 
+        error.push(config.userDetailsValidation.username.description);
     }
     if (password && !regex.password.test(password)) {
-        error.push(config.userDetailsValidation.password.description); 
+        error.push(config.userDetailsValidation.password.description);
     }
 
     if (error.length !== 0) {
@@ -108,7 +113,7 @@ async function login(req: Request, res: Response, next: NextFunction) {
     }
 
     const [statusCode, loginResponse] = await dao.login(username, password);
-    
+
     // prepare and send json response
     res.status(statusCode).json(loginResponse);
 }

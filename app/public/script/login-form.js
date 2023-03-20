@@ -16,7 +16,9 @@
 
     document
         .querySelector('#login-submit')
-        .addEventListener('click', (event) => handleLoginSubmission(event, validations))
+        .addEventListener('click', (event) => handleLoginSubmission(event, validations));
+
+    document.querySelector('#show-password-login').addEventListener('click', () => handleShowPasswordInputs('#login-password-input'));
 })();
 
 function handleLoginSubmission(event, validations) {
@@ -38,3 +40,4 @@ function handleLoginSubmission(event, validations) {
     }
     if (allValid) document.querySelector('#login-form').submit();
 }
+

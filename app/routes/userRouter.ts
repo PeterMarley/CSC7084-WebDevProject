@@ -17,7 +17,6 @@ const userRouter = Router();
  * 
  *******************************************************/
 
-
 // log out
 userRouter.get('/logout', controller.logout);
 

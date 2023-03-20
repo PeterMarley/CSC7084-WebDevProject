@@ -41,8 +41,8 @@
     </div>
     <div>
         <form class="box-style-1" style="margin-top: 10px;" action="/mood/context/" method="POST">
-            New Activity: <input type="text" name="activityName" placeholder="Activity Name"> 
-            Activity Icon URL:<input type="text" name="activityIconUrl" placeholder="Icon URL">
+            New Activity: <input id="new-activity-name" type="text" name="activityName" placeholder="Activity Name"> 
+            Activity Icon URL:<input type="text" id="new-activity-icon-url" name="activityIconUrl" placeholder="Icon URL">
             <select name="activityGroupId">    
                 <% for (const group of activityGroups) { %>
                 <option value="<%- group.activityGroupId %>"><%- group.activityGroupName %></option>
