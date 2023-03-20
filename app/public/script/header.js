@@ -191,8 +191,6 @@ function createDeleteUserConfirmModal() {
 }
 
 function handleConfirmDeleteAccountKeyup(e) {
-    console.log(username);
-    console.log(username == e.target.value);
     const isEqual = username == e.target.value;
     if (isEqual) {
         e.target.classList.remove('invalid');

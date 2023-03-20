@@ -3,7 +3,7 @@ import AccountDetailsGetResponse from '../../common/response/AccountDetailsGetRe
 import RegistrationResponse from '../../common/response/RegistrationResponse';
 import config from "../../common/config/Config";
 import apiCall from "../utils/apiCall";
-import { verifyToken } from "../utils/jwtHelpers";
+import { verifyToken } from "../../common/utils/jwtHelpers";
 import SuccessResponse from "../../common/response/SuccessResponse";
 
 const regex = {

@@ -123,8 +123,6 @@ class MoodApiDataAccessObject {
 	async updateSingleEntry(userId: number, entryId: number, entryNotes: string, activityCommaDelimStr: string): Promise<[number, boolean]> {
 		const con = await getConnection();
 		try {
-			console.log(entryId);
-
 			// check entry exits - should be moved into usp_update_entry if i had time
 			const checkSql = formatSQL('SELECT COUNT(entry_id) AS `count` FROM tbl_entry WHERE user_id=? AND entry_id=?', [userId, entryId]);
 			const check = (await con.execute(checkSql)).at(0) as RowDataPacket;
@@ -152,19 +150,17 @@ class MoodApiDataAccessObject {
 		}
 
 		const entryImages: IDbEntriesImages[] = (await con.execute(formatSQL('CALL usp_select_entry_images_by_entry_id(?)', [entryId])) as Array<any>)[0];
-		const dbActs: IDbActivity[] = (await con.execute(formatSQL('CALL usp_select_activities_by_entry_id(?)', [entryId])) as Array<any>)[0];
+		const dbActs: IDbActivity[] = (await con.execute(formatSQL('CALL usp_select_activities_by_entry_id(?)', [entryId])) as Array<any>)[0][0];
 		con.end();
 
 		const acts: Activity[] = dbActs.map(e => new Activity(e.activityName, e.activityId, new Image(e.iconUrl, e.iconAltText)));
-		// console.log(acts);
-
 
 		// process entry and images
 		const images: Image[] = entryImages.map(e => new Image(e.url, e.altText))
 		const responseEntry = new Entry(
 			entryId,
 			entry.timestamp,
-			validator.unescape(entry.entryNotes),
+			validator.escape(decodeURIComponent(entry.entryNotes)),
 			//entry.entryNotes,
 			new Mood(
 				entry.moodId,
@@ -225,7 +221,7 @@ class MoodApiDataAccessObject {
 
 			const storedProcedureResponse = (await con.execute(sql)).at(0) as ResultSetHeader
 			const entryId = ((await con.query('SELECT @entryId AS entryId')).at(0) as RowDataPacket).at(0).entryId;
-			
+
 			const { affectedRows, warningStatus } = storedProcedureResponse;
 			success = affectedRows > 0 && warningStatus === 0;
 			return new CreateEntryResponse(success, entryId);
@@ -239,7 +235,7 @@ class MoodApiDataAccessObject {
 		return new CreateEntryResponse(false, null, ['Something went wrong']);
 	}
 
-	async getEntryList(userId: number): Promise<[number,any]> {
+	async getEntryList(userId: number): Promise<[number, any]> {
 		// get database data 
 		const con = await getConnection();
 		const map = new Map<number, Entry>();
@@ -258,6 +254,7 @@ class MoodApiDataAccessObject {
 
 		// process data
 		try {
+
 			entries.forEach((dbEntry: IDbEntry) => {
 				const mood = new Mood(
 					dbEntry.moodId,
@@ -265,7 +262,7 @@ class MoodApiDataAccessObject {
 					new Image(dbEntry.moodIconUrl, dbEntry.moodIconAltText),
 					dbEntry.moodValence,
 					dbEntry.moodArousal);
-				map.set(dbEntry.entryId, new Entry(dbEntry.entryId, dbEntry.timestamp, dbEntry.entryNotes, mood))
+				map.set(dbEntry.entryId, new Entry(dbEntry.entryId, dbEntry.timestamp, validator.escape(decodeURIComponent(dbEntry.entryNotes)), mood))
 			});
 			activities.forEach((dbActivity: IDbEntryActivities) => {
 				const { entryId, activityName, activityId, activityIconUrl, activityIconAltText } = dbActivity;
@@ -302,6 +299,54 @@ class MoodApiDataAccessObject {
 		}
 
 		return [200, response];
+	}
+	async updateContext(activityId: number, activityName: string, activityIconUrl: string, userId: number): Promise<[number, any]> {
+		const con = await getConnection();
+
+		// ensure it exists before update/insert
+		let result = (await con.query(formatSQL('SELECT COUNT(*) AS `count`, icon_image_id AS oldImageId FROM tbl_activity WHERE activity_id=? AND user_id=?', [activityId, userId])));
+		let count = (result.at(0) as RowDataPacket).at(0).count;
+		let oldImageId = (result.at(0) as RowDataPacket).at(0).oldImageId;
+
+		if (count != 1) {
+			con.end();
+			return [400, false];
+		}
+
+		result = (await con.query(formatSQL('SELECT COUNT(*)  AS `count`, activity_image_id AS imageId FROM tbl_activity_image WHERE url=?', [activityIconUrl])));
+		count = (result.at(0) as RowDataPacket).at(0).count;
+		let iconId: number;
+		if (count == 0) {
+			const img = await con.execute(formatSQL("INSERT INTO tbl_activity_image (url, alt_text) VALUES(?,'ALT TEXT')", [activityIconUrl]));
+			iconId = (img.at(0) as ResultSetHeader).insertId;
+		} else {
+			iconId = (result.at(0) as RowDataPacket).at(0).imageId;
+			const img = await con.execute(formatSQL("UPDATE tbl_activity_image SET url=?, alt_text='ALT TEXT' WHERE activity_image_id=?", [activityIconUrl, oldImageId]));
+		}
+
+		const result2 = await con.execute(formatSQL('UPDATE tbl_activity SET name=?, icon_image_id=?, user_id=? WHERE activity_id=? AND user_id=?',
+			[activityName, iconId, userId, activityId, userId]));
+
+		con.end();
+		return [200, true];
+		// con.query('UPDATE tbl_activity SET name=?,  ')
+		// console.log();
+
+	}
+	async createContext(activityName: string, activityIconUrl: string, activityGroupId: number, userId: number): Promise<[number, any]> {
+		try {
+			const con = await getConnection();
+
+
+			const response = await con.execute(formatSQL("INSERT INTO tbl_activity_image (url, alt_text) VALUES (?,'ALT TEXT')", [activityIconUrl]));
+			const newImageId = (response.at(0) as ResultSetHeader).insertId;
+
+			await con.execute(formatSQL("INSERT INTO tbl_activity (name, icon_image_id, activity_group_id, user_id) VALUES (?,?,?,?)", [activityName, newImageId, activityGroupId, userId]));
+			return [200, true];
+		} catch (err) {
+			logErrors([err]);
+			return [500, false];
+		}
 	}
 }
 

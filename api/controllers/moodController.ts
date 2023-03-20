@@ -2,6 +2,13 @@ import { Request, Response, NextFunction } from "express";
 import dao from '../database/mood-dao';
 import CreateEntryResponse from "../../common/response/CreateEntryResponse";
 import SuccessResponse from "../../common/response/SuccessResponse";
+import config from "../../common/config/Config";
+import { log } from "console";
+
+const regex = {
+	contextName: new RegExp(config.contexts.name.regex),
+	contextIconUrl: new RegExp(config.contexts.iconUrl.regex)
+};
 
 /**
  * Express middleware that deletes a single mood entry entry from the database.
@@ -37,9 +44,8 @@ async function deleteSingleEntry(req: Request, res: Response, next: NextFunction
 async function updateSingleEntry(req: Request, res: Response, next: NextFunction) {
 	const entryId = Number(req.params.entryId);
 	const userId = Number(req.params.userId);
-	const { activities: activityNamesCommaDelimStr, notes: entryNotes } = req.body;
-	console.log(req.body);
-	
+	let { activities: activityNamesCommaDelimStr, notes: entryNotes } = req.body;
+	activityNamesCommaDelimStr = decodeURIComponent(activityNamesCommaDelimStr);
 	try {
 		const [statusCode, success] = await dao.updateSingleEntry(userId, entryId, entryNotes, activityNamesCommaDelimStr);
 		res.status(statusCode).json(new SuccessResponse(success));
@@ -101,8 +107,6 @@ async function createNewEntry(req: Request, res: Response, next: NextFunction) {
 		notes
 	} = req.body; // only mood is required
 
-	console.log(req.body);
-	
 	// normalise empty values from body
 	if (!activityNameCommaDelimStr) activityNameCommaDelimStr = '';
 	if (!notes) notes = '';
@@ -145,6 +149,74 @@ async function getEntryList(req: Request, res: Response, next: NextFunction) {
 	}
 }
 
+async function updateContext(req: Request, res: Response, next: NextFunction) {
+	const activityName = req.body.activityName;
+	const activityIconUrl = req.body.activityIconUrl;
+	const activityId = Number(req.params.activityId);
+	const userId = Number(req.params.userId);
+	const messages: string[] = [];
+	
+	if (!activityName) {
+		messages.push('Activity Name is required!');
+	} else {
+		if (!regex.contextName.test(activityName)) messages.push('Activity Name is not valid, must be a-z A-Z 0-9 or whitespace only.');
+	}
+
+	if (!activityIconUrl) {
+		messages.push('Activity Icon URL is required!');
+	} else {
+		if (!regex.contextIconUrl.test(activityIconUrl)) messages.push('Activity Icon URL is not a valid URL.');
+	}
+
+	if (!activityId) {
+		messages.push('The form has been tampered with! Update unsuccessful.');
+	}
+
+	if (messages.length > 0) {	
+		res.status(400).json(new SuccessResponse(false, messages));
+		return;
+	}
+
+	const [statusCode, response] = await dao.updateContext(activityId, activityName, activityIconUrl, userId);
+	
+	res.status(statusCode).json(new SuccessResponse(response));
+}
+async function createContext(req: Request, res: Response, next: NextFunction) {
+	const activityName = req.body.activityName;
+	const activityIconUrl = req.body.activityIconUrl;
+	const activityGroupId = req.body.activityGroupId;
+	const userId = Number(req.params.userId);
+	const messages: string[] = [];
+	
+	if (!activityName) {
+		messages.push('Activity Name is required!');
+	} else {
+		if (!regex.contextName.test(activityName)) messages.push('Activity Name is not valid, must be a-z A-Z 0-9 or whitespace only.');
+	}
+
+	if (!userId) {
+		messages.push('Form was tampered with! Aborting activity creation');
+	}
+
+	if (!activityIconUrl) {
+		messages.push('Activity Icon URL is required!');
+	} else {
+		if (!regex.contextIconUrl.test(activityIconUrl)) messages.push('Activity Icon URL is not a valid URL.');
+	}
+
+	if (!activityGroupId) {
+		messages.push('Form has been tampered with. Aborting update!');
+	}
+
+	if (messages.length > 0) {
+		res.status(400).json(new SuccessResponse(false, messages));
+		return;
+	}
+
+	const [statusCode, success] = await dao.createContext(activityName, activityIconUrl, activityGroupId, userId);
+	res.status(statusCode).json(new SuccessResponse(success));
+}
+
 const controller = {
 	deleteSingleEntry,
 	updateSingleEntry,
@@ -152,6 +224,8 @@ const controller = {
 	getEntryFormData,
 	createNewEntry,
 	getEntryList,
+	updateContext,
+	createContext
 };
 
 export default controller;

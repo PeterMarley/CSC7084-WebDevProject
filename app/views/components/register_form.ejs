@@ -18,6 +18,10 @@ You're already logged in mate
       <div id="register-form-validation-message-password" class="hidden validation-message-div box-style-errors"><%- config.userDetailsValidation.password.description %></div>
       <input class="invalid register-input" type="password" name="password" id="password" placeholder="Password..." required><br>
     </div>
+    <div class="flex-container flex-start-h centered-v show-password-checkbox">
+      <label for="show-password-register">Show password:</label>
+      <input type="checkbox" name="show-password-register" id="show-password-register"><br>
+    </div>
     <div class="grid-container">
       <label for="password">Confirm Password:</label>
       <div id="register-form-validation-message-password-confirm" class="hidden validation-message-div box-style-errors"><%- config.userDetailsValidation.password.description %></div>

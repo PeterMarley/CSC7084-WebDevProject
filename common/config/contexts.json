@@ -1,0 +1,10 @@
+{
+    "name": {
+        "minLength":1,
+        "maxLength":12,
+        "regex": "^[a-zA-Z0-9\\s]{1,12}$"
+    },
+    "iconUrl": {
+        "regex":"[-a-zA-Z0-9\/:]{0,256}"
+    }
+}

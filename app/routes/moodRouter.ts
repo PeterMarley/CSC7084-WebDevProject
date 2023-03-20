@@ -26,10 +26,12 @@ moodRouter.post('/new', controller.createNewEntry);
 
 moodRouter.get('/visual', controller.getVisual);
 
+moodRouter.get('/context', controller.moodContext);
+moodRouter.put('/context/:activityId', controller.updateContext);
+moodRouter.post('/context', controller.createContext);
+
 moodRouter.get('/:entryId', controller.initialiseLocalsForEntryEdit, controller.getEdit);
 moodRouter.put('/:entryId', controller.initialiseLocalsForEntryEdit, controller.postEdit);
 moodRouter.delete('/:entryId', controller.deleteEntry, controller.getEntryList);
-
-
 
 export default moodRouter;

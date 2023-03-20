@@ -1,0 +1,56 @@
+
+<%- include('partials/top.ejs') %>
+
+<div class="flex-container col">
+    <% if (typeof messages != 'undefined' && messages.length > 0) { %>
+    <div class="box-style-errors" style="margin: 10px">
+        <ul>
+        <% for (message of messages) { %>
+            <li><%- message %></li>
+        <% } %>
+        </ul>
+    </div>
+    <% } %>
+    <div class="box-style-1" style="min-width: 50%; height: fit-content;">
+        <div class="activity-selection grid-container">
+        <!-- Activity Groups -->
+        <% for (const actGroup of activityGroups) { %>
+            <div class="activity-group">
+                <div class="activity-group-name flex-container flex-start-h centered-v-no-height">
+                    <img class="img32x32 activity-group-name-img" src="<%- actGroup.image.url %>" alt="<%- actGroup.image.altText %>">
+                    <span><%- actGroup.activityGroupName %></span>
+                </div>
+                <div class="activity-group-activities">
+                <% 
+                let i = 1;
+                for (const act of actGroup.activities) { 
+                %>
+                
+                <form id="activity-<%- i %>" action="/mood/context/<%- act.activityId %>?_mo=PUT" method="POST" class="activity flex-container row centered-v-no-height space-between-h">
+                    Name: <input name="activityName" type="text" class="activity-name flex-container flex-start-h" value="<%- act.activityName %>" style="outline: none">
+                    Icon URL: <input name="activityIconUrl" type="text" class="activity-img-url flex-container flex-start-h" value="<%- act.image.url %>" style="outline: none">
+                    <input type="text" class="hidden" name="activityId" value="<%- act.activityId %>">
+                    <img class="img32x32" src="<%- act.image.url %>" alt="<%- act.image.altText %>">
+                    <div class="flex-container centered-h"><input type="submit" class="button-style-1" value="Update Context"></div>
+                </form>
+                <% } %>
+                </div>
+            </div>
+            <% } %>
+        </div>
+    </div>
+    <div>
+        <form class="box-style-1" style="margin-top: 10px;" action="/mood/context/" method="POST">
+            New Activity: <input type="text" name="activityName" placeholder="Activity Name"> 
+            Activity Icon URL:<input type="text" name="activityIconUrl" placeholder="Icon URL">
+            <select name="activityGroupId">    
+                <% for (const group of activityGroups) { %>
+                <option value="<%- group.activityGroupId %>"><%- group.activityGroupName %></option>
+                <% } %>
+            </select>
+            <button class="button-style-1">Add</button>
+        </form>
+    </div>
+</div>
+<script src="/script/context-form.js"></script>
+<%- include('partials/bottom.ejs') %>

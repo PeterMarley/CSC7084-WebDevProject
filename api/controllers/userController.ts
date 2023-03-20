@@ -48,13 +48,20 @@ async function register(req: Request, res: Response, next: NextFunction) {
 
 
     // destructure registration information
-    const { username, email, password } = req.body;
-
+    let { username, email, password } = req.body;
+    username = decodeURIComponent(username);
+    email = decodeURIComponent(email);
+    password = decodeURIComponent(password);
+    
     const bodyValidationErr: Array<string> = [];
     // validate post body
     if (!username) bodyValidationErr.push('nousername');
     if (!email) bodyValidationErr.push('noemail');
     if (!password) bodyValidationErr.push('nopassword');
+    
+    console.log(regex.email);
+    console.log(email);
+    
     
     // validate user account details
     if (!regex.username.test(username)) bodyValidationErr.push('badusername');

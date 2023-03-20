@@ -3,6 +3,12 @@ import apiCall from "../utils/apiCall";
 import EntryDataResponse from '../../common/response/EntryDataResponse';
 import EntryFormDataResponse from '../../common/response/EntryFormDataResponse';
 import SuccessResponse from '../../common/response/SuccessResponse';
+import config from "../../common/config/Config";
+
+const regex = {
+	contextName: new RegExp(config.contexts.name.regex),
+	contextIconUrl: new RegExp(config.contexts.iconUrl.regex)
+};
 
 class MoonController {
 	initialiseLocalsForEntryEdit(req: Request, res: Response, next: NextFunction) {
@@ -26,7 +32,7 @@ class MoonController {
 				'PUT',
 				'/api/mood/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId,
 				new URLSearchParams([
-					['activities', encodeURIComponent(activities)], 
+					['activities', encodeURIComponent(activities)],
 					['notes', encodeURIComponent(notes)],
 					['entryId', req.params.entryId]])
 			);
@@ -37,6 +43,8 @@ class MoonController {
 	async getEdit(req: Request, res: Response) {
 		const entryDataResponse: EntryDataResponse =
 			await apiCall('GET', '/api/mood/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId);
+
+		console.log(entryDataResponse.entry?.activities);
 
 		res.locals.entryFormData = entryDataResponse.entryFormData;
 		res.locals.entryData = entryDataResponse.entry;
@@ -49,12 +57,23 @@ class MoonController {
 	}
 	async createNewEntry(req: Request, res: Response) {
 		const { mood, activities, notes } = req.body;
-		if (mood === undefined || activities === undefined || notes === undefined) {
+
+		const errors: string[] = [];
+		if (!mood || (typeof mood == 'string' && mood.trim() == '')) {
+			errors.push('Required mood field was missing!');
+		}
+
+		if (activities === undefined || notes === undefined) {
+			errors.push('Form was tampered with!')
+		}
+
+		if (errors.length > 0) {
 			// TODO more gracefull bad request handling and validation of body
-			res.status(400).json({ success: false, body: req.body });
+			res.status(400).render('entryfailed', { validationErrors: errors });
 			return;
 		}
 
+		const p = new URLSearchParams();
 		const response = await apiCall(
 			'POST',
 			'/api/mood/' + (res.locals.id ? res.locals.id : '') + '/new',
@@ -92,6 +111,89 @@ class MoonController {
 			return;
 		}
 		res.render('visual');
+	}
+	async moodContext(req: Request, res: Response) {
+		const entryFormDataResponse: EntryFormDataResponse =
+			await apiCall('GET', '/api/mood/' + (res.locals.id ? res.locals.id : '') + '/new');
+
+		res.render('context', { activityGroups: entryFormDataResponse.activityGroups });
+	}
+	async updateContext(req: Request, res: Response) {
+		const { activityName, activityIconUrl } = req.body;
+		const activityId = Number(req.params.activityId);
+		// validate request body
+		const messages: string[] = [];
+
+		if (!activityName) {
+			messages.push('Activity Name is required!');
+		} else {
+			if (!regex.contextName.test(activityName)) messages.push('Activity Name is not valid, must be a-z A-Z 0-9 or whitespace only.');
+		}
+
+		if (!activityIconUrl) {
+			messages.push('Activity Icon URL is required!');
+		} else {
+			if (!regex.contextIconUrl.test(activityIconUrl)) messages.push('Activity Icon URL is not a valid URL.');
+		}
+
+		if (!activityId) {
+			messages.push('The form has been tampered with! Update unsuccessful.');
+		}
+		if (messages.length > 0) {
+			const entryFormDataResponse: EntryFormDataResponse = await apiCall('GET', '/api/mood/' + (res.locals.id ? res.locals.id : '') + '/new');
+			res.render('context', { activityGroups: entryFormDataResponse.activityGroups, messages });
+			return;
+		}
+
+
+		// call to API
+		const response: SuccessResponse = await apiCall('PUT',
+			'/api/mood/' + res.locals.id + '/context/' + activityId,
+			new URLSearchParams([
+				["activityName", activityName],
+				["activityIconUrl", activityIconUrl]
+			]));
+		const entryFormDataResponse: EntryFormDataResponse = await apiCall('GET', '/api/mood/' + (res.locals.id ? res.locals.id : '') + '/new');
+		res.render('context', { activityGroups: entryFormDataResponse.activityGroups, messages: [response.success ? "Success!" : "Something went wrong!"] })
+	}
+	async createContext(req: Request, res: Response) {
+		const { activityName, activityIconUrl, activityGroupId } = req.body;
+		// validate request body
+		const messages: string[] = [];
+
+		if (!activityName) {
+			messages.push('Activity Name is required!');
+		} else {
+			if (!regex.contextName.test(activityName)) messages.push('Activity Name is not valid, must be a-z A-Z 0-9 or whitespace only.');
+		}
+
+		if (!activityIconUrl) {
+			messages.push('Activity Icon URL is required!');
+		} else {
+			if (!regex.contextIconUrl.test(activityIconUrl)) messages.push('Activity Icon URL is not a valid URL.');
+		}
+
+		if (!activityGroupId) {
+			messages.push('Form has been tampered with! Context Add was aborted.');
+		}
+
+		if (messages.length > 0) {
+			const entryFormDataResponse: EntryFormDataResponse = await apiCall('GET', '/api/mood/' + (res.locals.id ? res.locals.id : '') + '/new');
+			res.render('context', { activityGroups: entryFormDataResponse.activityGroups, messages });
+			return;
+		}
+
+		const response: SuccessResponse = await apiCall('POST', '/api/mood/' + res.locals.id + '/context',
+			new URLSearchParams([
+				["activityName", activityName],
+				["activityIconUrl", activityIconUrl],
+				["activityGroupId", activityGroupId]
+			]));
+
+		if (response.success) messages.push('New Activity Added!')
+		const entryFormDataResponse: EntryFormDataResponse = await apiCall('GET', '/api/mood/' + (res.locals.id ? res.locals.id : '') + '/new');
+		res.render('context', { activityGroups: entryFormDataResponse.activityGroups, messages });
+		return;
 	}
 }
 

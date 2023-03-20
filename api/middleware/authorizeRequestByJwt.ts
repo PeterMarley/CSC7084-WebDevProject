@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { verifyToken } from '../../app/utils/jwtHelpers'
+import { verifyToken } from '../../common/utils/jwtHelpers'
 
 export default function authorizeRequestByJwt(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.get('Authorization') ?? '';

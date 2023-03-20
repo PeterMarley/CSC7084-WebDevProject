@@ -342,13 +342,13 @@ nav {
     flex-grow: 1;
 }
 
-/* .flex-container.gap-5 {
-    gap: 5px;
+.flex-container.flex-shrink-1 {
+    flex-shrink: 1;
 }
 
-.flex-container.gap-10 {
-    gap: 10px;
-} */
+.flex-container.space-between-h {
+    justify-content: space-between;
+}
 
 .flex-container.flex-wrap-on {
     flex-wrap: wrap;
@@ -372,8 +372,16 @@ nav {
     justify-content: center;
 }
 
+.grid-container.grid-start-h {
+    justify-content: start;
+}
+
 .grid-container.centered-v {
     align-items: center;
+}
+
+.grid-container.grid-start-v {
+    align-items: start;
 }
 
 .grid-container.grid-auto-flow-row {
@@ -452,6 +460,7 @@ nav {
     background-color: var(--color-bg-1);
     padding: 10px;
     border-radius: 0.5em;
+    height: fit-content;
 }
 
 .entry {
@@ -608,6 +617,16 @@ input:focus.form-style-1 {
     box-sizing: border-box;
 }
 
+.show-password-checkbox label {
+    /* grid-template: 1fr/ 80% 20%; */
+    margin-left: auto;
+    font-size: 0.65em;
+}
+
+/* .show-password-checkbox input[type="checkbox"] {
+    margin-right: auto;
+} */
+
 /* Account Form */
 
 .account-form {
@@ -706,6 +725,7 @@ input:focus.form-style-1 {
     background-color: var(--color-4);
     grid-template: 1fr / repeat(1, 1fr);
     min-width: 95%;
+    height: fit-content;
 }
 
 .activity-group {
@@ -713,6 +733,7 @@ input:focus.form-style-1 {
     background-color: var(--color-bg-1);
     border-radius: 5px;
     margin: 5px;
+    height: fit-content;
 }
 
 .activity-group-activities {

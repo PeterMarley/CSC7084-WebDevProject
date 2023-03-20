@@ -1,5 +1,5 @@
 <%- include('partials/top.ejs') %>
-<div id="chart-pane">
+<div id="chart-pane" class="flex-container centered-h centered-v-no-height col">
 <div id="chart-pane-controls" class="flex-container flex-wrap-on centered-h gap-5">
   <button id="chart-intro" class="chart-pane-button button-style-1 selected">Introduction</button>
   <button id="chart-mood-freq" class="chart-pane-button button-style-1">Mood Frequency</button>
@@ -8,7 +8,10 @@
   <button id="chart-relationships" class="chart-pane-button button-style-1">Activity/ Mood Relationships</button>
   <button id="chart-summary" class="chart-pane-button button-style-1">Summary</button>
 </div>
-<div id="chart-intro-text" class="flex-container centered-h">Speak a bit about Russell's Circumplex Model of Effect</div>
+<div id="chart-intro-text">
+  <p style="max-width: 500px; font-size: 0.8em;"><em>"The circumplex model of affect proposes that all affective states arise from cognitive interpretations of core neural sensations that are the product of two independent neurophysiological systems. This model stands in contrast to theories of basic emotions, which posit that a discrete and independent neural system subserves every emotion. We propose that basic emotion theories no longer explain adequately the vast number of empirical observations from studies in affective neuroscience, and we suggest that a conceptual shift is needed in the empirical approaches taken to the study of emotion and affective psychopathologies. The circumplex model of affect is more consistent with many recent findings from behavioral, cognitive neuroscience, neuroimaging, and developmental studies of affect. Moreover, the model offers new theoretical and empirical approaches to studying the development of affective disorders as well as the genetic and cognitive underpinnings of affective processing within the central nervous system."</em><br><b>Paper available <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2367156/">here</a></b></p>
+  <p style="max-width: 600px;">This mood model basically divides moods into 2 valences (positive/ negative) and 2 arousal levels (low/ high), and each mood offered for use by the user has a valence and an arousal value which allows us to categorise moods.</p>
+</div>
 <div id="chart-container" class="flex-container col centered-v-no-height centered-h">
   <div id="relationship-buttons-container" class="flex-container centered-h flex-wrap-on"></div>
   <canvas id="current-chart" class="hidden"></canvas>

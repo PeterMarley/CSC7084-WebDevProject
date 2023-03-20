@@ -17,7 +17,9 @@
 
     document
         .querySelector('#register-account-submit')
-        .addEventListener('click', (event) => handleRegisterSubmission(event, registrationValidations))
+        .addEventListener('click', (event) => handleRegisterSubmission(event, registrationValidations));
+
+    document.querySelector('#show-password-register').addEventListener('change', () => handleShowPasswordInputs('#password'));
 })();
 
 function handleRegisterSubmission(event, validations) {

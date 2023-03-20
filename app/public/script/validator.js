@@ -28,14 +28,27 @@ function validateEmail(email) {
     return valid;
 }
 
+function handleValidateContext(e, regex) {
+    const el = e.target;
+    console.log(el.value);
+    console.log(regex);
+    if (regex.test(el.value)) {
+        el.classList.remove('invalid');
+        el.classList.add('valid');
+    } else {
+        el.classList.add('invalid');
+        el.classList.remove('valid');
+    }
+}
+
 function handleValidateInput(inputSelector, validationDivSelector, validatorFunc) {
     const input = document.querySelector(inputSelector);
     const validator = document.querySelector(validationDivSelector);
     if (validatorFunc(input.value)) {
         input.classList.remove('invalid');
         input.classList.add('valid');
-        validator.classList.add('hidden');
-        input.parentNode.querySelector('.validation-message-div').classList.add('hidden');
+        if (!validationDivSelector) validator.classList.add('hidden');
+        if (!validationDivSelector) input.parentNode.querySelector('.validation-message-div').classList.add('hidden');
         return;
     }
     input.classList.add('invalid');
@@ -60,4 +73,10 @@ function handleValidatePasswordInputsTogether(e) {
         pwdConfirmInput.classList.remove('valid');
         pwdConfirmInput.classList.add('invalid');
     }
+}
+
+function handleShowPasswordInputs(passwordSelector) {
+    const passwordInput = document.querySelector(passwordSelector);
+    const value = passwordInput.getAttribute('type');
+    passwordInput.setAttribute('type', value == 'password' ? 'text' : 'password');
 }

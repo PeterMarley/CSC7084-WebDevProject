@@ -2,7 +2,7 @@ import { format, ResultSetHeader, RowDataPacket } from "mysql2";
 import { Connection } from 'mysql2/promise';
 import checkPasswordCorrect, { encrypt } from "../utils/crypt";
 import getConnection from "../utils/dbConnection";
-import { createToken } from "../../app/utils/jwtHelpers"
+import { createToken } from "../../common/utils/jwtHelpers"
 import AccountDetailsGetResponse from "../../common/response/AccountDetailsGetResponse";
 import SuccessResponse from "../../common/response/SuccessResponse";
 import LoginResponse from "../../common/response/LoginResponse";
