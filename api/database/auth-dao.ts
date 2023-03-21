@@ -72,7 +72,6 @@ class AuthApiDataAccessObject {
 
         try {
             con = await getConnection();
-            //TODO more probably needed here
             const result = (await con.execute('CALL usp_delete_account(?)', [userId])).at(0) as ResultSetHeader;
             success = result.affectedRows !== 0;
             if (!success) {

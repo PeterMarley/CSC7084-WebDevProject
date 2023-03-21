@@ -54,8 +54,9 @@ async function updateSingleEntry(req: Request, res: Response, next: NextFunction
 		res.status(400).json(new SuccessResponse(false, errors));
 		return;
 	}
-
+	console.log('before' + activityNamesCommaDelimStr);
 	activityNamesCommaDelimStr = decodeURIComponent(activityNamesCommaDelimStr);
+	console.log('after' + activityNamesCommaDelimStr);
 	try {
 		const [statusCode, success] = await dao.updateSingleEntry(userId, entryId, entryNotes, activityNamesCommaDelimStr);
 		res.status(statusCode).json(new SuccessResponse(success));

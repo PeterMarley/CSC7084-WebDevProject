@@ -142,6 +142,8 @@ class MoodApiDataAccessObject {
 
 			// if it exists, update it
 			const sql = formatSQL('CALL usp_update_entry(?,?,?,?)', [userId, entryId, entryNotes, activityCommaDelimStr]);
+			console.log(sql);
+			
 			const response: ResultSetHeader = (await con.execute(sql)).at(0) as ResultSetHeader;
 
 			return (response.affectedRows > 0 && response.warningStatus === 0) ? [200, true] : [200, false];

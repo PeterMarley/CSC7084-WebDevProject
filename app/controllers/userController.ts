@@ -161,7 +161,7 @@ class UserController {
             next();
             return;
         } else {
-            res.status(200).render('registerfailed', {
+            res.status(500).render('registerfailed', {
                 attemptedUsername: username,
                 attemptedEmail: email,
                 validationErrors: registrationResponse.errors
