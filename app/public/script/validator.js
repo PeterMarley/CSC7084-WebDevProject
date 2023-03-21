@@ -30,8 +30,6 @@ function validateEmail(email) {
 
 function handleValidateContext(e, regex) {
     const el = e.target;
-    console.log(el.value);
-    console.log(regex);
     if (regex.test(el.value)) {
         el.classList.remove('invalid');
         el.classList.add('valid');
@@ -47,8 +45,8 @@ function handleValidateInput(inputSelector, validationDivSelector, validatorFunc
     if (validatorFunc(input.value)) {
         input.classList.remove('invalid');
         input.classList.add('valid');
-        if (!validationDivSelector) validator.classList.add('hidden');
-        if (!validationDivSelector) input.parentNode.querySelector('.validation-message-div').classList.add('hidden');
+        validator.classList.add('hidden');
+        input.parentNode.querySelector('.validation-message-div').classList.add('hidden');
         return;
     }
     input.classList.add('invalid');

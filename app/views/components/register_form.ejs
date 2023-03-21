@@ -1,4 +1,4 @@
-<%_ if (!authed) { // TODO tidy this%>
+<%_ if (!authed) { // cant be logged in %>
 <% let username, email = '';                                                              %>
 <%if (typeof attemptedUsername !== 'undefined' && typeof attemptedEmail !== 'undefined'){ %>
 <%  username = attemptedUsername;                                                         %>

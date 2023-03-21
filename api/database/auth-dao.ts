@@ -109,8 +109,8 @@ class AuthApiDataAccessObject {
         const emailCount = emailResponse.at(0).at(0).emailCount;
 
         const dbValidationErr: Array<string> = [];
-        if (usernameCount !== 0) dbValidationErr.push('usernametaken');
-        if (emailCount !== 0) dbValidationErr.push('emailtaken');
+        if (usernameCount !== 0) dbValidationErr.push('Username taken');
+        if (emailCount !== 0) dbValidationErr.push('Email taken');
 
         if (dbValidationErr.length !== 0) {
             return [409, new RegistrationResponse(false, dbValidationErr)];
@@ -160,7 +160,7 @@ class AuthApiDataAccessObject {
             return [201, new RegistrationResponse(true, null, userId)];
         } catch (err: any) {
             logError([err]);
-            return [500, new RegistrationResponse(false, ['unknownerror'])];
+            return [500, new RegistrationResponse(false, ['Internal Server Error'])];
         } finally {
             con.end();
         }

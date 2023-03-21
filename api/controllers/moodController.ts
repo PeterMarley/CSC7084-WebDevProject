@@ -45,6 +45,16 @@ async function updateSingleEntry(req: Request, res: Response, next: NextFunction
 	const entryId = Number(req.params.entryId);
 	const userId = Number(req.params.userId);
 	let { activities: activityNamesCommaDelimStr, notes: entryNotes } = req.body;
+
+	const errors: string[] = [];
+	if (!entryId) errors.push('No Entry Id specified');
+	if (!userId) errors.push('No User Id specified');
+
+	if (errors.length > 0) {
+		res.status(400).json(new SuccessResponse(false, errors));
+		return;
+	}
+
 	activityNamesCommaDelimStr = decodeURIComponent(activityNamesCommaDelimStr);
 	try {
 		const [statusCode, success] = await dao.updateSingleEntry(userId, entryId, entryNotes, activityNamesCommaDelimStr);

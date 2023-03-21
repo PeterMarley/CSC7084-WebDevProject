@@ -68,35 +68,31 @@ async function register(req: Request, res: Response, next: NextFunction) {
     // destructure registration information
     let { username, email, password } = req.body;
 
-
     const bodyValidationErr: Array<string> = [];
     // validate post body
-    if (!username) bodyValidationErr.push('nousername');
-    if (!email) bodyValidationErr.push('noemail');
-    if (!password) bodyValidationErr.push('nopassword');
-
-    console.log(regex.email);
-    console.log(email);
-
-    // validate user account details
-    if (username && !regex.username.test(username)) bodyValidationErr.push('badusername');
-    if (email && !regex.email.test(email)) bodyValidationErr.push('bademail');
-    if (password && !regex.password.test(password)) bodyValidationErr.push('badpassword');
-
-    if (bodyValidationErr.length !== 0) {
-        // form BadRequest
-        res.status(400).send(new RegistrationResponse(false, bodyValidationErr));
-        return;
-    }
+    if (!username) bodyValidationErr.push('No username provided.');
+    if (!email) bodyValidationErr.push('No email provided');
+    if (!password) bodyValidationErr.push('No password provided');
 
     username = decodeURIComponent(username);
     email = decodeURIComponent(email);
     password = decodeURIComponent(password);
 
+    // validate user account details
+    if (username && !regex.username.test(username)) bodyValidationErr.push(config.userDetailsValidation.username.description);
+    if (email && !regex.email.test(email)) bodyValidationErr.push(config.userDetailsValidation.email.description);
+    if (password && !regex.password.test(password)) bodyValidationErr.push(config.userDetailsValidation.password.description);
+
+    if (bodyValidationErr.length !== 0) {
+        // 400 BadRequest
+        res.status(400).send(new RegistrationResponse(false, bodyValidationErr));
+        return;
+    }
+
     // Database
     const [statusCode, registrationResponse] = await dao.register(username, email, password);
 
-    // Response
+    // Response 201, 409 or 500
     res.status(statusCode).json(registrationResponse);
 }
 
