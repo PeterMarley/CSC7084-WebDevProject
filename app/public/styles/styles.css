@@ -903,7 +903,7 @@ input[type="password"].valid {
     background-color: var(--color-bg-1);
     margin: 10px;
     padding: 10px;
-    height: fit-content;
+    /* height: fit-content; */
 }
 
 #chart-pane-controls {
@@ -916,7 +916,9 @@ input[type="password"].valid {
 }
 
 #chart-container {
-    max-height: 75vh;
+    /* max-height: 75vh;
+    min-height: 500px; */
+    width: 80%;
 }
 
 #relationship-buttons-container {

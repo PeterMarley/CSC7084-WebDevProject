@@ -28,5 +28,6 @@ visualizeRouter.get('/moodFrequency', controller.moodFrequency);
 visualizeRouter.get('/arousal', controller.arousal);
 visualizeRouter.get('/valence', controller.valence);
 visualizeRouter.get('/relationship', controller.relationship);
+visualizeRouter.get('/summary', controller.summary);
 
 export default visualizeRouter;

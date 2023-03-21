@@ -1,5 +1,5 @@
 <%- include('partials/top.ejs') %>
-<div id="chart-pane" class="flex-container centered-h centered-v-no-height col">
+<div id="chart-pane" class="flex-container centered-v-no-height flex-start-h col flex-shrink-1" style="height: fit-content;">
 <div id="chart-pane-controls" class="flex-container flex-wrap-on centered-h gap-5">
   <button id="chart-intro" class="chart-pane-button button-style-1 selected">Introduction</button>
   <button id="chart-mood-freq" class="chart-pane-button button-style-1">Mood Frequency</button>
@@ -14,7 +14,9 @@
 </div>
 <div id="chart-container" class="flex-container col centered-v-no-height centered-h">
   <div id="relationship-buttons-container" class="flex-container centered-h flex-wrap-on"></div>
-  <canvas id="current-chart" class="hidden"></canvas>
+    <canvas id="current-chart" class="hidden"></canvas>
+    <canvas id="summary-canvas-1" class="hidden"></canvas>
+    <canvas id="summary-canvas-2" class="hidden"></canvas>
 </div>
 </div>
 <script src=" https://cdn.jsdelivr.net/npm/chart.js@4.2.0/dist/chart.umd.min.js "></script>

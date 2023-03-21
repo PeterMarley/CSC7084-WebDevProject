@@ -135,15 +135,37 @@ class Charts {
             }
         });
     }
+    static async summary() {
+        this.#destruct();
+        const data = await this.#getChartData('summary');
+        console.dir(data);
+        return new Chart(document.getElementById(this.#canvasId), {
+            type: 'line',
+            data: {
+                labels: data.map(d => '(' + new Date(d.thedate).toDateString() + ') ' + d.mood),
+                datasets: [{
+                    label: 'Frequency of most common mood per day',
+                    data: data.map(d => Number(d.freq)),
+                    backgroundColor: data.map(d => d.valence == 'Positive' ? this.#green : this.#red),
+                    borderWidth: 1,
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
     static async relationship() {
         // destroy old chart
         this.#destruct();
 
         // get data
         const data = await this.#getChartData('relationship');
-        console.log('-=-=-=-=-=-=-=-=-=-=-=-=-');
-        console.dir(data);
-        console.log('-=-=-=-=-=-=-=-=-=-=-=-=-');
+
         // prepare buttons
         const buttonContainers = document.querySelector('#relationship-buttons-container');
 
@@ -171,9 +193,9 @@ class Charts {
         new Chart(document.getElementById(this.#canvasId), {
             type: 'bar',
             data: {
-                labels: frequencySortedData.map(d => d.valence),
+                labels: frequencySortedData.map(d => d.activity + '/ ' + d.mood),
                 datasets: [{
-                    // label: 'Frequency of ' + activity,
+                    label: 'Combination frequency',
                     data: frequencySortedData.map(d => d.frequency),
                     backgroundColor: frequencySortedData.map(d => d.valence.toLowerCase() == 'negative' ? this.#red : this.#green)
                 }]
@@ -182,7 +204,7 @@ class Charts {
                 plugins: {
                     title: {
                         display: true,
-                        text: 'whatever'
+                        text: 'Activity/ Mood Combinations'
                     },
                     legend: {
                         display: false
@@ -209,15 +231,8 @@ class Charts {
             data: {
                 labels: frequencySortedData.map(d => d.mood),
                 datasets: [{
-                    // label: 'Frequency of ' + activity,
+                    label: 'Mood frequency when doing: ' + data[0].activity,
                     data: frequencySortedData.map(d => d.frequency),
-                    // backgroundColor: (cur) => {
-                    //     console.log(cur);
-                    //     if (cur.valence.toLowerCase() === 'negative') {
-                    //         return this.red;
-                    //     }
-                    //     return this.green;
-                    // }
                     backgroundColor: frequencySortedData.map(d => d.valence.toLowerCase() == 'negative' ? this.#red : this.#green)
                 }]
             },
@@ -234,9 +249,6 @@ class Charts {
             }
         }
         );
-    }
-    static summary() {
-        throw new Error('summary chart not implemented');
     }
 }
 

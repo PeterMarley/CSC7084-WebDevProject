@@ -24,16 +24,30 @@ async function updateAccountDetails(req: Request, res: Response, next: NextFunct
     const userId = Number(req.params.userId);
     const { username, email } = req.body;
 
+    const errors: string[] = [];
+    if (!userId) errors.push('userID must be a numeric value');
+    if (!username || !regex.username.test(username)) errors.push('username is invalid.');
+    if (!email || !regex.email.test(email)) errors.push('email is invalid.');
+
+    if (errors.length > 0) {
+        res.status(400).json(new SuccessResponse(false, errors));
+        return;
+    }
+
     let success = await dao.updateAccountDetails(userId, username, email);
 
-    res.json(new AccountDetailsUpdateResponse(success, userId, username, email));
+    res.status(success ? 200 : 404).json(new AccountDetailsUpdateResponse(success, userId, username, email));
 }
 
 async function getAccountDetails(req: Request, res: Response, next: NextFunction) {
 
     const userId = Number(req.params.userId);
-    const response = await dao.getAccountDetails(userId);
-    res.json(response);
+    if (userId) {
+        const response = await dao.getAccountDetails(userId);
+        res.status(response ? 200 : 404).json(response);
+    } else {
+        res.status(400).json(new SuccessResponse(false, ['UserID was a non numeric value']));
+    }
 }
 
 async function deleteUserAccount(req: Request, res: Response, next: NextFunction) {

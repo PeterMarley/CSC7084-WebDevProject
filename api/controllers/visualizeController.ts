@@ -38,6 +38,15 @@ async function relationship(req: Request, res: Response, next: NextFunction) {
     }
 }
 
-const controller = { moodFrequency, arousal, valence, relationship };
+async function summary(req: Request, res: Response, next: NextFunction) {
+    try {
+        res.json(await dao.getVisualSummary(res.locals.userId));
+    } catch (err: any) {
+        logErrors([err]);
+        next(err);
+    }
+}
+
+const controller = { moodFrequency, arousal, valence, relationship, summary };
 
 export default controller;

@@ -108,6 +108,18 @@ class MoodApiDataAccessObject {
 		return activityMoodRelationships;
 	}
 
+	async getVisualSummary(userId: number): Promise<IDbVisualSummary[]> {
+		const con = await getConnection();
+		try {
+			const result = ((await con.execute(formatSQL('CALL usp_get_visual_summary(?)', [userId]))).at(0) as any[])
+				.at(0) as IDbVisualSummary[];
+			return result;
+		} catch (err) {
+			logErrors([err]);
+			return [];
+		}
+	}
+
 	/**
 	 * Delete a single entry for a particular user
 	 * @param userId the user's unique id in the database
@@ -412,6 +424,14 @@ interface IDbEntriesImages {
 	url: string,
 	altText: string,
 	entryId: number
+}
+
+interface IDbVisualSummary {
+	thedate: Date,
+	mood: string,
+	freq: number,
+	valence: string,
+	arousal: string
 }
 
 export default new MoodApiDataAccessObject();
