@@ -4,6 +4,7 @@ import EntryDataResponse from '../../common/response/EntryDataResponse';
 import EntryFormDataResponse from '../../common/response/EntryFormDataResponse';
 import SuccessResponse from '../../common/response/SuccessResponse';
 import config from "../../common/config/Config";
+import CreateEntryResponse from "../../common/response/CreateEntryResponse";
 
 const regex = {
 	contextName: new RegExp(config.contexts.name.regex),
@@ -68,13 +69,11 @@ class MoodController {
 		}
 
 		if (errors.length > 0) {
-			// TODO more gracefull bad request handling and validation of body
 			res.status(400).render('entryfailed', { validationErrors: errors });
 			return;
 		}
 
-		const p = new URLSearchParams();
-		const response = await apiCall(
+		const response: CreateEntryResponse = await apiCall(
 			'POST',
 			'/api/mood/' + (res.locals.id ? res.locals.id : '') + '/new',
 			new URLSearchParams([
@@ -84,9 +83,7 @@ class MoodController {
 			])
 		);
 
-		res.locals.entryAdded = response.success ? true : false;
-
-		// TODO redirect to single entry page, not list
+		res.locals.entryAdded = response.success;
 		res.redirect('/mood/list');
 	}
 	async getNewEntryForm(req: Request, res: Response) {

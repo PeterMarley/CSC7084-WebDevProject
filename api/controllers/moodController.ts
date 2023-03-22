@@ -128,7 +128,8 @@ async function createNewEntry(req: Request, res: Response, next: NextFunction) {
 	if (!mood) errors.push(`mood was not provided: ${mood}`);
 
 	if (errors.length > 0) {
-		res.status(400).json(new SuccessResponse(false, errors));
+		// res.status(400).json(new SuccessResponse(false, errors));
+		res.status(400).json(new CreateEntryResponse(false, undefined, errors));
 		return;
 	}
 

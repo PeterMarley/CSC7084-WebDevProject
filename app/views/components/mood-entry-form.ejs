@@ -1,21 +1,16 @@
 <% 
-if (authed) { 
-  let notes, formAction, submitButtonText;
-  //let httpVerb;
+  let notes, formAction, submitButtonText, posMoodsButtonSelector, 
+    negMoodsButtonSelector, valenceButtonsDisabled, posValenceButtonSelected, 
+    negValenceButtonSelected;
   let selectedMood = '';
   let selectedActivities = [];
   let positiveMoods = entryFormData.moods.filter(m => m.valence === 'Positive');
   let negativeMoods = entryFormData.moods.filter(m => m.valence === 'Negative');
-  let posMoodsButtonSelector;
-  let negMoodsButtonSelector;
-  let valenceButtonsDisabled;
-  let posValenceButtonSelected, negValenceButtonSelected;
-
+ 
   switch (action) {
     case 'new':
       notes = '';
       formAction = '/mood/new';
-      //httpVerb = 'POST';
       submitButtonText = 'Add New Entry';
       posMoodsButtonSelector = ' hidden';
       negMoodsButtonSelector = ' hidden';
@@ -26,7 +21,6 @@ if (authed) {
     case 'edit':
       notes = entryData.notes;
       formAction = '/mood/' + entryData.entryId + '?_mo=PUT';
-      //httpVerb ='dont know this either';
       submitButtonText = 'Edit Entry';
       posMoodsButtonSelector = positiveMoods.reduce((prev, cur) => {
         if (cur.moodId === entryData.mood.moodId) return '';
@@ -37,18 +31,10 @@ if (authed) {
         return prev;
       }, ' hidden');
       valenceButtonsDisabled = true;
-      posValenceButtonSelected = posMoodsButtonSelector ? '': ' selected';
-      negValenceButtonSelected = negMoodsButtonSelector ? '': ' selected';
+      posValenceButtonSelected = posMoodsButtonSelector ? '' : ' selected';
+      negValenceButtonSelected = negMoodsButtonSelector ? '' : ' selected';
       break;
-
-
   }
-  // console.log('===entryFormData===');
-  // console.log(entryFormData);
-  // console.log('===entryData===');
-  // console.log(entryData);
-  // console.log('pos selector: ' + posMoodsButtonSelector);
-  // console.log('neg selector: ' + negMoodsButtonSelector);
 %>
 <div id="mood-entry-form-container" class="flex-container flex-start-h col">
   <form method="POST" action="<%- formAction %>" id="mood-entry-form">
@@ -106,12 +92,10 @@ if (authed) {
           <div class="activity-group-name flex-container flex-start-h centered-v-no-height">
             <img class="img32x32 activity-group-name-img" src="<%- actGroup.image.url %>" alt="<%- actGroup.image.altText %>">
             <span><%- actGroup.activityGroupName %></span>
-            </div>
+          </div>
           <div class="activity-group-activities grid-container grid-auto-flow-row">
             <% 
             for (const act of actGroup.activities) { 
-              // console.log('===act===');
-              // console.log(act);
               let activitySelector = 'activity flex-container col centered-v-no-height';
               const activityIndex = entryData ? entryData.activities.findIndex(e => e.activityId === act.activityId) : -1;
               if (action === 'edit' && activityIndex !== -1) {
@@ -137,6 +121,3 @@ if (authed) {
   </form>
 </div>
 </div>
-<% } else { %>
-Not authorized
-<% } %>

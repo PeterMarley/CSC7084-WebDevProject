@@ -17,16 +17,15 @@ const entryFormComponents = {
         active: document.querySelector('#mood-valence-button-container').getAttribute('disabled') == 'false',
         valenceContainer: document.querySelector('#mood-valence-button-container')
     }
-
-    // action: document.querySelector('.mood-selection').dataset.action,
 }
-entryFormComponents.selected.mood;
+
 /**
  * Initialise elements, and add event listeners
  */
 (function intialiseMoodEntryForm() {
+    
     // configure elements
-
+    
     const activitiesDivs = document.querySelectorAll(".activity.selected");
     for (const div of activitiesDivs) {
         entryFormComponents.selected.activities.push(div.children[1].textContent);
@@ -58,7 +57,6 @@ entryFormComponents.selected.mood;
     document
         .querySelector("#mood-entry-form-submit")
         .addEventListener("click", handleMoodFormSubmission);
-
 })();
 
 function createMoodEntryValidationModal() {
@@ -152,10 +150,8 @@ function validateSelectedMood() {
     let validated = false;
     if (mood.length === 0) {
         moodSelectionBox.classList.add('invalid');
-        // console.log(1);
     } else {
         moodSelectionBox.classList.remove('invalid');
-        // console.log(2);
         validated = true;
     }
     return validated;
@@ -167,15 +163,9 @@ function grabSelectedActivities() {
 }
 
 function handleMoodValenceButtonClicks(event) {
-    //console.log("disabled? " + document.querySelector('#mood-valence-button-container').getAttribute('disabled'));
-
-    if (!entryFormComponents.moodSelection.active) return;
-
-
-    //FIXME redo the selection and mood/activity passthrough javascript
+    if (!entryFormComponents.moodSelection.active) return; // stop users changing mood value when editing log entry
     const { positive, negative } = entryFormComponents.moodSelection;
     const buttonPressedId = event.target.id;
-    //console.log(buttonPressedId);
 
     if (buttonPressedId === 'valence-negative') {
         negative.valenceButton.classList.add('selected');
