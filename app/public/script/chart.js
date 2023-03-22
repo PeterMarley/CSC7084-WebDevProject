@@ -1,9 +1,9 @@
 
-async function initialiseCharts() {
+(function initialiseCharts() {
     document
         .querySelectorAll('.chart-pane-button')
         .forEach(btn => btn.addEventListener('click', handleChartControlClick));
-}
+})();
 
 async function handleChartControlClick(event) {
     const btnId = event.target.id;
@@ -14,7 +14,7 @@ async function handleChartControlClick(event) {
         case 'chart-valence': Charts.valence(); break;
         case 'chart-relationships': Charts.relationship(); break;
         case 'chart-summary': Charts.summary(); break;
-        case 'chart-mood-freq': 
+        case 'chart-mood-freq':
         default: Charts.moodFrequency();
     }
 }
@@ -51,6 +51,7 @@ class Charts {
     static #canvasId = 'current-chart';
     static #red = '#bf212f';
     static #green = '#27b376';
+
     static async #getChartData(chartType) {
         const cookieName = 'token=';
         const token = document.cookie
@@ -67,14 +68,14 @@ class Charts {
                     'Authorization': token
                 }
             });
-            if (response.status == 200) {
-                return await response.json();
-            } else {
-                return [];
-            }
+        if (response.status == 200) {
+            return await response.json();
+        } else {
+            return [];
+        }
     }
+
     static #destruct() {
-        console.dir(Chart.instances);
         for (const i in Chart.instances) {
             const instance = Chart.instances[i];
             if (instance.canvas.id === this.#canvasId) {
@@ -83,6 +84,7 @@ class Charts {
             }
         }
     }
+
     static async arousal() {
         this.#destruct();
         const data = await this.#getChartData('arousal');
@@ -97,6 +99,7 @@ class Charts {
             }
         });
     }
+
     static async valence() {
         this.#destruct();
         const data = await this.#getChartData('valence');
@@ -111,10 +114,10 @@ class Charts {
             }
         });
     }
+
     static async moodFrequency() {
         this.#destruct();
         const data = await this.#getChartData('moodFrequency');
-        console.dir(data);
         return new Chart(document.getElementById(this.#canvasId), {
             type: 'bar',
             data: {
@@ -135,10 +138,10 @@ class Charts {
             }
         });
     }
+
     static async summary() {
         this.#destruct();
         const data = await this.#getChartData('summary');
-        console.dir(data);
         return new Chart(document.getElementById(this.#canvasId), {
             type: 'line',
             data: {
@@ -159,6 +162,7 @@ class Charts {
             }
         });
     }
+
     static async relationship() {
         // destroy old chart
         this.#destruct();
@@ -166,30 +170,35 @@ class Charts {
         // get data
         const data = await this.#getChartData('relationship');
 
-        // prepare buttons
-        const buttonContainers = document.querySelector('#relationship-buttons-container');
-
+        // process data
         const frequencySortedData = Array.from(data).sort((a, b) => b.frequency - a.frequency);
         const activitySortedData = Array.from(data).sort((a, b) => {
-            if (a.activity > b.activity) { return 1; }
-            else if (a.activity > b.activity) {
+            const first = a.activity + '/ ' + a.mood;
+            const second = b.activity + '/ ' + b.mood;
+            if (first > second) {
+                return 1;
+            } else if (first > second) {
                 return -1;
             } else {
                 return 0;
             }
         });
-        const uniqueActivities = [...new Set(activitySortedData.map(d => d.activity))];
 
-        for (const act of uniqueActivities) {
-            // console.groupCollapsed(act);
-            const btn = document.createElement('button');
-            btn.textContent = act;
-            btn.classList.add('button-style-1');
-            const newData = frequencySortedData.filter(d => d.activity.toLowerCase() == act.toLowerCase());
-            btn.addEventListener('click', () => Charts.relationshipSingle(newData));
-            buttonContainers.appendChild(btn);
-            // console.groupEnd(act);
+        // configure buttons
+        const uniqueActivities = [...new Set(activitySortedData.map(d => d.activity))]; // remove duplicates
+        const buttonContainers = document.querySelector('#relationship-buttons-container');
+        if (buttonContainers.children.length === 0) {
+            for (const act of uniqueActivities) {
+                const btn = document.createElement('button');
+                btn.textContent = act;
+                btn.classList.add('button-style-1');
+                const newData = frequencySortedData.filter(d => d.activity.toLowerCase() == act.toLowerCase());
+                btn.addEventListener('click', () => Charts.relationshipSingle(newData));
+                buttonContainers.appendChild(btn);
+            }
         }
+
+        // instantiate chart and add to canvas
         new Chart(document.getElementById(this.#canvasId), {
             type: 'bar',
             data: {
@@ -218,14 +227,10 @@ class Charts {
         // destroy old chart
         this.#destruct();
 
-        // prepare buttons
-
+        // sort data by frequency
         const frequencySortedData = Array.from(data).sort((a, b) => b.frequency - a.frequency);
-        const activitySortedData = Array.from(data).sort((a, b) => a.activity == b.activity ? 0 : (a.activity > b.activity ? -1 : 1));
-        console.log('-=-=-=-=-=-=-=-=-=-=-=-=-');
-        console.log(activitySortedData);
-        console.log('-=-=-=-=-=-=-=-=-=-=-=-=-');
-          
+
+        // render chart
         new Chart(document.getElementById(this.#canvasId), {
             type: 'bar',
             data: {

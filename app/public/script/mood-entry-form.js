@@ -17,15 +17,15 @@ const entryFormComponents = {
         active: document.querySelector('#mood-valence-button-container').getAttribute('disabled') == 'false',
         valenceContainer: document.querySelector('#mood-valence-button-container')
     }
-}
+};
 
 /**
  * Initialise elements, and add event listeners
  */
 (function intialiseMoodEntryForm() {
-    
+
     // configure elements
-    
+
     const activitiesDivs = document.querySelectorAll(".activity.selected");
     for (const div of activitiesDivs) {
         entryFormComponents.selected.activities.push(div.children[1].textContent);

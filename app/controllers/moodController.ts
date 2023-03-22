@@ -103,10 +103,6 @@ class MoodController {
 		res.render('mood-entry-list');
 	}
 	async getVisual(req: Request, res: Response) {
-		if (!res.locals.authed) {
-			res.status(401).json({ success: false, message: "Not Authorized" })
-			return;
-		}
 		res.render('visual');
 	}
 	async moodContext(req: Request, res: Response) {

@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import SuccessResponse from "../../common/response/SuccessResponse";
 import { verifyToken } from '../../common/utils/jwtHelpers'
 
 export default function authorizeRequestByJwt(req: Request, res: Response, next: NextFunction) {
@@ -6,10 +7,11 @@ export default function authorizeRequestByJwt(req: Request, res: Response, next:
     let userId: number;
     try {
         const payload = verifyToken(authHeader);
+        if (payload.expiry <= Date.now()) throw '';
         userId = payload.id
     } catch (err: any) {
         console.log(err.message);
-        res.status(401).json({status: "failed", message: "Not Authorized"});
+        res.status(401).json(new SuccessResponse(false, ['You are not authorized.']));
         return;
     }
 

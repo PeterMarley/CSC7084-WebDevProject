@@ -17,7 +17,7 @@ export default async function authorizeRequestSource(req: Request, res: Response
         count = result[0].count;
     } catch (err: any) {
         console.error(err);
-        res.status(500).send(new SuccessResponse(false, ['Something went wrong.']));
+        res.status(500).send(new SuccessResponse(false, ['Internal Server Error.']));
         return;
     }
 

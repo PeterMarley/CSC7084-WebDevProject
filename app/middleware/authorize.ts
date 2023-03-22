@@ -1,5 +1,6 @@
 import { verifyToken } from '../../common/utils/jwtHelpers';
 import { Request, Response, NextFunction } from 'express';
+import logErrors from '../../common/utils/logError';
 
 export function authorize(req: Request, res: Response, next: NextFunction) {
 	let success = false;
@@ -14,6 +15,7 @@ export function authorize(req: Request, res: Response, next: NextFunction) {
 				res.clearCookie('token');
 			}
 		} catch (err) {
+			logErrors([err]);
 			res.clearCookie('token');
 		}
 	}
