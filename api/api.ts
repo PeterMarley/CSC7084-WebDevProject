@@ -13,6 +13,7 @@ import internalServerErrorHandler from './middleware/internalServerErrorHandler'
 import userRouter from './routes/userRouter';
 import moodRouter from './routes/moodRouter';
 import visualizeRouter from './routes/visualizeRouter';
+import SuccessResponse from '../common/response/SuccessResponse';
 
 // configure express
 const api = express.Router();
@@ -38,6 +39,8 @@ api.use('/visualize', visualizeRouter);
 api.use(internalServerErrorHandler);
 
 // 404 NOT FOUND fallback route
-api.all('*', (req: Request, res: Response) => res.status(404).send('that aint no valid API JIMBOB ME SON: ' + req.originalUrl));
+api.all('*', (req: Request, res: Response) => {
+    res.status(404).json(new SuccessResponse(false, ['Route not recognised: ' + req.originalUrl]));
+});
 
 export default api;
