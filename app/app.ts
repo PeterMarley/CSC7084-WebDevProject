@@ -11,15 +11,14 @@ import https from 'https';
 // my module imports
 import { authorize } from './middleware/authorize';
 import config from '../common/config/Config';
-
+import injectConfig from './middleware/injectConfig';
+import internalServerErrorHandler from './middleware/internalServerErrorHandler';
 
 // Router imports
 import api from '../api/api';
 import mainRouter from './routes/mainRouter';
 import userRouter from './routes/userRouter';
 import moodRouter from './routes/moodRouter';
-import injectConfig from './middleware/injectConfig';
-import internalServerErrorHandler from './middleware/internalServerErrorHandler';
 
 /******************************
  * 

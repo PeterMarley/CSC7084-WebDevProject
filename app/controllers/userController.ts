@@ -5,6 +5,7 @@ import config from "../../common/config/Config";
 import apiCall from "../utils/apiCall";
 import { verifyToken } from "../../common/utils/jwtHelpers";
 import SuccessResponse from "../../common/response/SuccessResponse";
+import LoginResponse from "../../common/response/LoginResponse";
 
 const regex = {
     username: new RegExp(config.userDetailsValidation.username.regex),
@@ -61,7 +62,7 @@ class UserController {
         const { username: newUsername, email: newEmail }: AccountDetailsGetResponse = req.body;
         const { username: oldUsername, email: oldEmail } = res.locals;
 
-        const messages: Array<string> = [];
+        const messages: string[] = [];
         if (newUsername !== oldUsername || newEmail !== oldEmail) {
 
             const accountDetailsUpdateResponse = await apiCall(
@@ -72,6 +73,8 @@ class UserController {
                     ['email', encodeURIComponent(newEmail)]
                 ])
             );
+            console.log(accountDetailsUpdateResponse);
+            
             const { success } = accountDetailsUpdateResponse;
             if (success && newUsername !== oldUsername) {
                 messages.push('Username was updated.');
@@ -192,7 +195,7 @@ class UserController {
                 ['username', encodeURIComponent(username)],
                 ['password', encodeURIComponent(password)]
             ])
-        );
+        ) as LoginResponse;
 
         // build response & send
         const COOKIE_NAME = "token";
@@ -207,7 +210,7 @@ class UserController {
                 .render('welcome');
         } else if (!loginResponse.success) {
             res.locals.authed = false;
-            res.locals.errors = loginResponse.error;
+            res.locals.errors = loginResponse.errors;
 
             res.status(401)
                 .clearCookie(COOKIE_NAME)

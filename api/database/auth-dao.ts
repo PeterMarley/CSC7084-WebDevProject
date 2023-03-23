@@ -1,5 +1,5 @@
 import { format, ResultSetHeader, RowDataPacket } from "mysql2";
-import { Connection } from 'mysql2/promise';
+import { Pool } from 'mysql2/promise';
 import checkPasswordCorrect, { encrypt } from "../utils/crypt";
 import getConnection from "../utils/dbConnection";
 import { createToken } from "../../common/utils/jwtHelpers"
@@ -17,7 +17,7 @@ const userDetailsValidation = require('../../common/config/userDetailsValidation
 class AuthApiDataAccessObject {
     async changePassword(password: string, userId: number): Promise<boolean> {
         let success = false;
-        let con: Connection | null = null;
+        let con: Pool | null = null;
         try {
             if (this.validatePassword(password)) {
                 const updateAccountDetailsSql = format(`CALL usp_update_password(?,?)`, [userId, encrypt(password)]);
@@ -38,7 +38,7 @@ class AuthApiDataAccessObject {
     async updateAccountDetails(userId: number, username: string, email: string): Promise<boolean> {
         let success = false;
 
-        let con: Connection | null = null;
+        let con: Pool | null = null;
         try {
             if (this.validateUsername(username) && this.validateEmail(email)) {
                 const updateAccountDetailsSql = format(`UPDATE tbl_user u SET u.username = ?, u.email=? WHERE u.user_id = ?`, [username, email, userId]);
@@ -68,7 +68,7 @@ class AuthApiDataAccessObject {
         let success = false;
         let error: string[] | null = null;
         let statusCode = 200;
-        let con: Connection | null = null;
+        let con: Pool | null = null;
 
         try {
             con = await getConnection();

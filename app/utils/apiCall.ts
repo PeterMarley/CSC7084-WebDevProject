@@ -1,7 +1,6 @@
 import fetch from "node-fetch";
 import buildApiUrl from "./buildApiUrl";
 
-//export default async function apiCall(httpMethod: 'POST' | 'GET' | 'DELETE' | 'PUT' | 'PATCH', endpoint: string, body: URLSearchParams | undefined = undefined, token: string | undefined = undefined) {
 export default async function apiCall(httpMethod: 'POST' | 'GET' | 'DELETE' | 'PUT' | 'PATCH', endpoint: string, body: URLSearchParams | undefined = undefined) {
 	const opts = {
 		method: httpMethod,

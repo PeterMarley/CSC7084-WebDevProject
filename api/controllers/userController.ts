@@ -22,7 +22,8 @@ async function accountPasswordPatch(req: Request, res: Response, next: NextFunct
 async function updateAccountDetails(req: Request, res: Response, next: NextFunction) {
     // const sql = "SELECT username, email FROM tbl_user WHERE user_id=?";
     const userId = Number(req.params.userId);
-    const { username, email } = req.body;
+    let username = decodeURIComponent(req.body.username);
+    let email = decodeURIComponent(req.body.email);
 
     const errors: string[] = [];
     if (!userId) errors.push('userID must be a numeric value');
@@ -33,6 +34,9 @@ async function updateAccountDetails(req: Request, res: Response, next: NextFunct
         res.status(400).json(new SuccessResponse(false, errors));
         return;
     }
+
+    username = decodeURIComponent(req.body.username);
+    email = decodeURIComponent(req.body.email);
 
     let success = await dao.updateAccountDetails(userId, username, email);
 
@@ -62,9 +66,6 @@ async function deleteUserAccount(req: Request, res: Response, next: NextFunction
 }
 
 async function register(req: Request, res: Response, next: NextFunction) {
-    // validate post body properties exist
-
-
     // destructure registration information
     let { username, email, password } = req.body;
 
