@@ -73,7 +73,6 @@ class UserController {
                     ['email', encodeURIComponent(newEmail)]
                 ])
             );
-            console.log(accountDetailsUpdateResponse);
             
             const { success } = accountDetailsUpdateResponse;
             if (success && newUsername !== oldUsername) {

@@ -10,7 +10,6 @@ export default function authorizeRequestByJwt(req: Request, res: Response, next:
         if (payload.expiry <= Date.now()) throw '';
         userId = payload.id
     } catch (err: any) {
-        console.log(err.message);
         res.status(401).json(new SuccessResponse(false, ['You are not authorized.']));
         return;
     }

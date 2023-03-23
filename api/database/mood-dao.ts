@@ -142,7 +142,6 @@ class MoodApiDataAccessObject {
 
 			// if it exists, update it
 			const sql = formatSQL('CALL usp_update_entry(?,?,?,?)', [userId, entryId, entryNotes, activityCommaDelimStr]);
-			console.log(sql);
 			
 			const response: ResultSetHeader = (await con.execute(sql)).at(0) as ResultSetHeader;
 
@@ -197,7 +196,6 @@ class MoodApiDataAccessObject {
 
 		const con = await getConnection();
 		const moods: IDbMood[] = (await con.execute('CALL usp_select_moods') as Array<any>).at(0).at(0);
-		//console.log(moods);
 
 		const activities: IDbActivity[] = (await con.execute(formatSQL('CALL usp_select_activities_by_user_id(?)', [userId])) as Array<any>).at(0).at(0);
 		const activityGroups: IDbActivityGroup[] = (await con.execute(formatSQL('CALL usp_select_activity_groups_by_user_id(?)', [userId])) as Array<any>).at(0).at(0);
@@ -220,7 +218,6 @@ class MoodApiDataAccessObject {
 			moods.map((mood: IDbMood): Mood => new Mood(mood.moodId, mood.moodName, new Image(mood.iconUrl, mood.iconAltText), mood.moodValence, mood.moodArousal)),
 			Array.from(activityMap.values())
 		);
-		//console.log(entryFormData);
 
 		return entryFormData;
 	}
@@ -231,12 +228,13 @@ class MoodApiDataAccessObject {
 		const con = await getConnection();
 
 		try {
-			const sql = formatSQL('CALL usp_insert_entry(?,?,?,?,@entryId)', [userId, moodName, validator.escape(notes), activityNameCommaDelimStr]);
-
+			const sql = formatSQL('CALL usp_insert_entry(?,?,?,?,@entryId)', [userId, moodName, validator.escape(notes), decodeURIComponent(activityNameCommaDelimStr)]);
+			
 			const storedProcedureResponse = (await con.execute(sql)).at(0) as ResultSetHeader
 			const entryId = ((await con.query('SELECT @entryId AS entryId')).at(0) as RowDataPacket).at(0).entryId;
 
 			const { affectedRows, warningStatus } = storedProcedureResponse;
+			
 			success = affectedRows > 0 && warningStatus === 0;
 			return new CreateEntryResponse(success, entryId);
 		} catch (err: any) {
@@ -292,7 +290,6 @@ class MoodApiDataAccessObject {
 			logErrors([err]);
 			return [500, { error: "Something went wrong processing the entry list." }];
 		}
-		// console.log(formatSQL('INSERT INTO tbl VALUES (?);', ['); DROP TABLE tbl;']));
 
 		// map to date
 		const response: any = {};
@@ -345,9 +342,6 @@ class MoodApiDataAccessObject {
 
 		con.end();
 		return [200, true];
-		// con.query('UPDATE tbl_activity SET name=?,  ')
-		// console.log();
-
 	}
 	async createContext(activityName: string, activityIconUrl: string, activityGroupId: number, userId: number): Promise<[number, any]> {
 		try {

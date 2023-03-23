@@ -106,7 +106,6 @@ function handleActivitySelection(event) {
         entryFormComponents.selected.activities.splice(index, 1);
     }
     actHiddenInput.value = entryFormComponents.selected.activities.join(",");
-    console.log(actHiddenInput.value);
 }
 
 /**
@@ -115,12 +114,10 @@ function handleActivitySelection(event) {
  */
 function handleMoodSelection(moodElement) {
     if (!entryFormComponents.moodSelection.active) return;
-    //console.log(document.querySelector('.mood-selection').dataset.action);
     entryFormComponents.moodSelection.buttons.forEach((el) => el.classList.remove("selected"));
     entryFormComponents.selected.mood = moodElement.querySelector(".mood-name").textContent;
     moodElement.classList.add("selected");
     entryFormComponents.selected.mood = moodElement.children[1].textContent;
-    console.log("mood selected: " + entryFormComponents.selected.mood);
     validateSelectedMood();
 }
 

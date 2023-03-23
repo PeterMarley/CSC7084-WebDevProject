@@ -45,14 +45,10 @@ class MoodController {
 		const entryDataResponse: EntryDataResponse =
 			await apiCall('GET', '/api/mood/' + (res.locals.id ? res.locals.id : '') + '/' + req.params.entryId);
 
-		console.log(entryDataResponse.entry?.activities);
 
 		res.locals.entryFormData = entryDataResponse.entryFormData;
 		res.locals.entryData = entryDataResponse.entry;
 		res.locals.action = 'edit';
-		//res.locals.entryAdded = false;
-
-		// console.log(res.locals.formData);
 
 		res.render('mood-entry-edit');
 	}

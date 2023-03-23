@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 23, 2023 at 04:20 PM
+-- Generation Time: Mar 23, 2023 at 05:55 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -25,56 +25,6 @@ DELIMITER $$
 --
 -- Procedures
 --
-CREATE DEFINER=`root`@`localhost` PROCEDURE `usp_Create_User` (IN `username` VARCHAR(255), IN `encryptedPassword` VARCHAR(255), IN `email` INT)   BEGIN
-	DECLARE user_id int;
-    DECLARE activity_group_id int;
-    
-    -- insert user
-    INSERT INTO tbl_user (tbl_user.username, tbl_user.password, tbl_user.email)
-    VALUES (username, encryptedPassword, email);
-
-    SET user_id = LAST_INSERT_ID();
-    
-    -- insert default moods
-    INSERT INTO tbl_mood 
-    (
-        tbl_mood.name, 
-        tbl_mood.order, 
-        tbl_mood.icon_image_id, 
-        tbl_mood.user_id
-    )
-    VALUES 
-    ('Awful', 1, 1, user_id),
-    ('Bad', 2, 2, user_id),
-    ('Ok', 3, 3, user_id),
-    ('Good', 4, 4, user_id),
-    ('Great', 5, 5, user_id);
-    
-    -- insert default activity group
-    INSERT INTO tbl_activity_group
-    (
-    	tbl_activity_group.name,
-        tbl_activity_group.icon_image_id,
-        tbl_activity_group.user_id
-    )
-    VALUES
-    ('Default', 1, user_id);
-    
-    SET activity_group_id = LAST_INSERT_ID();
-
-    -- insert default activities
-    INSERT INTO tbl_activity
-    (
-        tbl_activity.name,
-        tbl_activity.icon_image_id,
-        tbl_activity.activity_group_id,
-        tbl_activity.user_id
-    )
-    VALUES
-    ('Work',1,activity_group_id,user_id),
-    ('Exersize',2,activity_group_id,user_id);
-END$$
-
 CREATE DEFINER=`root`@`localhost` PROCEDURE `usp_delete_account` (IN `userId` INT)   BEGIN
 	START TRANSACTION;
 	    -- SELECT 1337 INTO number;
@@ -240,18 +190,6 @@ FROM tbl_activity a
 INNER JOIN tbl_activity_image ai ON ai.activity_image_id = a.icon_image_id
 WHERE a.user_id = userId$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `usp_select_activities_by_user_id_and_activity_names` (IN `userId` INT, IN `activityNameDelimitedString` VARCHAR(1000))   SELECT 
-	a.name AS activityName,
-	a.activity_id AS activityId,
-	ag.activity_group_id activityGroupId ,
-	ai.url AS iconUrl,
-	ai.alt_text as iconAltText
-FROM tbl_activity a 
-INNER JOIN tbl_activity_image ai ON ai.activity_image_id = a.icon_image_id
-INNER JOIN tbl_activity_group ag ON a.activity_group_id = ag.activity_group_id
-WHERE a.user_id = userId 
-AND FIND_IN_SET(a.name, activityNameDelimitedString)$$
-
 CREATE DEFINER=`root`@`localhost` PROCEDURE `usp_select_activity_groups_by_user_id` (IN `userId` INT)   SELECT
 	ag.name AS activityGroupName,
 	ag.activity_group_id AS activityGroupId,
@@ -321,11 +259,6 @@ FROM tbl_mood m
 LEFT JOIN tbl_mood_image mi ON mi.mood_image_id = m.icon_image_id
 LEFT JOIN tbl_mood_valence mv ON mv.mood_valence_id = m.mood_valence_id
 LEFT JOIN tbl_mood_arousal ma ON ma.mood_arousal_id = m.mood_arousal_id$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `usp_select_mood_by_user_id_and_mood_name` (IN `moodName` VARCHAR(255), IN `userId` INT)   SELECT mood_id AS moodId
-FROM tbl_mood 
-WHERE tbl_mood.name = moodName 
-AND tbl_mood.user_id = userId$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `usp_update_entry` (IN `userId` INT, IN `entryId` INT, IN `entryNotes` TEXT, IN `activityCommaDelimStr` VARCHAR(1000))   BEGIN
 	START TRANSACTION;
@@ -573,7 +506,9 @@ INSERT INTO `tbl_entry` (`entry_id`, `notes`, `timestamp`, `user_id`, `mood_id`)
 (171, 'must...record...one...more...vid%20*dies*%20*pets%20doggo*', '2023-03-21 23:15:00', 94, 6),
 (172, 'This entry was created in postman', '2023-03-21 23:31:16', 94, 2),
 (173, 'bump%20up%20that%20visual%20chart%20hey', '2023-03-22 13:00:07', 94, 2),
-(174, 'T%20MINUS%2048%20HOURS', '2023-03-22 19:24:11', 94, 12);
+(174, 'T%20MINUS%2048%20HOURS', '2023-03-22 19:24:11', 94, 12),
+(177, 'dfdsf', '2023-03-23 16:48:44', 94, 10),
+(182, 'adsfasdf', '2023-03-23 16:52:35', 94, 2);
 
 -- --------------------------------------------------------
 
@@ -622,7 +557,12 @@ INSERT INTO `tbl_entry_activity` (`entry_activity_id`, `entry_id`, `activity_id`
 (462, 172, 17),
 (463, 172, 18),
 (464, 173, 18),
-(466, 174, 44);
+(466, 174, 44),
+(472, 177, 18),
+(473, 177, 40),
+(475, 182, 44),
+(476, 182, 47),
+(477, 182, 48);
 
 -- --------------------------------------------------------
 
@@ -963,13 +903,13 @@ ALTER TABLE `tbl_activity_image`
 -- AUTO_INCREMENT for table `tbl_entry`
 --
 ALTER TABLE `tbl_entry`
-  MODIFY `entry_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=176;
+  MODIFY `entry_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=183;
 
 --
 -- AUTO_INCREMENT for table `tbl_entry_activity`
 --
 ALTER TABLE `tbl_entry_activity`
-  MODIFY `entry_activity_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=471;
+  MODIFY `entry_activity_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=478;
 
 --
 -- AUTO_INCREMENT for table `tbl_entry_images`

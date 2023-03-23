@@ -16,8 +16,6 @@ export default async function apiCall(httpMethod: 'POST' | 'GET' | 'DELETE' | 'P
 	try {
 		return JSON.parse(text);
 	} catch (err) {
-		console.log(`error in apiCall():`);
-		console.error(err);
 		return { success: false }
 	}
 }
